@@ -5,7 +5,7 @@
         <div>
           <multiselect
             style="width: 50%; z-index: 10"
-            class="float-left rounded-lg border border-white"
+            class="float-left rounded-md border border-black"
             placeholder="Select Company."
             v-model="selected_folder2"
             track-by="id"
@@ -15,7 +15,7 @@
           >
           </multiselect>
 
-          <jet-button @click="folderModification" class="ml-2 mt-1"
+          <jet-button @click="folderModification" class="ml-2 mt-1 buttondesign"
             >Folder Modification</jet-button
           >
         </div>
@@ -23,7 +23,7 @@
         <div class="justify-end">
           <multiselect
             style="width: 50%; z-index: 10"
-            class="float-right rounded-lg border border-white"
+            class="float-right rounded-md border border-black"
             placeholder="Select Company."
             v-model="co_id"
             track-by="id"
@@ -44,32 +44,34 @@
       <!-- <form @submit.prevent="form.get(route('years.create'))"> -->
       <!-- <div class="grid grid-cols-2"> -->
 
-      <jet-button @click="uploadFile" class="ml-2">Upload File</jet-button>
+      <jet-button @click="uploadFile" class="ml-2 buttondesign">Upload File</jet-button>
 
       <div class="">
-        <div class="obsolute overflow-x-auto mt-2 ml-2 sm:rounded-2xl">
-          <table class="w-full shadow-lg border rounded-2xl">
+        <div class="obsolute mt-2 ml-2 sm:rounded-2xl">
+          <table class="table2">
             <thead>
-              <tr class="bg-gray-800 text-white">
-                <th class="py-1 px-4 border">File Name</th>
-                <th class="py-1 px-4 border">Action</th>
+              <tr class="tablerowhead">
+                <th class="py-1 px-4 rounded-l-2xl">File Name</th>
+                <th class="py-1 px-4 rounded-r-2xl">Action</th>
               </tr>
             </thead>
             <tbody>
               <tr
-                class="bg-gray-50"
+                class="tablerowbody2"
                 v-for="item in balances.data"
                 :key="item.id"
               >
-                <td class="w-4/12 px-4 border w-2/5">
+                <td class="w-4/12 px-4 border rounded-l-2xl w-2/5">
                   {{ item.name }}
                 </td>
-                <td class="w-4/12px-4 border w-2/6 text-center">
+                <td class="w-4/12px-4 border w-2/6 rounded-r-2xl text-center">
                   <button
                     class="
                       border
                       bg-indigo-300
                       rounded-xl
+                      text-white
+                      font-bold
                       px-4
                       m-1
                       hover:text-white hover:bg-indigo-400
@@ -81,13 +83,10 @@
                   </button>
                   <button
                     class="
-                      border
-                      bg-red-500
-                      rounded-xl
+                      deletebutton
                       px-4
                       m-1
-                      hover:text-white hover:bg-red-600
-                    "
+                      "
                     @click="deleteFileFolder(item.id)"
                     type="button"
                   >
@@ -97,7 +96,7 @@
                 </td>
               </tr>
               <tr v-if="balances.data.length === 0">
-                <td class="border-t px-6 py-4 bg-gray-100" colspan="4">
+                <td class="border-t px-6 py-4 " colspan="4">
                   No Record found.
                 </td>
               </tr>

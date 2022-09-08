@@ -1,7 +1,7 @@
 <template>
   <app-layout>
     <template #header>
-      <h2 class="font-extrabold text-2xl text-black my-2">Company</h2>
+      <h2 class="header">Company</h2>
     </template>
 
     <FlashMessage />

@@ -24242,7 +24242,10 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
                     href: "#",
                     "class": (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeClass)([{
                       'bg-gray-100': active
-                    }, "block py-2 px-4 text-sm text-gray-700"])
+                    }, "block py-2 px-4 text-sm text-gray-700"]),
+                    onClick: _cache[5] || (_cache[5] = function () {
+                      return $options.logout && $options.logout.apply($options, arguments);
+                    })
                   }, "Log out", 2
                   /* CLASS */
                   )];
@@ -24556,8 +24559,8 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     }, [link.label != 'Previous' ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_26, [!$options.isFirstOrLastOrDots(_ctx.index, $props.balances.links.length, link.label) ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_inertia_link, {
       key: 0,
       "class": (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeClass)([{
-        'bg-indigo-300': link.active === true
-      }, "relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 leading-5 hover:text-gray-500 focus:z-10 focus:outline-none focus:ring ring-gray-300 focus:border-blue-300 active:bg-gray-100 active:text-gray-700 transition ease-in-out duration-150"]),
+        'bg-gray-600  text-white hover:text-white hover:bg-gray-600': link.active === true
+      }, "relative inline-flex items-center px-4 py-2 -ml-px text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 leading-5 hover:text-white focus:z-10 focus:outline-none focus:ring ring-gray-300 hover:bg-gray-500 focus:border-blue-300 active:bg-gray-100 active:text-gray-700 transition ease-in-out duration-150"]),
       href: link.url
     }, {
       "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
@@ -25026,7 +25029,7 @@ var _hoisted_1 = {
 };
 
 var _hoisted_2 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h2", {
-  "class": "font-semibold text-xl text-white my-2"
+  "class": "header"
 }, "Account Groups", -1
 /* HOISTED */
 );
@@ -25051,20 +25054,20 @@ var _hoisted_5 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementV
 
 var _hoisted_6 = [_hoisted_5];
 var _hoisted_7 = {
-  "class": "obsolute overflow-x-auto mt-2 ml-2 sm:rounded-2xl"
+  "class": "obsolute mt-2 ml-2 sm:rounded-2xl"
 };
 var _hoisted_8 = {
-  "class": "w-full shadow-lg border rounded-2xl"
+  "class": "table2"
 };
 
 var _hoisted_9 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("thead", null, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tr", {
-  "class": "bg-gray-800 text-white"
+  "class": "tablerowhead"
 }, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
-  "class": "py-1 px-4 border w-2/5"
+  "class": "py-1 px-4 rounded-l-2xl w-2/5"
 }, "Group Name"), /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
-  "class": "py-1 px-4 border"
+  "class": "py-1 px-4"
 }, "Group Type"), /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
-  "class": "py-1 px-4 border"
+  "class": "py-1 px-4 rounded-r-2xl"
 }, "Actions")])], -1
 /* HOISTED */
 );
@@ -25073,7 +25076,7 @@ var _hoisted_10 = {
   style: {
     "width": "30%"
   },
-  "class": "px-4 border"
+  "class": "px-4 border rounded-l-2xl"
 };
 var _hoisted_11 = {
   style: {
@@ -25085,7 +25088,7 @@ var _hoisted_12 = {
   style: {
     "width": "40%"
   },
-  "class": "px-4 border text-center"
+  "class": "px-4 border text-center rounded-r-2xl"
 };
 var _hoisted_13 = ["onClick"];
 
@@ -25106,7 +25109,7 @@ var _hoisted_19 = {
 };
 
 var _hoisted_20 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", {
-  "class": "border-t px-6 py-4 bg-gray-100",
+  "class": "border-t px-6 py-4",
   colspan: "4"
 }, " No Record found. ", -1
 /* HOISTED */
@@ -25144,7 +25147,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
       return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_FlashMessage), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_4, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" <jet-button @click=\"create\" class=\"ml-2\">Create</jet-button>\n      <jet-button @click=\"generate\" v-if=\"exists\" class=\"ml-2\"\n        >Auto Generate Groups</jet-button\n      > "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" disabled=\"false\" "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" <button\n      class=\"border bg-indigo-300 rounded-xl px-4  m-1\"\n      @click=\"check();\n        this.disable = true;\n        (_) => {\n          setTimeout(() => {}, 1000);\n        };\n      \"\n    >\n      <span>Check</span>\n    </button> "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" <input\n        type=\"search\"\n        v-model=\"params.search\"\n        aria-label=\"Search\"\n        placeholder=\"Search...\"\n        class=\"h-9 w-full lg:w-1/4 ml-4 rounded-full placeholder-indigo-300\"\n      /> "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
         type: "text",
-        "class": "ml-4 h-8 px-2 w-80 border-gray-800 ring-gray-800 ring-1 outline-none",
+        "class": "ml-4 h-8 px-2 w-80 border-gray-300 <!-- ring-gray-800 ring-1 --> outline-none",
         "onUpdate:modelValue": _cache[1] || (_cache[1] = function ($event) {
           return $data.params.search = $event;
         }),
@@ -25162,14 +25165,14 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         "class": "border-2 pb-2.5 pt-1 bg-gray-800 border-gray-800 px-1 hover:bg-gray-700"
       }, _hoisted_6), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_7, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("table", _hoisted_8, [_hoisted_9, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tbody", null, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($props.balances.data, function (item) {
         return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("tr", {
-          "class": "bg-gray-100",
+          "class": "tablerowbody2",
           key: item.id
         }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_10, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(item.name), 1
         /* TEXT */
         ), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_11, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(item.type_name), 1
         /* TEXT */
         ), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_12, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
-          "class": "border bg-indigo-300 rounded-xl px-4 m-1 hover:text-white hover:bg-indigo-400",
+          "class": "editbutton px-4 m-1",
           onClick: function onClick($event) {
             return $options.edit(item.id);
           }
@@ -25177,7 +25180,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         /* PROPS */
         , _hoisted_13), item["delete"] ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("button", {
           key: 0,
-          "class": "border bg-red-500 rounded-xl px-4 m-1 hover:text-white hover:bg-red-600",
+          "class": "deletebutton px-4 m-1",
           onClick: function onClick($event) {
             return $options.destroy(item.id);
           }
@@ -25219,7 +25222,7 @@ var _hoisted_1 = {
 };
 
 var _hoisted_2 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h2", {
-  "class": "font-semibold text-xl text-white my-2"
+  "class": "header"
 }, "Accounts", -1
 /* HOISTED */
 );
@@ -25247,32 +25250,41 @@ var _hoisted_7 = {
   "class": ""
 };
 var _hoisted_8 = {
-  "class": "relative overflow-x-auto mt-2 ml-2 sm:rounded-2xl"
+  "class": "obsolute mt-2 ml-2 sm:rounded-2xl"
 };
 var _hoisted_9 = {
-  "class": "w-full shadow-lg border rounded-2xl"
+  "class": "table2"
 };
 
 var _hoisted_10 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("thead", null, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tr", {
-  "class": "bg-gray-900 text-white"
+  "class": "tablerowhead"
 }, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" <th class=\"py-2 px-4 border\">ID</th> "), /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
-  "class": "py-1 px-4 border"
+  "class": "py-1 px-4 rounded-l-2xl"
 }, "Name of Account"), /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
-  "class": "py-1 px-4 border"
+  "class": "py-1 px-4"
 }, "Group of Account"), /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
-  "class": "py-1 px-4 border"
+  "class": "py-1 px-4 rounded-r-2xl"
 }, "Action")])], -1
 /* HOISTED */
 );
 
 var _hoisted_11 = {
-  "class": "px-4 border"
+  style: {
+    "width": "40%"
+  },
+  "class": "px-4 border rounded-l-2xl"
 };
 var _hoisted_12 = {
+  style: {
+    "width": "37%"
+  },
   "class": "px-4 border"
 };
 var _hoisted_13 = {
-  "class": "px-4 border text-center"
+  style: {
+    "width": "23%"
+  },
+  "class": "px-4 border text-center rounded-r-2xl"
 };
 var _hoisted_14 = ["onClick"];
 
@@ -25293,9 +25305,9 @@ var _hoisted_20 = {
 };
 
 var _hoisted_21 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", {
-  "class": "border-t px-6 py-4 bg-gray-100",
+  "class": "border-t px-6 py-4",
   colspan: "4"
-}, " No Record found. ", -1
+}, "No Record found.", -1
 /* HOISTED */
 );
 
@@ -25349,14 +25361,14 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         "class": "border-2 pb-2.5 pt-1 bg-gray-800 border-gray-800 px-1 hover:bg-gray-700"
       }, _hoisted_6), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_7, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_8, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("table", _hoisted_9, [_hoisted_10, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tbody", null, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($props.balances.data, function (item) {
         return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("tr", {
-          "class": "bg-gray-100",
+          "class": "tablerowbody2",
           key: item.id
         }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" <td class=\"py-1 px-4 border text-center\">{{ item.id }}</td> "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_11, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(item.name), 1
         /* TEXT */
         ), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_12, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(item.group_name), 1
         /* TEXT */
         ), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" <td class=\" px-4 border\">{{ item.accountGroup.name }}</td> "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_13, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
-          "class": "border bg-indigo-300 rounded-xl px-4 m-1 hover:text-white hover:bg-indigo-400",
+          "class": "editbutton px-4 m-1",
           onClick: function onClick($event) {
             return $options.edit(item.id);
           }
@@ -25364,7 +25376,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         /* PROPS */
         , _hoisted_14), item["delete"] ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("button", {
           key: 0,
-          "class": "border bg-red-500 rounded-xl px-4 m-1 hover:text-white hover:bg-red-600",
+          "class": "deletebutton px-4 m-1",
           onClick: function onClick($event) {
             return $options.destroy(item.id);
           }
@@ -26244,7 +26256,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var _hoisted_1 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h2", {
-  "class": "font-semibold text-xl text-white my-2"
+  "class": "header"
 }, "Create Company", -1
 /* HOISTED */
 );
@@ -26260,7 +26272,7 @@ var _hoisted_4 = {
 };
 
 var _hoisted_5 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
-  "class": "my-2 mr-8 text-right w-36 font-bold"
+  "class": "my-2 mr-8 ml-40 text-right w-36 font-bold"
 }, "Name :", -1
 /* HOISTED */
 );
@@ -26275,7 +26287,7 @@ var _hoisted_7 = {
 };
 
 var _hoisted_8 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
-  "class": "my-2 mr-8 text-right w-36 font-bold"
+  "class": "my-2 mr-8 ml-40 text-right w-36 font-bold"
 }, "Address :", -1
 /* HOISTED */
 );
@@ -26288,7 +26300,7 @@ var _hoisted_10 = {
 };
 
 var _hoisted_11 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
-  "class": "my-2 mr-8 text-right w-36 font-bold"
+  "class": "my-2 mr-8 ml-40 text-right w-36 font-bold"
 }, "Email :", -1
 /* HOISTED */
 );
@@ -26301,7 +26313,7 @@ var _hoisted_13 = {
 };
 
 var _hoisted_14 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
-  "class": "my-2 mr-8 text-right w-36 font-bold"
+  "class": "my-2 mr-8 ml-40 text-right w-36 font-bold"
 }, "Web Address :", -1
 /* HOISTED */
 );
@@ -26314,7 +26326,7 @@ var _hoisted_16 = {
 };
 
 var _hoisted_17 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
-  "class": "my-2 mr-8 text-right w-36 font-bold"
+  "class": "my-2 mr-8 ml-40 text-right w-36 font-bold"
 }, "Phone No :", -1
 /* HOISTED */
 );
@@ -26327,7 +26339,7 @@ var _hoisted_19 = {
 };
 
 var _hoisted_20 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
-  "class": "my-2 text-right w-36 mr-8 font-bold"
+  "class": "my-2 ml-40 text-right w-36 mr-8 font-bold"
 }, "Fiscal :", -1
 /* HOISTED */
 );
@@ -26341,7 +26353,7 @@ var _hoisted_23 = {
 };
 
 var _hoisted_24 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
-  "class": "my-2 mr-8 text-right w-36 font-bold"
+  "class": "my-2 mr-8 ml-40 text-right w-36 font-bold"
 }, "Incorp :", -1
 /* HOISTED */
 );
@@ -26350,7 +26362,7 @@ var _hoisted_25 = {
   key: 0
 };
 var _hoisted_26 = {
-  "class": "px-4 py-2 border-t border-gray-200 flex justify-center items-center"
+  "class": "px-4 py-2 flex justify-center items-center"
 };
 var _hoisted_27 = ["disabled"];
 function render(_ctx, _cache, $props, $setup, $data, $options) {
@@ -26370,7 +26382,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         "onUpdate:modelValue": _cache[0] || (_cache[0] = function ($event) {
           return $setup.form.name = $event;
         }),
-        "class": "pr-2 pb-2 w-full lg:w-1/4 rounded-md placeholder-indigo-300",
+        "class": "pr-2 pb-2 w-full lg:w-1/4 rounded-md hover:transition hover:ease-in-out transform hover:scale-110 ease-out duration-200 placeholder-indigo-300",
         label: "name",
         placeholder: "Enter Company name:"
       }, null, 512
@@ -26382,7 +26394,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         "onUpdate:modelValue": _cache[1] || (_cache[1] = function ($event) {
           return $setup.form.address = $event;
         }),
-        "class": "pr-2 pb-2 w-full lg:w-1/4 rounded-md placeholder-indigo-300",
+        "class": "pr-2 pb-2 w-full lg:w-1/4 rounded-md hover:transition hover:ease-in-out transform hover:scale-110 ease-out duration-200 placeholder-indigo-300",
         label: "address",
         placeholder: "Enter address:"
       }, null, 512
@@ -26394,7 +26406,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         "onUpdate:modelValue": _cache[2] || (_cache[2] = function ($event) {
           return $setup.form.email = $event;
         }),
-        "class": "pr-2 pb-2 w-full lg:w-1/4 rounded-md placeholder-indigo-300",
+        "class": "pr-2 pb-2 w-full lg:w-1/4 rounded-md hover:transition hover:ease-in-out transform hover:scale-110 ease-out duration-200 placeholder-indigo-300",
         label: "email",
         placeholder: "Enter email:"
       }, null, 512
@@ -26406,7 +26418,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         "onUpdate:modelValue": _cache[3] || (_cache[3] = function ($event) {
           return $setup.form.web = $event;
         }),
-        "class": "pr-2 pb-2 w-full lg:w-1/4 rounded-md placeholder-indigo-300",
+        "class": "pr-2 pb-2 w-full lg:w-1/4 rounded-md hover:transition hover:ease-in-out transform hover:scale-110 ease-out duration-200 placeholder-indigo-300",
         label: "website",
         placeholder: "Enter web address:"
       }, null, 512
@@ -26418,7 +26430,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         "onUpdate:modelValue": _cache[4] || (_cache[4] = function ($event) {
           return $setup.form.phone = $event;
         }),
-        "class": "pr-2 pb-2 w-full lg:w-1/4 rounded-md placeholder-indigo-300",
+        "class": "pr-2 pb-2 w-full lg:w-1/4 rounded-md hover:transition hover:ease-in-out transform hover:scale-110 ease-out duration-200 placeholder-indigo-300",
         label: "phone",
         placeholder: "Enter phone no:"
       }, null, 512
@@ -26429,7 +26441,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         "onUpdate:modelValue": _cache[5] || (_cache[5] = function ($event) {
           return $setup.form.fiscal = $event;
         }),
-        "class": "pr-2 pb-2 w-full lg:w-1/4 rounded-md placeholder-indigo-300",
+        "class": "pr-2 pb-2 w-full lg:w-1/4 rounded-md hover:transition hover:ease-in-out transform hover:scale-110 ease-out duration-200 placeholder-indigo-300",
         label: "ficsal",
         placeholder: "Select Fiscal:"
       }, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($props.fiscals, function (fiscal) {
@@ -26450,7 +26462,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         "onUpdate:modelValue": _cache[6] || (_cache[6] = function ($event) {
           return $setup.form.incorp = $event;
         }),
-        "class": "pr-2 pb-2 w-full lg:w-1/4 rounded-md placeholder-indigo-300",
+        "class": "pr-2 pb-2 w-full lg:w-1/4 rounded-md hover:transition hover:ease-in-out transform hover:scale-110 ease-out duration-200 placeholder-indigo-300",
         label: "incorp",
         placeholder: "Enter Incorp:"
       }, null, 512
@@ -26458,7 +26470,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $setup.form.incorp]]), $props.errors.incorp ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_25, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.errors.incorp), 1
       /* TEXT */
       )) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_26, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
-        "class": "border rounded-xl shadow-md p-1 px-4 mt-1 bg-gray-800 text-white ml-2 inline-block hover:bg-gray-700 hover:text-white",
+        "class": "submitbutton p-1 px-4 mt-1 ml-2 inline-block mr-3",
         type: "submit",
         disabled: $setup.form.processing
       }, " Create Company ", 8
@@ -26490,7 +26502,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var _hoisted_1 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h2", {
-  "class": "font-semibold text-xl text-white my-2"
+  "class": "header"
 }, "Edit Company", -1
 /* HOISTED */
 );
@@ -26506,7 +26518,7 @@ var _hoisted_4 = {
 };
 
 var _hoisted_5 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
-  "class": "my-2 mr-8 text-right w-36 font-bold"
+  "class": "my-2 mr-8 ml-40 text-right w-36 font-bold"
 }, "Name :", -1
 /* HOISTED */
 );
@@ -26521,7 +26533,7 @@ var _hoisted_7 = {
 };
 
 var _hoisted_8 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
-  "class": "my-2 mr-8 text-right w-36 font-bold"
+  "class": "my-2 mr-8 ml-40 text-right w-36 font-bold"
 }, "Address :", -1
 /* HOISTED */
 );
@@ -26534,7 +26546,7 @@ var _hoisted_10 = {
 };
 
 var _hoisted_11 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
-  "class": "my-2 mr-8 text-right w-36 font-bold"
+  "class": "my-2 mr-8 ml-40 text-right w-36 font-bold"
 }, "Email :", -1
 /* HOISTED */
 );
@@ -26547,7 +26559,7 @@ var _hoisted_13 = {
 };
 
 var _hoisted_14 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
-  "class": "my-2 mr-8 text-right w-36 font-bold"
+  "class": "my-2 mr-8 ml-40 text-right w-36 font-bold"
 }, "Web Address :", -1
 /* HOISTED */
 );
@@ -26560,7 +26572,7 @@ var _hoisted_16 = {
 };
 
 var _hoisted_17 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
-  "class": "my-2 mr-8 text-right w-36 font-bold"
+  "class": "my-2 mr-8 ml-40 text-right w-36 font-bold"
 }, "Phone No :", -1
 /* HOISTED */
 );
@@ -26573,7 +26585,7 @@ var _hoisted_19 = {
 };
 
 var _hoisted_20 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
-  "class": "my-2 mr-8 text-right w-36 font-bold"
+  "class": "my-2 mr-8 ml-40 text-right w-36 font-bold"
 }, "Fiscal :", -1
 /* HOISTED */
 );
@@ -26586,7 +26598,7 @@ var _hoisted_22 = {
 };
 
 var _hoisted_23 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
-  "class": "my-2 mr-8 text-right w-36 font-bold"
+  "class": "my-2 mr-8 ml-40 text-right w-36 font-bold"
 }, "Incorp :", -1
 /* HOISTED */
 );
@@ -26596,9 +26608,9 @@ var _hoisted_24 = {
 };
 
 var _hoisted_25 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
-  "class": "px-4 py-2 bg-gray-200 border-t border-gray-200 flex justify-center items-center"
+  "class": "px-4 py-2 flex justify-center items-center"
 }, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
-  "class": "border rounded-xl shadow-md p-1 px-4 mt-1 bg-gray-800 text-white ml-2 inline-block hover:bg-gray-700 hover:text-white",
+  "class": "submitbutton p-1 px-4 mt-1 ml-2 mr-3",
   type: "submit"
 }, " Update Company ")], -1
 /* HOISTED */
@@ -26621,7 +26633,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         "onUpdate:modelValue": _cache[0] || (_cache[0] = function ($event) {
           return $data.form.name = $event;
         }),
-        "class": "pr-2 pb-2 w-full lg:w-1/4 rounded-md placeholder-indigo-300",
+        "class": "pr-2 pb-2 w-full lg:w-1/4 rounded-md hover:transition hover:ease-in-out transform hover:scale-110 ease-out duration-200 placeholder-indigo-300",
         label: "name",
         placeholder: "Enter name:"
       }, null, 512
@@ -26633,7 +26645,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         "onUpdate:modelValue": _cache[1] || (_cache[1] = function ($event) {
           return $data.form.address = $event;
         }),
-        "class": "pr-2 pb-2 w-full lg:w-1/4 rounded-md placeholder-indigo-300",
+        "class": "pr-2 pb-2 w-full lg:w-1/4 rounded-md hover:transition hover:ease-in-out transform hover:scale-110 ease-out duration-200 placeholder-indigo-300",
         label: "address",
         placeholder: "Enter address:"
       }, null, 512
@@ -26645,7 +26657,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         "onUpdate:modelValue": _cache[2] || (_cache[2] = function ($event) {
           return $data.form.email = $event;
         }),
-        "class": "pr-2 pb-2 w-full lg:w-1/4 rounded-md placeholder-indigo-300",
+        "class": "pr-2 pb-2 w-full lg:w-1/4 rounded-md hover:transition hover:ease-in-out transform hover:scale-110 ease-out duration-200 placeholder-indigo-300",
         label: "email",
         placeholder: "Enter Email:"
       }, null, 512
@@ -26657,7 +26669,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         "onUpdate:modelValue": _cache[3] || (_cache[3] = function ($event) {
           return $data.form.web = $event;
         }),
-        "class": "pr-2 pb-2 w-full lg:w-1/4 rounded-md placeholder-indigo-300",
+        "class": "pr-2 pb-2 w-full lg:w-1/4 rounded-md hover:transition hover:ease-in-out transform hover:scale-110 ease-out duration-200 placeholder-indigo-300",
         label: "website",
         placeholder: "Enter Web Address:"
       }, null, 512
@@ -26669,7 +26681,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         "onUpdate:modelValue": _cache[4] || (_cache[4] = function ($event) {
           return $data.form.phone = $event;
         }),
-        "class": "pr-2 pb-2 w-full lg:w-1/4 rounded-md placeholder-indigo-300",
+        "class": "pr-2 pb-2 w-full lg:w-1/4 rounded-md hover:transition hover:ease-in-out transform hover:scale-110 ease-out duration-200 placeholder-indigo-300",
         label: "phone",
         placeholder: "Enter Phone no:"
       }, null, 512
@@ -26681,7 +26693,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         "onUpdate:modelValue": _cache[5] || (_cache[5] = function ($event) {
           return $data.form.fiscal = $event;
         }),
-        "class": "pr-2 pb-2 w-full lg:w-1/4 rounded-md",
+        "class": "pr-2 pb-2 w-full lg:w-1/4 hover:transition hover:ease-in-out transform hover:scale-110 ease-out duration-200 rounded-md",
         label: "fiscal",
         disabled: ""
       }, null, 512
@@ -26693,7 +26705,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         "onUpdate:modelValue": _cache[6] || (_cache[6] = function ($event) {
           return $data.form.incorp = $event;
         }),
-        "class": "pr-2 pb-2 w-full lg:w-1/4 rounded-md placeholder-indigo-300",
+        "class": "pr-2 pb-2 w-full lg:w-1/4 rounded-md hover:transition hover:ease-in-out transform hover:scale-110 ease-out duration-200 placeholder-indigo-300",
         label: "date",
         placeholder: "Enter Incorp:"
       }, null, 512
@@ -26727,7 +26739,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var _hoisted_1 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h2", {
-  "class": "font-extrabold text-2xl text-black my-2"
+  "class": "header"
 }, "Company", -1
 /* HOISTED */
 );
@@ -26983,7 +26995,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var _hoisted_1 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h2", {
-  "class": "font-semibold text-xl text-white leading-tight"
+  "class": "header leading-tight"
 }, " Dashboard ", -1
 /* HOISTED */
 );
@@ -27037,7 +27049,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var _hoisted_1 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h2", {
-  "class": "font-semibold text-xl text-white my-2"
+  "class": "header"
 }, "Create Folder", -1
 /* HOISTED */
 );
@@ -27057,7 +27069,7 @@ var _hoisted_5 = {
 };
 
 var _hoisted_6 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
-  "class": "my-2 mr-8 text-right w-36 font-bold"
+  "class": "my-2 mr-8 ml-40 text-right w-36 font-bold"
 }, "Folder Name :", -1
 /* HOISTED */
 );
@@ -27068,7 +27080,7 @@ var _hoisted_7 = {
   role: "alert"
 };
 var _hoisted_8 = {
-  "class": "px-4 py-2 bg-gray-200 border-t border-gray-200 flex justify-center items-center"
+  "class": "px-4 py-2 flex justify-center items-center"
 };
 var _hoisted_9 = ["disabled"];
 function render(_ctx, _cache, $props, $setup, $data, $options) {
@@ -27090,7 +27102,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         "onUpdate:modelValue": _cache[0] || (_cache[0] = function ($event) {
           return $setup.form.name = $event;
         }),
-        "class": "pr-2 pb-2 w-full lg:w-1/4 rounded-md placeholder-indigo-300",
+        "class": "pr-2 pb-2 w-full lg:w-1/4 rounded-md hover:transition hover:ease-in-out transform hover:scale-110 ease-out duration-200 placeholder-indigo-300",
         label: "name",
         placeholder: "Enter Folder name:"
       }, null, 512
@@ -27098,7 +27110,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $setup.form.name]]), $props.errors.name ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_7, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.errors.name), 1
       /* TEXT */
       )) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_8, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
-        "class": "border rounded-xl shadow-md p-1 px-4 mt-1 bg-gray-800 text-white ml-2 inline-block hover:bg-gray-700 hover:text-white",
+        "class": "submitbutton p-1 px-4 mr-8 mt-1 ml-2 inline-block",
         type: "submit",
         disabled: $setup.form.processing
       }, " Create Folder ", 8
@@ -27147,27 +27159,27 @@ var _hoisted_6 = {
   "class": ""
 };
 var _hoisted_7 = {
-  "class": "obsolute overflow-x-auto mt-2 ml-2 sm:rounded-2xl"
+  "class": "obsolute mt-2 ml-2 sm:rounded-2xl"
 };
 var _hoisted_8 = {
-  "class": "w-full shadow-lg border rounded-2xl"
+  "class": "table2"
 };
 
 var _hoisted_9 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("thead", null, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tr", {
-  "class": "bg-gray-800 text-white"
+  "class": "tablerowhead"
 }, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
-  "class": "py-1 px-4 border"
+  "class": "py-1 px-4 rounded-l-2xl"
 }, "File Name"), /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
-  "class": "py-1 px-4 border"
+  "class": "py-1 px-4 rounded-r-2xl"
 }, "Action")])], -1
 /* HOISTED */
 );
 
 var _hoisted_10 = {
-  "class": "w-4/12 px-4 border w-2/5"
+  "class": "w-4/12 px-4 border rounded-l-2xl w-2/5"
 };
 var _hoisted_11 = {
-  "class": "w-4/12px-4 border w-2/6 text-center"
+  "class": "w-4/12px-4 border w-2/6 rounded-r-2xl text-center"
 };
 var _hoisted_12 = ["onClick"];
 
@@ -27187,7 +27199,7 @@ var _hoisted_17 = {
 };
 
 var _hoisted_18 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", {
-  "class": "border-t px-6 py-4 bg-gray-100",
+  "class": "border-t px-6 py-4",
   colspan: "4"
 }, " No Record found. ", -1
 /* HOISTED */
@@ -27212,7 +27224,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
           "width": "50%",
           "z-index": "10"
         },
-        "class": "float-left rounded-lg border border-white",
+        "class": "float-left rounded-md border border-black",
         placeholder: "Select Company.",
         modelValue: $data.selected_folder2,
         "onUpdate:modelValue": [_cache[0] || (_cache[0] = function ($event) {
@@ -27225,7 +27237,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       /* PROPS */
       , ["modelValue", "options", "onUpdate:modelValue"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_jet_button, {
         onClick: $options.folderModification,
-        "class": "ml-2 mt-1"
+        "class": "ml-2 mt-1 buttondesign"
       }, {
         "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
           return [_hoisted_2];
@@ -27240,7 +27252,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
           "width": "50%",
           "z-index": "10"
         },
-        "class": "float-right rounded-lg border border-white",
+        "class": "float-right rounded-md border border-black",
         placeholder: "Select Company.",
         modelValue: $data.co_id,
         "onUpdate:modelValue": [_cache[1] || (_cache[1] = function ($event) {
@@ -27256,7 +27268,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
       return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_FlashMessage), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_4, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" <jet-button @click=\"create\" class=\"mt-4 ml-8\">Create</jet-button> "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" <form @submit.prevent=\"form.get(route('years.create'))\"> "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" <div class=\"grid grid-cols-2\"> "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_jet_button, {
         onClick: $options.uploadFile,
-        "class": "ml-2"
+        "class": "ml-2 buttondesign"
       }, {
         "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
           return [_hoisted_5];
@@ -27268,12 +27280,12 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       /* PROPS */
       , ["onClick"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_6, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_7, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("table", _hoisted_8, [_hoisted_9, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tbody", null, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($props.balances.data, function (item) {
         return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("tr", {
-          "class": "bg-gray-50",
+          "class": "tablerowbody2",
           key: item.id
         }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_10, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(item.name), 1
         /* TEXT */
         ), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_11, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
-          "class": "border bg-indigo-300 rounded-xl px-4 m-1 hover:text-white hover:bg-indigo-400",
+          "class": "border bg-indigo-300 rounded-xl text-white font-bold px-4 m-1 hover:text-white hover:bg-indigo-400",
           onClick: function onClick($event) {
             return $options.downloadFile(item.id);
           },
@@ -27281,7 +27293,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         }, _hoisted_14, 8
         /* PROPS */
         , _hoisted_12), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
-          "class": "border bg-red-500 rounded-xl px-4 m-1 hover:text-white hover:bg-red-600",
+          "class": "deletebutton px-4 m-1",
           onClick: function onClick($event) {
             return $options.deleteFileFolder(item.id);
           },
@@ -27323,7 +27335,7 @@ var _hoisted_1 = {
   "class": "grid grid-cols-2 items-center"
 };
 var _hoisted_2 = {
-  "class": "font-semibold text-xl text-white my-2"
+  "class": "header"
 };
 var _hoisted_3 = {
   "class": "justify-end"
@@ -27340,30 +27352,30 @@ var _hoisted_7 = {
   "class": ""
 };
 var _hoisted_8 = {
-  "class": "obsolute overflow-x-auto mt-2 ml-2 sm:rounded-2xl"
+  "class": "obsolute mt-2 ml-2 sm:rounded-2xl"
 };
 var _hoisted_9 = {
-  "class": "w-full shadow-lg border rounded-2xl"
+  "class": "table2"
 };
 var _hoisted_10 = {
-  "class": "bg-gray-800 text-white"
+  "class": "tablerowhead"
 };
 var _hoisted_11 = {
-  "class": "py-1 px-4 border"
+  "class": "py-1 px-4 rounded-l-2xl"
 };
 
 var _hoisted_12 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
-  "class": "py-1 px-4 border"
+  "class": "py-1 px-4 rounded-r-2xl"
 }, "Action", -1
 /* HOISTED */
 );
 
 var _hoisted_13 = {
-  "class": "w-4/12 px-4 border w-2/5"
+  "class": "w-4/12 px-4 border rounded-l-2xl w-2/5"
 };
 var _hoisted_14 = {
   key: 0,
-  "class": "w-4/12px-4 border w-2/6 text-center"
+  "class": "w-4/12px-4 border w-2/6 text-center rounded-r-2xl"
 };
 var _hoisted_15 = ["onClick"];
 
@@ -27380,7 +27392,7 @@ var _hoisted_19 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElement
 
 var _hoisted_20 = {
   key: 1,
-  "class": "w-4/12px-4 border w-2/6 text-center"
+  "class": "w-4/12px-4 border w-2/6 text-center rounded-r-2xl"
 };
 var _hoisted_21 = ["onClick"];
 
@@ -27427,7 +27439,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
           "width": "50%",
           "z-index": "10"
         },
-        "class": "float-right rounded-lg border border-white",
+        "class": "float-right rounded-md border border-black",
         placeholder: "Select Company.",
         modelValue: $data.co_id,
         "onUpdate:modelValue": [_cache[0] || (_cache[0] = function ($event) {
@@ -27444,7 +27456,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_FlashMessage), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_4, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" <jet-button @click=\"create\" class=\"mt-4 ml-8\">Create</jet-button> "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" <form @submit.prevent=\"form.get(route('years.create'))\"> "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" <div class=\"grid grid-cols-2\"> "), $props.parent.type == 'File' ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_jet_button, {
         key: 0,
         onClick: $options.uploadFile,
-        "class": "ml-2"
+        "class": "ml-2 buttondesign"
       }, {
         "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
           return [_hoisted_5];
@@ -27458,7 +27470,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         key: 1,
         type: "button",
         onClick: $options.createFolder,
-        "class": "ml-2"
+        "class": "ml-2 buttondesign"
       }, {
         "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
           return [_hoisted_6];
@@ -27472,12 +27484,12 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       /* TEXT */
       ), _hoisted_12])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tbody", null, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($props.balances.data, function (item) {
         return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("tr", {
-          "class": "bg-gray-50",
+          "class": "tablerowbody2",
           key: item.id
         }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_13, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(item.name), 1
         /* TEXT */
         ), $props.parent.type == 'File' ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("td", _hoisted_14, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
-          "class": "border bg-indigo-300 rounded-xl px-4 m-1 hover:text-white hover:bg-indigo-400",
+          "class": "border bg-indigo-300 rounded-xl px-4 text-white font-bold m-1 hover:text-white hover:bg-indigo-400",
           onClick: function onClick($event) {
             return $options.downloadFile(item.id);
           },
@@ -27485,7 +27497,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         }, _hoisted_17, 8
         /* PROPS */
         , _hoisted_15), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
-          "class": "border bg-red-500 rounded-xl px-4 m-1 hover:text-white hover:bg-red-600",
+          "class": "border bg-red-500 rounded-xl px-4 m-1 text-white font-bold hover:text-white hover:bg-red-600",
           onClick: function onClick($event) {
             return $options.deleteFileFolder(item.id);
           },
@@ -27493,7 +27505,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" v-if=\"item.delete\" "), _hoisted_19], 8
         /* PROPS */
         , _hoisted_18)])) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("td", _hoisted_20, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
-          "class": "border bg-indigo-300 rounded-xl px-4 m-1 hover:text-white hover:bg-indigo-400",
+          "class": "border bg-indigo-300 rounded-xl px-4 m-1 text-white font-bold hover:text-white hover:bg-indigo-400",
           onClick: function onClick($event) {
             return $options.viewFolder(item.id);
           },
@@ -27501,7 +27513,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         }, _hoisted_23, 8
         /* PROPS */
         , _hoisted_21), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
-          "class": "border bg-red-500 rounded-xl px-4 m-1 hover:text-white hover:bg-red-600",
+          "class": "deletebutton px-4 m-1",
           onClick: function onClick($event) {
             return $options.deleteFileFolder(item.id);
           },
@@ -27543,7 +27555,7 @@ var _hoisted_1 = {
   "class": "grid grid-cols-2 items-center"
 };
 var _hoisted_2 = {
-  "class": "font-semibold text-xl text-white my-2"
+  "class": "header"
 };
 var _hoisted_3 = {
   key: 0,
@@ -27572,7 +27584,7 @@ var _hoisted_9 = {
 };
 
 var _hoisted_10 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
-  "class": "border bg-indigo-300 rounded-xl px-4 py-2 m-4",
+  "class": "trailbutton",
   type: "submit"
 }, " Upload File ", -1
 /* HOISTED */
@@ -28803,7 +28815,7 @@ __webpack_require__.r(__webpack_exports__);
 var _hoisted_1 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
   "class": "grid grid-cols-2 items-center"
 }, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h2", {
-  "class": "font-semibold text-xl text-white my-2"
+  "class": "header"
 }, " Upload Trial in Excel ")], -1
 /* HOISTED */
 );
@@ -28827,21 +28839,21 @@ var _hoisted_6 = {
 };
 
 var _hoisted_7 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
-  "class": "border bg-indigo-300 rounded-xl px-4 py-4 m-4",
+  "class": "trailbutton",
   type: "submit"
 }, " Upload Trial Balance ", -1
 /* HOISTED */
 );
 
 var _hoisted_8 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("a", {
-  "class": "border bg-indigo-300 rounded-xl px-4 py-4 m-4",
+  "class": "trailbutton",
   href: "/trialpattern"
 }, "Download Trail Template", -1
 /* HOISTED */
 );
 
 var _hoisted_9 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("a", {
-  "class": "border bg-indigo-300 rounded-xl px-4 py-4 m-4",
+  "class": "trailbutton",
   href: "/lead"
 }, "Lead Schedule", -1
 /* HOISTED */
@@ -28999,7 +29011,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var _hoisted_1 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h2", {
-  "class": "font-semibold text-xl text-white leading-tight"
+  "class": "header leading-tight"
 }, "Years", -1
 /* HOISTED */
 );
@@ -29016,7 +29028,7 @@ var _hoisted_4 = {
 };
 
 var _hoisted_5 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
-  "class": "my-2 mr-8 text-right w-36 font-bold"
+  "class": "my-2 mr-8 ml-40 text-right w-36 font-bold"
 }, "Begin Date :", -1
 /* HOISTED */
 );
@@ -29029,7 +29041,7 @@ var _hoisted_7 = {
 };
 
 var _hoisted_8 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
-  "class": "my-2 mr-8 text-right w-36 font-bold"
+  "class": "my-2 mr-8 ml-40 text-right w-36 font-bold"
 }, "End Date :", -1
 /* HOISTED */
 );
@@ -29038,7 +29050,7 @@ var _hoisted_9 = {
   key: 0
 };
 var _hoisted_10 = {
-  "class": "px-4 py-2 bg-gray-100 border-t border-gray-200 flex justify-start items-center"
+  "class": "px-4 py-2 flex justify-start items-center"
 };
 var _hoisted_11 = ["disabled"];
 function render(_ctx, _cache, $props, $setup, $data, $options) {
@@ -29062,7 +29074,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         }),
         label: "date",
         placeholder: "Enter Begin date:",
-        "class": "pr-2 pb-2 rounded-md placeholder-indigo-300"
+        "class": "pr-2 pb-2 rounded-md hover:transition hover:ease-in-out transform hover:scale-110 ease-out duration-200 placeholder-indigo-300"
       }, null, 512
       /* NEED_PATCH */
       ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $setup.form.begin]]), $props.errors.begin ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_6, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.errors.begin), 1
@@ -29072,7 +29084,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         "onUpdate:modelValue": _cache[1] || (_cache[1] = function ($event) {
           return $setup.form.end = $event;
         }),
-        "class": "pr-2 pb-2 rounded-md placeholder-indigo-300",
+        "class": "pr-2 pb-2 rounded-md hover:transition hover:ease-in-out transform hover:scale-110 ease-out duration-200 placeholder-indigo-300",
         label: "date",
         placeholder: "Enter End date:"
       }, null, 512
@@ -29080,7 +29092,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $setup.form.end]]), $props.errors.end ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_9, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.errors.end), 1
       /* TEXT */
       )) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_10, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
-        "class": "border bg-indigo-300 rounded-xl px-4 py-2 ml-4 mt-4",
+        "class": "submitbutton px-4 py-2 ml-4 mt-4",
         type: "submit",
         disabled: $setup.form.processing
       }, " Create Year ", 8
@@ -29112,7 +29124,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var _hoisted_1 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h2", {
-  "class": "font-semibold text-xl text-white my-2"
+  "class": "header"
 }, "Year", -1
 /* HOISTED */
 );
@@ -29125,7 +29137,7 @@ var _hoisted_3 = {
 };
 
 var _hoisted_4 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
-  "class": "my-2 mr-8 text-right w-36 font-bold"
+  "class": "my-2 mr-8 ml-40 text-right w-36 font-bold"
 }, "Begin Date :", -1
 /* HOISTED */
 );
@@ -29138,7 +29150,7 @@ var _hoisted_6 = {
 };
 
 var _hoisted_7 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
-  "class": "my-2 mr-8 text-right w-36 font-bold"
+  "class": "my-2 mr-8 ml-40 text-right w-36 font-bold"
 }, "End Date :", -1
 /* HOISTED */
 );
@@ -29148,9 +29160,9 @@ var _hoisted_8 = {
 };
 
 var _hoisted_9 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
-  "class": "px-4 py-2 bg-gray-200 border-t border-gray-200 flex ml-60 items-center"
+  "class": "px-4 py-2 flex ml-60 items-center"
 }, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
-  "class": "border rounded-xl shadow-md p-1 px-4 mt-1 bg-gray-800 text-white ml-2 inline-block hover:bg-gray-700 hover:text-white",
+  "class": "submitbutton p-1 px-4 mt-1 ml-32 inline-block",
   type: "submit"
 }, " Update Year ")], -1
 /* HOISTED */
@@ -29175,7 +29187,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         }),
         label: "date",
         placeholder: "Enter Begin date:",
-        "class": "pr-2 pb-2 rounded-md placeholder-indigo-300"
+        "class": "pr-2 pb-2 rounded-md hover:transition hover:ease-in-out transform hover:scale-110 ease-out duration-200 placeholder-indigo-300"
       }, null, 512
       /* NEED_PATCH */
       ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.form.begin]]), $props.errors.begin ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_5, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.errors.begin), 1
@@ -29185,7 +29197,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         "onUpdate:modelValue": _cache[1] || (_cache[1] = function ($event) {
           return $data.form.end = $event;
         }),
-        "class": "pr-2 pb-2 rounded-md placeholder-indigo-300",
+        "class": "pr-2 pb-2 rounded-md hover:transition hover:ease-in-out transform hover:scale-110 ease-out duration-200 placeholder-indigo-300",
         label: "date",
         placeholder: "Enter End date:"
       }, null, 512
@@ -29222,7 +29234,7 @@ var _hoisted_1 = {
 };
 
 var _hoisted_2 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h2", {
-  "class": "font-semibold text-xl text-white my-2"
+  "class": "header"
 }, "Years", -1
 /* HOISTED */
 );
@@ -29240,28 +29252,28 @@ var _hoisted_6 = {
   "class": ""
 };
 var _hoisted_7 = {
-  "class": "obslute overflow-x-auto mt-2 ml-2 sm:rounded-2xl"
+  "class": "obsolute mt-2 ml-2 sm:rounded-2xl"
 };
 var _hoisted_8 = {
-  "class": "w-full shadow-lg border rounded-2xl"
+  "class": "table2"
 };
 
 var _hoisted_9 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("thead", null, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tr", {
-  "class": "bg-gray-800 text-white"
+  "class": "tablerowhead"
 }, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
-  "class": "py-1 px-4 border"
+  "class": "py-1 px-4 rounded-l-2xl"
 }, "Company"), /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
-  "class": "py-1 px-4 border"
+  "class": "py-1 px-4"
 }, "Begin"), /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
-  "class": "py-1 px-4 border"
+  "class": "py-1 px-4"
 }, "End"), /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
-  "class": "py-1 px-4 border"
+  "class": "py-1 px-4 rounded-r-2xl"
 }, "Action")])], -1
 /* HOISTED */
 );
 
 var _hoisted_10 = {
-  "class": "w-4/12 px-4 border w-2/5"
+  "class": "w-4/12 px-4 border rounded-l-2xl w-2/5"
 };
 var _hoisted_11 = {
   "class": "w-2/12 px-4 border w-2/6 text-center"
@@ -29270,7 +29282,7 @@ var _hoisted_12 = {
   "class": "w-2/12 px-4 border w-2/6 text-center"
 };
 var _hoisted_13 = {
-  "class": "w-4/12px-4 border w-2/6 text-center"
+  "class": "w-4/12px-4 border w-2/6 rounded-r-2xl text-center"
 };
 var _hoisted_14 = ["onClick"];
 
@@ -29298,7 +29310,7 @@ var _hoisted_23 = {
 };
 
 var _hoisted_24 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", {
-  "class": "border-t px-6 py-4 bg-gray-100",
+  "class": "border-t px-6 py-4",
   colspan: "4"
 }, " No Record found. ", -1
 /* HOISTED */
@@ -29344,7 +29356,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" <div class=\"grid grid-cols-2\"> "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_jet_button, {
         type: "submit",
         onClick: $options.create,
-        "class": "ml-2"
+        "class": "ml-2 buttondesign"
       }, {
         "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
           return [_hoisted_5];
@@ -29356,7 +29368,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       /* PROPS */
       , ["onClick"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" <div class=\"justify-end overflow-hidden\">\n            <multiselect\n              style=\"width: 50%\"\n              class=\"float-right rounded-md border border-black\"\n              placeholder=\"Select Company.\"\n              v-model=\"co_id\"\n              track-by=\"id\"\n              label=\"name\"\n              :options=\"options\"\n              @update:model-value=\"coch\"\n            >\n            </multiselect>\n          </div>\n        </div> "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" <button\n          class=\"border bg-indigo-300 rounded-xl px-4  m-1 ml-2 mt-4\"\n          type=\"submit\"\n          :disabled=\"form.processing\"\n        >\n          Add Year\n        </button> "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" <select\n          v-model=\"co_id\"\n          class=\"pr-2 ml-2 pb-2 w-full lg:w-1/4 rounded-md float-right mt-2\"\n          label=\"company\"\n          @change=\"coch\"\n        >\n          <option v-for=\"type in companies\" :key=\"type.id\" :value=\"type.id\">\n            {{ type.name }}\n          </option>\n        </select> "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" <div v-if=\"errors.type\">{{ errors.type }}</div> "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_6, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_7, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("table", _hoisted_8, [_hoisted_9, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tbody", null, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($props.balances.data, function (item) {
         return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("tr", {
-          "class": "bg-gray-50",
+          "class": "tablerowbody2",
           key: item.id
         }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_10, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(item.company_name), 1
         /* TEXT */
@@ -29365,7 +29377,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         ), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_12, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(item.end), 1
         /* TEXT */
         ), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_13, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
-          "class": "border bg-indigo-300 rounded-xl px-4 m-1 hover:text-white hover:bg-indigo-400",
+          "class": "editbutton px-4 m-1",
           onClick: function onClick($event) {
             return $options.edit(item.id);
           },
@@ -29374,7 +29386,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         /* PROPS */
         , _hoisted_14), item["delete"] ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("button", {
           key: 0,
-          "class": "border bg-red-500 rounded-xl px-4 m-1 hover:text-white hover:bg-red-600",
+          "class": "deletebutton px-4 m-1",
           onClick: function onClick($event) {
             return $options.destroy(item.id);
           },
@@ -29383,7 +29395,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         /* PROPS */
         , _hoisted_17)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), item.closed == 0 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("button", {
           key: 1,
-          "class": "border bg-gray-300 rounded-xl px-4 m-1 hover:bg-gray-700 hover:text-white",
+          "class": "border bg-gray-600 text-white font-bold rounded-xl px-4 m-1 hover:bg-gray-700",
           onClick: function onClick($event) {
             return $options.close(item.id);
           },
