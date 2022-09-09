@@ -1,0 +1,33 @@
+@tailwind components;
+.tablerowhead{
+    @apply bg-gray-200 text-black  text-lg rounded-2xl;
+}
+.table1{
+    @apply w-full  border-separate border-spacing-x-0 border-spacing-y-6;
+}
+.table2{
+    @apply w-full border-separate border-spacing-x-0 border-spacing-y-1;
+}
+.tablerowbody1{
+    @apply font-bold text-gray-600 hover:bg-blue-600 hover:text-white hover:transition hover:ease-in-out transform hover:scale-105 ease-out duration-300;
+    
+}
+.tablerowbody2{
+    @apply md:hover:bg-gray-700 md:hover:text-white md:hover:transition md:hover:ease-in-out md:hover:scale-105 ease-out duration-300 md:hover:font-bold;
+}
+
+.editbutton{
+    @apply border bg-green-500 rounded-xl text-white hover:text-white hover:bg-green-400 font-bold;
+}
+.deletebutton{
+    @apply border text-white border bg-red-500 rounded-xl hover:text-white hover:bg-red-600 font-bold;
+}
+.submitbutton{
+    @apply border rounded-xl shadow-md  bg-gray-800 text-white font-bold  hover:bg-gray-700 hover:text-white transform hover:ease-out hover:scale-110 hover:duration-150
+}
+.header{
+    @apply font-extrabold text-2xl text-black my-2;
+}
+.trailbutton{
+    @apply border font-bold bg-gray-600 hover:bg-gray-700 text-white hover:ease-out hover:scale-110 hover:duration-150  rounded-xl px-4 py-4 m-4;
+}

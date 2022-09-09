@@ -1,13 +1,13 @@
 <template>
   <app-layout>
     <template #header>
-      <h2 class="font-semibold text-xl text-white my-2">Create Company</h2>
+      <h2 class="header">Create Company</h2>
     </template>
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 py-4">
       <div class="">
         <form @submit.prevent="form.post(route('companies.store'))">
           <div class="p-2 mr-2 mb-2 mt-4 ml-6 flex flex-wrap">
-            <label class="my-2 mr-8 text-right w-36 font-bold">Name :</label>
+            <label class="my-2 mr-8 ml-40 text-right w-36 font-bold">Name :</label>
             <input
               type="text"
               v-model="form.name"
@@ -17,6 +17,7 @@
                 w-full
                 lg:w-1/4
                 rounded-md
+                hover:transition hover:ease-in-out transform hover:scale-110 ease-out duration-200
                 placeholder-indigo-300
               "
               label="name"
@@ -41,7 +42,7 @@
           </div>
 
           <div class="p-2 mr-2 mb-2 mt-4 ml-6 flex flex-wrap">
-            <label class="my-2 mr-8 text-right w-36 font-bold">Address :</label>
+            <label class="my-2 mr-8 ml-40 text-right w-36 font-bold">Address :</label>
             <input
               type="text"
               v-model="form.address"
@@ -51,6 +52,7 @@
                 w-full
                 lg:w-1/4
                 rounded-md
+                hover:transition hover:ease-in-out transform hover:scale-110 ease-out duration-200
                 placeholder-indigo-300
               "
               label="address"
@@ -60,7 +62,7 @@
           </div>
 
           <div class="p-2 mr-2 mb-2 mt-4 ml-6 flex flex-wrap">
-            <label class="my-2 mr-8 text-right w-36 font-bold">Email :</label>
+            <label class="my-2 mr-8 ml-40 text-right w-36 font-bold">Email :</label>
             <input
               type="text"
               v-model="form.email"
@@ -70,6 +72,7 @@
                 w-full
                 lg:w-1/4
                 rounded-md
+                hover:transition hover:ease-in-out transform hover:scale-110 ease-out duration-200
                 placeholder-indigo-300
               "
               label="email"
@@ -79,7 +82,7 @@
           </div>
 
           <div class="p-2 mr-2 mb-2 mt-4 ml-6 flex flex-wrap">
-            <label class="my-2 mr-8 text-right w-36 font-bold"
+            <label class="my-2 mr-8 ml-40 text-right w-36 font-bold"
               >Web Address :</label
             >
             <input
@@ -91,6 +94,7 @@
                 w-full
                 lg:w-1/4
                 rounded-md
+                hover:transition hover:ease-in-out transform hover:scale-110 ease-out duration-200
                 placeholder-indigo-300
               "
               label="website"
@@ -100,7 +104,7 @@
           </div>
 
           <div class="p-2 mr-2 mb-2 mt-4 ml-6 flex flex-wrap">
-            <label class="my-2 mr-8 text-right w-36 font-bold"
+            <label class="my-2 mr-8 ml-40 text-right w-36 font-bold"
               >Phone No :</label
             >
             <input
@@ -112,6 +116,7 @@
                 w-full
                 lg:w-1/4
                 rounded-md
+                hover:transition hover:ease-in-out transform hover:scale-110 ease-out duration-200
                 placeholder-indigo-300
               "
               label="phone"
@@ -120,7 +125,7 @@
             <div v-if="errors.phone">{{ errors.phone }}</div>
           </div>
           <div class="p-2 mr-2 mb-2 ml-6 flex flex-wrap">
-            <label class="my-2 text-right w-36 mr-8 font-bold">Fiscal :</label>
+            <label class="my-2 ml-40 text-right w-36 mr-8 font-bold">Fiscal :</label>
             <select
               v-model="form.fiscal"
               class="
@@ -129,6 +134,7 @@
                 w-full
                 lg:w-1/4
                 rounded-md
+                hover:transition hover:ease-in-out transform hover:scale-110 ease-out duration-200
                 placeholder-indigo-300
               "
               label="ficsal"
@@ -141,7 +147,7 @@
             <div v-if="errors.fiscal">{{ errors.fiscal }}</div>
           </div>
           <div class="p-2 mr-2 mb-2 mt-4 ml-6 flex flex-wrap">
-            <label class="my-2 mr-8 text-right w-36 font-bold">Incorp :</label>
+            <label class="my-2 mr-8 ml-40 text-right w-36 font-bold">Incorp :</label>
             <input
               type="date"
               v-model="form.incorp"
@@ -151,6 +157,7 @@
                 w-full
                 lg:w-1/4
                 rounded-md
+                hover:transition hover:ease-in-out transform hover:scale-110 ease-out duration-200
                 placeholder-indigo-300
               "
               label="incorp"
@@ -162,7 +169,6 @@
             class="
               px-4
               py-2
-              border-t border-gray-200
               flex
               justify-center
               items-center
@@ -170,17 +176,14 @@
           >
             <button
               class="
-                border
-                rounded-xl
-                shadow-md
+                submitbutton
                 p-1
                 px-4
                 mt-1
-                bg-gray-800
-                text-white
                 ml-2
                 inline-block
-                hover:bg-gray-700 hover:text-white
+                mr-3
+               
               "
               type="submit"
               :disabled="form.processing"

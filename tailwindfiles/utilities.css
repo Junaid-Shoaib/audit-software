@@ -1,0 +1,4 @@
+@tailwind utilities;
+.buttondesign{
+    @apply  rounded-3xl transform hover:ease-out hover:scale-110 hover:duration-150 ;
+}

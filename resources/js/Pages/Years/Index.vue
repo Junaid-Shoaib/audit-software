@@ -2,7 +2,7 @@
   <app-layout>
     <template #header>
       <div class="grid grid-cols-2 items-center">
-        <h2 class="font-semibold text-xl text-white my-2">Years</h2>
+        <h2 class="header">Years</h2>
         <div class="justify-end">
           <multiselect
             style="width: 50%; z-index: 10"
@@ -26,7 +26,7 @@
 
       <form @submit.prevent="form.get(route('years.create'))">
         <!-- <div class="grid grid-cols-2"> -->
-        <jet-button type="submit" @click="create" class="ml-2"
+        <jet-button type="submit" @click="create" class="ml-2 buttondesign"
           >Add Year</jet-button
         >
         <!-- <div class="justify-end overflow-hidden">
@@ -62,23 +62,23 @@
         </select> -->
         <!-- <div v-if="errors.type">{{ errors.type }}</div> -->
         <div class="">
-          <div class="obslute overflow-x-auto mt-2 ml-2 sm:rounded-2xl">
-            <table class="w-full shadow-lg border rounded-2xl">
+          <div class="obsolute  mt-2 ml-2 sm:rounded-2xl">
+            <table class="table2">
               <thead>
-                <tr class="bg-gray-800 text-white">
-                  <th class="py-1 px-4 border">Company</th>
-                  <th class="py-1 px-4 border">Begin</th>
-                  <th class="py-1 px-4 border">End</th>
-                  <th class="py-1 px-4 border">Action</th>
+                <tr class="tablerowhead">
+                  <th class="py-1 px-4 rounded-l-2xl">Company</th>
+                  <th class="py-1 px-4 ">Begin</th>
+                  <th class="py-1 px-4 ">End</th>
+                  <th class="py-1 px-4 rounded-r-2xl">Action</th>
                 </tr>
               </thead>
               <tbody>
                 <tr
-                  class="bg-gray-50"
+                  class="tablerowbody2"
                   v-for="item in balances.data"
                   :key="item.id"
                 >
-                  <td class="w-4/12 px-4 border w-2/5">
+                  <td class="w-4/12 px-4 border rounded-l-2xl w-2/5">
                     {{ item.company_name }}
                   </td>
                   <td class="w-2/12 px-4 border w-2/6 text-center">
@@ -87,15 +87,12 @@
                   <td class="w-2/12 px-4 border w-2/6 text-center">
                     {{ item.end }}
                   </td>
-                  <td class="w-4/12px-4 border w-2/6 text-center">
+                  <td class="w-4/12px-4 border w-2/6 rounded-r-2xl text-center">
                     <button
                       class="
-                        border
-                        bg-indigo-300
-                        rounded-xl
+                        editbutton
                         px-4
                         m-1
-                        hover:text-white hover:bg-indigo-400
                       "
                       @click="edit(item.id)"
                       type="button"
@@ -104,12 +101,9 @@
                     </button>
                     <button
                       class="
-                        border
-                        bg-red-500
-                        rounded-xl
+                        deletebutton
                         px-4
                         m-1
-                        hover:text-white hover:bg-red-600
                       "
                       @click="destroy(item.id)"
                       type="button"
@@ -121,11 +115,13 @@
                       v-if="item.closed == 0"
                       class="
                         border
-                        bg-gray-300
+                        bg-gray-600
+                        text-white
+                        font-bold
                         rounded-xl
                         px-4
                         m-1
-                        hover:bg-gray-700 hover:text-white
+                        hover:bg-gray-700 
                       "
                       @click="close(item.id)"
                       type="button"
@@ -135,7 +131,7 @@
                   </td>
                 </tr>
                 <tr v-if="balances.data.length === 0">
-                  <td class="border-t px-6 py-4 bg-gray-100" colspan="4">
+                  <td class="border-t px-6 py-4 " colspan="4">
                     No Record found.
                   </td>
                 </tr>

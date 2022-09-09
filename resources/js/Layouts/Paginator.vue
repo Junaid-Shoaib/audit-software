@@ -217,7 +217,7 @@
                 v-if="
                   !isFirstOrLastOrDots(index, balances.links.length, link.label)
                 "
-                :class="{ 'bg-indigo-300': link.active === true }"
+                :class="{ 'bg-gray-600  text-white hover:text-white hover:bg-gray-600': link.active === true }"
                 :href="link.url"
                 class="
                   relative
@@ -232,9 +232,10 @@
                   bg-gray-100
                   border border-gray-300
                   leading-5
-                  hover:text-gray-500
+                  hover:text-white
                   focus:z-10 focus:outline-none focus:ring
                   ring-gray-300
+                  hover:bg-gray-500
                   focus:border-blue-300
                   active:bg-gray-100 active:text-gray-700
                   transition

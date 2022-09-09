@@ -1,5 +1,5 @@
 <template>
-    <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
+    <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gradient-to-r from-[#F6F0EA] to-[#F1DFD1]">
         <div>
             <slot name="logo" />
         </div>

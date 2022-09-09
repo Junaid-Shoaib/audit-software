@@ -184,14 +184,14 @@
       </Dialog>
     </TransitionRoot>
 
-    <div class="hidden w-64 bg-gray-800 border-r border-white-200 md:block">
+    <div class="hidden w-64 bg-gray-800 border-r md:block fixed top-0 bottom-0 left-0 right-0 ">
       <div class="py-4 px-6">
         <a href="/">
           <ApplicationLogo class="w-48 h-9" />
         </a>
       </div>
 
-      <div class="mb-10">
+      <div class="">
         <!-- <h3 class="mx-6 mb-2 text-xs tracking-widest text-white uppercase">
           Main
         </h3> -->
@@ -204,7 +204,7 @@
         >
           <component
             :is="item.icon"
-            class="mr-2 w-5 h-5 text-white group-hover:text-indigo-300"
+            class="mr-2 w-5 h-5 active:text-gray-500 group-hover:text-gray-400 "
           />
           {{ item.label }}
         </jet-nav-link>
@@ -237,10 +237,12 @@
           class="
             flex
             items-center
-            px-6
+            px-16
+            pl-8
+            rounded-r-full
             py-2.5
             text-white
-            hover:text-indigo-400 hover:bg-gray-700
+            hover:text-blue-500 hover:bg-white
             group
           "
         >
@@ -298,7 +300,7 @@
       </div> -->
     </div>
 
-    <div class="h-screen bg-gray-200 flex-1">
+    <div class="h-screen md:ml-64 bg-white flex-1">
       <div
         class="
           flex
@@ -308,7 +310,7 @@
           md:px-6
           space-x-3
           md:space-x-6
-          bg-gray-800
+          bg-gray-200
           border-b
         "
       >
@@ -443,6 +445,7 @@
                   href="#"
                   :class="{ 'bg-gray-100': active }"
                   class="block py-2 px-4 text-sm text-gray-700"
+                  @click="logout"
                   >Log out</a
                 >
               </MenuItem>
@@ -462,7 +465,7 @@
     </div>
   </div>
 </template>
-
+<style src="@suadelabs/vue3-multiselect/dist/vue3-multiselect.css"></style>
 
 <script>
 import {
