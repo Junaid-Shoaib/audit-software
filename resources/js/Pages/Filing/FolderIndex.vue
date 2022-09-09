@@ -15,7 +15,7 @@
           >
           </multiselect>
 
-          <jet-button @click="folderModification" class="ml-2 mt-1 buttondesign"
+          <jet-button @click="folderModification" class="ml-2 mt-1 buttondesign hover:scale-105"
             >Folder Modification</jet-button
           >
         </div>

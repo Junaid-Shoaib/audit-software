@@ -193,14 +193,14 @@
                         v-for="item in balances.data"
                         :key="item.id"
                     >
-                        <td style="width: 20%" class="w-3/12 px-4 border rounded-l-2xl">
+                        <td style="width: 15%" class="w-3/12 px-4 border rounded-l-2xl">
                         {{ item.name }}
                         </td>
-                        <td style="width: 20%" class="px-4 border">
+                        <td style="width: 15%" class="px-4 border">
                         {{ item.address }}
                         </td>
-                        <td style="width: 15%" class="px-4 border">{{ item.email }}</td>
-                        <td style="width: 15%" class="px-4 border">{{ item.web }}</td>
+                        <td style="width: 25%" class="px-4 border ">{{ item.email }}</td>
+                        <td style="width: 25%" class="px-4 border ">{{ item.web }}</td>
                         <td style="width: 15%" class="px-4 border">{{ item.phone }}</td>
                         <!-- <td class="py-1 px-4 border" v-if="can['edit'] || can['delete']"> -->
                         <td style="width: 15%" class="px-4 border text-center rounded-r-2xl">
