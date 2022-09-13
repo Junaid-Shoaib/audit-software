@@ -11,6 +11,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use App\Models\AccountType;
 use App\Models\AccountGroup;
 use App\Models\Account;
+use App\Models\Company;
 use App\Models\Trial;
 use Carbon\Carbon;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
@@ -26,6 +27,15 @@ class Excel extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
+    public function index()
+    {
+        if(Company::first())
+        {
+            return Inertia::render('TrialExcel/Index');
+        } else {
+            return Redirect::route('companies')->with('warning', 'Create Company first');
+        }
+    }
     public function __invoke(Request $request)
     {
         // return Inertia::render('TrialExcel/Index');

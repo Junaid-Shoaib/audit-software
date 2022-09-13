@@ -1,13 +1,13 @@
 <template>
   <app-layout>
     <template #header>
-      <h2 class="font-semibold text-xl text-white my-2">Company</h2>
+      <h2 class="header">Company</h2>
     </template>
 
     <FlashMessage />
     <!-- <div class="py-12"> -->
         <div class="max-w-7xl  mx-auto sm:px-6 lg:px-8 py-2">
-        <jet-button @click="create" class="ml-2">Create</jet-button>
+        <jet-button @click="create" class="ml-2 buttondesign">Create</jet-button>
 
         <!-- <jet-button v-if="can['create']" @click="create" class="mt-4 ml-8" -->
         <!-- <input
@@ -44,12 +44,12 @@
             </option>
         </select> -->
             <div class="">
-                <div class="obslute overflow-x-auto mt-2 ml-2 sm:rounded-2xl">
-                <table class="w-full shadow-lg border rounded-2xl">
+                <div class="obsolute  mt-2 ml-2 sm:rounded-2xl">
+                <table class="table2">
                     <thead>
                     <!-- <tr class="bg-indigo-100"> -->
-                    <tr class="bg-gray-800 text-white">
-                        <th class="py-1 px-4 border">
+                    <tr class="tablerowhead">
+                        <th class="py-1 px-4 rounded-l-2xl">
                         <span @click="sort('name')">
                             Name
                             <!-- Email Descending  Starts-->
@@ -179,39 +179,36 @@
                             <!-- Email Ascending Ends-->
                         </span>
                         </th>
-                        <th class="py-1 px-4 border">Address</th>
-                        <th class="py-1 px-4 border">Email</th>
-                        <th class="py-1 px-4 border">Website</th>
-                        <th class="py-1 px-4 border">Phone</th>
+                        <th class="py-1 px-4 ">Address</th>
+                        <th class="py-1 px-4 ">Email</th>
+                        <th class="py-1 px-4 ">Website</th>
+                        <th class="py-1 px-4 ">Phone</th>
                         <!-- <th v-if="can['edit'] || can['delete']" class="py-2 px-4 border"> -->
-                        <th class="py-1 px-4 border">Action</th>
+                        <th class="py-1 px-4 rounded-r-2xl">Action</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr
-                        class="bg-gray-50"
+                        class="tablerowbody2"
                         v-for="item in balances.data"
                         :key="item.id"
                     >
-                        <td style="width: 20%" class="w-3/12 px-4 border">
+                        <td style="width: 15%" class="w-3/12 px-4 border rounded-l-2xl">
                         {{ item.name }}
                         </td>
-                        <td style="width: 20%" class="px-4 border">
+                        <td style="width: 15%" class="px-4 border">
                         {{ item.address }}
                         </td>
-                        <td style="width: 15%" class="px-4 border">{{ item.email }}</td>
-                        <td style="width: 15%" class="px-4 border">{{ item.web }}</td>
+                        <td style="width: 25%" class="px-4 border ">{{ item.email }}</td>
+                        <td style="width: 25%" class="px-4 border ">{{ item.web }}</td>
                         <td style="width: 15%" class="px-4 border">{{ item.phone }}</td>
                         <!-- <td class="py-1 px-4 border" v-if="can['edit'] || can['delete']"> -->
-                        <td style="width: 15%" class="px-4 border text-center">
+                        <td style="width: 15%" class="px-4 border text-center rounded-r-2xl">
                         <!-- class="border bg-indigo-300 rounded-xl px-4 py-1 m-1" -->
                         <button
                             class="
-                            border
-                            bg-indigo-300
-                            rounded-xl
+                          editbutton
                             px-4
-                            hover:text-white hover:bg-indigo-400
                             m-1
                             "
                             @click="edit(item.id)"

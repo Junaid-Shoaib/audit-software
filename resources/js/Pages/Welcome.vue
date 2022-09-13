@@ -13,7 +13,7 @@ defineProps({
     <Head title="Welcome" />
 
     <div class="relative flex items-top justify-center min-h-screen bg-gray-100 dark:bg-gray-900 sm:items-center sm:pt-0">
-        <div v-if="canLogin" class="hidden fixed top-0 right-0 px-6 py-4 sm:block">
+        <!-- <div v-if="canLogin" class="hidden fixed top-0 right-0 px-6 py-4 sm:block">
             <Link v-if="$page.props.user" :href="route('dashboard')" class="text-sm text-gray-700 underline">
                 Dashboard
             </Link>
@@ -27,9 +27,59 @@ defineProps({
                     Register
                 </Link>
             </template>
-        </div>
+        </div> -->
 
-        <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
+        <div class="flex w-screen h-screen z-10 bg-gray-900 overflow-hidden">
+                <img src="../../../public/images/front3.jpg" class="w-full h-full object-cover px-2 animate-groww bg-[length:100%] overflow-hidden  "  alt="">
+                <div v-if="canLogin" class="hidden fixed top-0 right-0 px-6 py-4 sm:block">
+            <Link v-if="$page.props.user" :href="route('dashboard')" class="text-md font-bold border border-blue-400 text-white bg-blue-600  rounded-2xl px-4 py-1 hover:bg-blue-700">
+                Dashboard
+            </Link>
+
+            <template v-else>
+                <Link :href="route('login')" class="text-md border border-gray-400 text-center text-white bg-gray-600  rounded-2xl px-4  py-1 hover:bg-gray-700  ">
+                    Login
+                </Link>
+
+                <Link v-if="canRegister" :href="route('register')" class="ml-4 text-md border border-green-300 text-white bg-green-500  rounded-2xl px-4 py-1  hover:bg-green-600 ">
+                    Register
+                </Link>
+            </template>
+        </div>
+                <div class="absolute z-20 invisible md:visible w-50% my-2 text-left">
+                    <p class="text-white text-3xl font-sans mx-10 mt-10 drop-shadow-[4px_4px_16px_rgba(0,0,255)]">BKR INTERNATIONAL</p>
+                    <!-- <img src="../../../public/images/logo8.png" class="w-80 h-28 ml-5 " alt=""> -->
+                </div>
+               <div class="absolute z-20 invisible md:visible bottom-16 right-10 drop-shadow-[4px_4px_16px_rgba(0,0,255)] " >
+               <p class="text-white text-center font-sans font-bold text-2xl"> Powered by </p>
+               <p class="font-bold text-md text-center text-white"> Digital Solution Department </p>
+               <p class="font-bold text-md text-white"> Muniff Ziauddin &amp; Co. Chartered Accountants </p>
+               </div>
+               <!-- <div class="absolute z-20 invisible md:visible bottom-16 left-10 drop-shadow-[4px_4px_16px_rgba(0,0,255)]" >
+               <p class="text-white text-left font-sans font-bold text-2xl"> Benefits </p>
+               <p class="font-bold text-md mt-2 text-left text-white"> 1. Save cost Eliminating extra </p>
+               <p class="font-bold ml-4 text-md text-left text-white"> stationery expenses associated<br></p>
+               <p class="font-bold ml-4 text-md text-left text-white"> with conventional method </p>
+               <p class="font-bold text-md text-left text-white"> 2. Save time<br> 3. Secure </p>
+               </div> -->
+
+               <div class="
+                    flex flex-row
+                    bottom-px
+                    items-center
+                    w-full
+                    justify-center
+                    fixed
+                    px-6
+                    py-2
+      ">
+      <div class="">
+        <p class="text-sm font-bold bg-blend-screen text-white ml-5 drop-shadow-[4px_4px_16px_rgba(0,0,255)]" > Copyright @ 2022, BKR INTERNATIONAL </p>
+        </div>
+      </div>
+            </div>
+
+        <!-- <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
             <div class="flex justify-center pt-8 sm:justify-start sm:pt-0">
                 <svg
                     viewBox="0 0 651 192"
@@ -180,7 +230,7 @@ defineProps({
                     Laravel v{{ laravelVersion }} (PHP v{{ phpVersion }})
                 </div>
             </div>
-        </div>
+        </div> -->
     </div>
 </template>
 

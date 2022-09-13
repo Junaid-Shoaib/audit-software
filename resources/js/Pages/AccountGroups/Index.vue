@@ -2,7 +2,7 @@
   <app-layout>
     <template #header>
       <div class="grid grid-cols-2 items-center">
-        <h2 class="font-semibold text-xl text-white my-2">Account Groups</h2>
+        <h2 class="header">Account Groups</h2>
         <div class="justify-end">
           <multiselect
             style="width: 50%"
@@ -54,8 +54,8 @@
           h-8
           px-2
           w-80
-          border-gray-800
-          ring-gray-800 ring-1
+          border-gray-300
+          <!-- ring-gray-800 ring-1 -->
           outline-none
         "
         v-model="params.search"
@@ -87,48 +87,42 @@
         </svg>
       </button>
       <div>
-        <div class="obsolute overflow-x-auto mt-2 ml-2 sm:rounded-2xl">
-          <table class="w-full shadow-lg border rounded-2xl">
+        <div class="obsolute mt-2 ml-2 sm:rounded-2xl">
+          <table class="table2">
             <thead>
-              <tr class="bg-gray-800 text-white">
-                <th class="py-1 px-4 border w-2/5">Group Name</th>
-                <th class="py-1 px-4 border">Group Type</th>
-                <th class="py-1 px-4 border">Actions</th>
+              <tr class="tablerowhead">
+                <th class="py-1 px-4 rounded-l-2xl w-2/5">Group Name</th>
+                <th class="py-1 px-4 ">Group Type</th>
+                <th class="py-1 px-4 rounded-r-2xl">Actions</th>
               </tr>
             </thead>
             <tbody>
               <tr
-                class="bg-gray-100"
+                class="tablerowbody2"
                 v-for="item in balances.data"
                 :key="item.id"
               >
-                <td style="width: 30%" class="px-4 border">{{ item.name }}</td>
+                <td style="width: 30%" class="px-4 border rounded-l-2xl">{{ item.name }}</td>
                 <td style="width: 30%" class="px-4 border text-center">
                   {{ item.type_name }}
                 </td>
-                <td style="width: 40%" class="px-4 border text-center">
+                <td style="width: 40%" class="px-4 border text-center rounded-r-2xl">
                   <button
                     class="
-                      border
-                      bg-indigo-300
-                      rounded-xl
+                      editbutton
                       px-4
                       m-1
-                      hover:text-white hover:bg-indigo-400
-                    "
+                      "
                     @click="edit(item.id)"
                   >
                     <span>Edit</span>
                   </button>
                   <button
                     class="
-                      border
-                      bg-red-500
-                      rounded-xl
+                      deletebutton
                       px-4
                       m-1
-                      hover:text-white hover:bg-red-600
-                    "
+                      "
                     @click="destroy(item.id)"
                     v-if="item.delete"
                   >
@@ -137,7 +131,7 @@
                 </td>
               </tr>
               <tr v-if="balances.data.length === 0">
-                <td class="border-t px-6 py-4 bg-gray-100" colspan="4">
+                <td class="border-t px-6 py-4 " colspan="4">
                   No Record found.
                 </td>
               </tr>

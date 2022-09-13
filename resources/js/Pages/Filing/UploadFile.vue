@@ -2,7 +2,7 @@
   <app-layout>
     <template #header>
       <div class="grid grid-cols-2 items-center">
-        <h2 class="font-semibold text-xl text-white my-2">
+        <h2 class="header">
           Upload File in {{ parent.name }}
         </h2>
       </div>
@@ -51,7 +51,7 @@
                 {{ form2.progress.percentage }}%
               </progress> -->
               <button
-                class="border bg-indigo-300 rounded-xl px-4 py-2 m-4"
+                class="trailbutton"
                 type="submit"
               >
                 Upload File

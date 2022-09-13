@@ -2,7 +2,7 @@
   <app-layout>
     <template #header>
       <div class="grid grid-cols-2 items-center">
-        <h2 class="font-semibold text-xl text-white my-2">
+        <h2 class="header">
           Upload Trial in Excel
         </h2>
       </div>
@@ -44,15 +44,15 @@
                 {{ form2.progress.percentage }}%
               </progress> -->
               <button
-                class="border bg-indigo-300 rounded-xl px-4 py-4 m-4"
+                class="trailbutton"
                 type="submit"
               >
                 Upload Trial Balance
               </button>
-                <a class="border bg-indigo-300 rounded-xl px-4 py-4 m-4"
+                <a class="trailbutton"
                 href="/trialpattern">Download Trail Template</a>
 
-                 <a class="border bg-indigo-300 rounded-xl px-4 py-4 m-4"
+                 <a class="trailbutton"
                 href="/lead">Lead Schedule</a>
 
               <!-- <button

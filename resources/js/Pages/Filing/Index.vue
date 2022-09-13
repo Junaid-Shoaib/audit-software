@@ -2,13 +2,13 @@
   <app-layout>
     <template #header>
       <div class="grid grid-cols-2 items-center">
-        <h2 class="font-semibold text-xl text-white my-2">
+        <h2 class="header">
           {{ parent.name }} - {{ parent.type }}
         </h2>
         <div class="justify-end">
           <multiselect
             style="width: 50%; z-index: 10"
-            class="float-right rounded-lg border border-white"
+            class="float-right rounded-md border border-black "
             placeholder="Select Company."
             v-model="co_id"
             track-by="id"
@@ -29,34 +29,34 @@
       <!-- <form @submit.prevent="form.get(route('years.create'))"> -->
       <!-- <div class="grid grid-cols-2"> -->
 
-      <jet-button v-if="parent.type == 'File'" @click="uploadFile" class="ml-2"
+      <jet-button v-if="parent.type == 'File'" @click="uploadFile" class="ml-2 buttondesign"
         >Upload File</jet-button
       >
-      <jet-button v-else type="button" @click="createFolder" class="ml-2"
+      <jet-button v-else type="button" @click="createFolder" class="ml-2 buttondesign"
         >Create Folder</jet-button
       >
 
       <div class="">
-        <div class="obsolute overflow-x-auto mt-2 ml-2 sm:rounded-2xl">
-          <table class="w-full shadow-lg border rounded-2xl">
+        <div class="obsolute mt-2 ml-2 sm:rounded-2xl">
+          <table class="table2">
             <thead>
-              <tr class="bg-gray-800 text-white">
-                <th class="py-1 px-4 border">{{ parent.type }} Name</th>
-                <th class="py-1 px-4 border">Action</th>
+              <tr class="tablerowhead">
+                <th class="py-1 px-4 rounded-l-2xl ">{{ parent.type }} Name</th>
+                <th class="py-1 px-4 rounded-r-2xl">Action</th>
               </tr>
             </thead>
             <tbody>
               <tr
-                class="bg-gray-50"
+                class="tablerowbody2"
                 v-for="item in balances.data"
                 :key="item.id"
               >
-                <td class="w-4/12 px-4 border w-2/5">
+                <td class="w-4/12 px-4 border rounded-l-2xl w-2/5">
                   {{ item.name }}
                 </td>
                 <td
                   v-if="parent.type == 'File'"
-                  class="w-4/12px-4 border w-2/6 text-center"
+                  class="w-4/12px-4 border w-2/6 text-center rounded-r-2xl"
                 >
                   <button
                     class="
@@ -64,6 +64,8 @@
                       bg-indigo-300
                       rounded-xl
                       px-4
+                      text-white
+                      font-bold
                       m-1
                       hover:text-white hover:bg-indigo-400
                     "
@@ -79,6 +81,8 @@
                       rounded-xl
                       px-4
                       m-1
+                      text-white
+                      font-bold
                       hover:text-white hover:bg-red-600
                     "
                     @click="deleteFileFolder(item.id)"
@@ -89,7 +93,7 @@
                   </button>
                 </td>
 
-                <td v-else class="w-4/12px-4 border w-2/6 text-center">
+                <td v-else class="w-4/12px-4 border w-2/6 text-center rounded-r-2xl">
                   <button
                     class="
                       border
@@ -97,6 +101,8 @@
                       rounded-xl
                       px-4
                       m-1
+                      text-white
+                      font-bold
                       hover:text-white hover:bg-indigo-400
                     "
                     @click="viewFolder(item.id)"
@@ -106,12 +112,11 @@
                   </button>
                   <button
                     class="
-                      border
-                      bg-red-500
-                      rounded-xl
+                      deletebutton
                       px-4
+                     
                       m-1
-                      hover:text-white hover:bg-red-600
+                     
                     "
                     @click="deleteFileFolder(item.id)"
                     type="button"

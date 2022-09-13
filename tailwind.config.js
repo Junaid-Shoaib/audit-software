@@ -14,6 +14,15 @@ module.exports = {
             fontFamily: {
                 sans: ['Nunito', ...defaultTheme.fontFamily.sans],
             },
+            keyframes:{
+                groww:{
+                    '0%':{transform: 'scale(1)'},
+                    '100%':{transform:'scale(1.25)'},
+                }
+            },
+            animation:{
+                groww: 'groww infinite alternate ease-in-out 8s',
+            },
         },
     },
 
