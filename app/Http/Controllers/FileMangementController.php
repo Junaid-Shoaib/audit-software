@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Auth;
 use App\Models\FileManager;
+use App\Models\Template;
 use App\Models\Company;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
@@ -377,4 +378,46 @@ class FileMangementController extends Controller
         }
         return true;
     }
+
+
+
+    public function index_temp($type)
+    {      //Validating request
+
+            request()->validate([
+                'direction' => ['in:asc,desc'],
+                'field' => ['in:name,email']
+            ]);
+
+            //Searching request
+            $query = Template::query();
+            if (request('search')) {
+                $query->where('name', 'LIKE', '%' . request('search') . '%');
+            }
+            $balances = $query
+                ->where('type',$type)
+                ->paginate(10)
+                ->through(
+                    function ($temp) {
+                        return
+                            [
+                                'id' => $temp->id,
+                                'name' => $temp->name,
+                                'path' => $temp->path,
+                                'type' => $temp->type,
+                            ];
+                    }
+                );
+
+            return Inertia::render('Filing/IndexTemplate', [
+                'filters' => request()->all(['search', 'field', 'direction']),
+                'balances' => $balances,
+                'company' => Company::where('id', session('company_id'))->first(),
+                'companies' => auth()->user()->companies,
+                'type' => $type,
+            ]);
+
+    }
+
+
 }

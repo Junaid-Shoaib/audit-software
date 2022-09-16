@@ -45,6 +45,9 @@
       <!-- <div class="grid grid-cols-2"> -->
 
       <jet-button @click="uploadFile" class="ml-2 buttondesign">Upload File</jet-button>
+         <jet-button type="button" @click="templates" class="ml-2 buttondesign"
+        >Templates</jet-button
+      >
 
       <div class="">
         <div class="obsolute mt-2 ml-2 sm:rounded-2xl">
@@ -177,13 +180,9 @@ export default {
       this.$inertia.get(route("filing", ["execution"]));
     },
 
-    // edit(id) {
-    //   this.$inertia.get(route("years.edit", id));
-    // },
-
-    // destroy(id) {
-    //   this.$inertia.delete(route("years.destroy", id));
-    // },
+    templates() {
+      this.$inertia.get(route("index_temp", 'execution'));
+    },
 
     coch() {
       this.$inertia.get(route("companies.coch", this.co_id["id"]));

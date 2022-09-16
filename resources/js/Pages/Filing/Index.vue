@@ -1,3 +1,4 @@
+
 <template>
   <app-layout>
     <template #header>
@@ -24,16 +25,15 @@
     <FlashMessage />
 
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 py-2">
-      <!-- <jet-button @click="create" class="mt-4 ml-8">Create</jet-button> -->
-
-      <!-- <form @submit.prevent="form.get(route('years.create'))"> -->
-      <!-- <div class="grid grid-cols-2"> -->
 
       <jet-button v-if="parent.type == 'File'" @click="uploadFile" class="ml-2 buttondesign"
         >Upload File</jet-button
       >
       <jet-button v-else type="button" @click="createFolder" class="ml-2 buttondesign"
         >Create Folder</jet-button
+      >
+      <jet-button type="button" @click="templates" class="ml-2 buttondesign"
+        >Templates</jet-button
       >
 
       <div class="">
@@ -114,9 +114,9 @@
                     class="
                       deletebutton
                       px-4
-                     
+
                       m-1
-                     
+
                     "
                     @click="deleteFileFolder(item.id)"
                     type="button"
@@ -189,6 +189,10 @@ export default {
 
     createFolder() {
       this.$inertia.get(route("filing.createFolder"));
+    },
+
+     templates() {
+      this.$inertia.get(route("index_temp", this.parent.name));
     },
 
     viewFolder(id) {

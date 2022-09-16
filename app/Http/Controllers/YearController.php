@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Year;
 use App\Models\Setting;
 use App\Models\Company;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Database\Seeder;
 // use App\Models\Document;
 use Inertia\Inertia;
 use Carbon\Carbon;
@@ -20,6 +22,7 @@ use App\Models\AccountType;
 use App\Models\Account;
 use App\Models\Entry;
 use App\Models\FileManager;
+use Database\Seeders\TemplateSeeder;
 
 class YearController extends FileMangementController
 {
@@ -83,9 +86,9 @@ class YearController extends FileMangementController
         session(['year_id' => $year->id]);
 
         Storage::makeDirectory('/public/' . $year->company_id . '/' . $year->id);
-
         // Calling the function from DefaultFoldersCreation controller ---- to generate the default folder
         $this->defaultFolders();
+        Artisan::call('db:seed --class=TemplateSeeder');
         return Redirect::back()->with('success', 'Year created.');
     }
 

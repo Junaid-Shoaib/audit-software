@@ -155,6 +155,21 @@ class CreateCoreTables extends Migration
             $table->timestamps();
         });
 
+        Schema::create('templates', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->string('path');
+            $table->tinyInteger('enabled')->default('1');
+            $table->enum('type',  ['planing', 'completion', 'execution']);
+            $table->unsignedBigInteger('company_id')->nullable();
+            $table->unsignedBigInteger('year_id')->nullable();
+            $table->foreign('company_id')->references('id')->on('companies');
+            $table->foreign('year_id')->references('id')->on('years');
+            $table->timestamps();
+        });
+
+
+
         Schema::create('companies_users', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
@@ -176,6 +191,7 @@ class CreateCoreTables extends Migration
         // Schema::dropIfExists('entries');
         // Schema::dropIfExists('documents');
         // Schema::dropIfExists('document_types');
+        Schema::dropIfExists('templates');
         Schema::dropIfExists('file_managers');
         Schema::dropIfExists('settings');
         Schema::dropIfExists('years');

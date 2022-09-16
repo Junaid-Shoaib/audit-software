@@ -20,5 +20,8 @@ class DatabaseSeeder extends Seeder
         $this->call([
             PermissionsDemoSeeder::class,
         ]);
+        $this->call([
+            TemplateSeeder::class,
+        ]);
     }
 }

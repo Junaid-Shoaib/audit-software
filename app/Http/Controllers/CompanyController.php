@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Company;
 use App\Models\Year;
 use App\Models\Setting;
+use Illuminate\Support\Facades\Artisan;
 use Egulias\EmailValidator\Warning\Warning;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
@@ -154,7 +155,11 @@ class CompanyController extends FileMangementController
             session(['year_id' => $year->id]);
 
             Storage::makeDirectory('/public/' . $company->id);
+            Storage::makeDirectory('/public/' . 'planing');
+            Storage::makeDirectory('/public/' . 'execution');
+            Storage::makeDirectory('/public/' . 'completion');
             Storage::makeDirectory('/public/' . $company->id . '/' . $year->id);
+
 
             // Calling the function from DefaultFoldersCreation controller ---- to generate the default folder
             $this->defaultFolders();

@@ -12,6 +12,7 @@ use App\Models\AccountType;
 use App\Models\AccountGroup;
 use App\Models\Account;
 use App\Models\Company;
+use App\Models\FileManager;
 use App\Models\Trial;
 use Carbon\Carbon;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
@@ -29,6 +30,7 @@ class Excel extends Controller
      */
     public function index()
     {
+
         if(Company::first())
         {
             return Inertia::render('TrialExcel/Index');

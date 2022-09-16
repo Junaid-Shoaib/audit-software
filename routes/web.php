@@ -12,6 +12,7 @@ use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\YearController;
 use App\Http\Controllers\AccountGroupController;
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\TemplateController;
 use App\Http\Controllers\FileMangementController;
 use App\Http\Controllers\DefaultFoldersCreation;
 use Illuminate\Support\Facades\Artisan;
@@ -126,6 +127,41 @@ Route::get('years/{year}/close', [YearController::class, 'close'])
     ->name('years.close')
     ->middleware('auth');
 //YEARS ------------------------------------ END ------------------
+//New User ------------------------------------ START ------------------
+Route::get('users', [UserController::class, 'index'])
+->name('users')
+->middleware('auth');
+Route::get('users/create', [UserController::class, 'create'])
+->name('users.create')
+->middleware('auth');
+Route::post('users', [UserController::class, 'store'])
+->name('users.store')
+->middleware('auth');
+//New User ------------------------------------ END ------------------
+
+
+
+//Template ----------------------- STARTS --------------------
+Route::get('templates', [TemplateController::class, 'index'])
+    ->name('templates')
+    ->middleware('auth');
+
+Route::get('templates/create', [TemplateController::class, 'create'])
+    ->name('templates.create')
+    ->middleware('auth');
+
+Route::post('templates', [TemplateController::class, 'store'])
+    ->name('templates.store')
+    ->middleware('auth');
+
+Route::get('template/download/{id}', [TemplateController::class, 'download_temp'])
+->name('download_temp')
+->middleware('auth');
+
+
+Route::delete('template/delete/{id}', [TemplateController::class, 'destroy'])
+    ->name('templates.destroy')
+    ->middleware('auth');
 
 
 //ACCOUNTS GROUPS ----------------------- END --------------------
@@ -213,6 +249,7 @@ Route::get('filing/downloadFile/{file_id}', [FileMangementController::class, 'do
     ->name('filing.downloadFile')
     ->middleware('auth');
 
+
 Route::get('filing/deleteFileFolder/{file_folder_id}', [FileMangementController::class, 'deleteFileFolder'])
     ->name('filing.deleteFileFolder')
     ->middleware('auth');
@@ -224,6 +261,7 @@ Route::get('/filing/folder/{folder_id?}', [FileMangementController::class, 'fold
 
 Route::controller(FileMangementController::class)->group(function () {
     Route::get('/filing/{parent_name_id}', 'filing')->name('filing');
+    Route::get('/template/{type}','index_temp')->name('index_temp');
     // Route::get('/filing/execution/{parent_name_id?}', 'folder')->name('folder');
     Route::get('filing/createFolder', 'createFolder')->name('filing.createFolder');
     Route::post('filing', 'storeFolder')->name('filing.storeFolder');
