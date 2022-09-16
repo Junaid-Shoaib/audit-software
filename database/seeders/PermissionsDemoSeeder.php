@@ -15,18 +15,18 @@ class PermissionsDemoSeeder extends Seeder
 
 
         Permission::create(['name' => 'create']);
+        Permission::create(['name' => 'read']);
         Permission::create(['name' => 'edit']);
         Permission::create(['name' => 'delete']);
-        Permission::create(['name' => 'read']);
+        Permission::create(['name' => 'manage']);
 
 
         //Trainee
 
-        $role1 = Role::create(['name' => 'trainee']);
+        $role1 = Role::create(['name' => 'staff']);
         $role1->givePermissionTo('read');
 
         //Manager
-
         $role2 = Role::create(['name' => 'manager']);
         $role2->givePermissionTo('create');
         $role2->givePermissionTo('edit');
@@ -34,24 +34,19 @@ class PermissionsDemoSeeder extends Seeder
         $role2->givePermissionTo('read');
 
         //Partner
-
         $role3 = Role::create(['name' => 'partner']);
+        $role3->givePermissionTo('create');
+        $role3->givePermissionTo('edit');
+        $role3->givePermissionTo('delete');
         $role3->givePermissionTo('read');
 
-        // Permission::create(['name' => 'edit articles']);
-        // Permission::create(['name' => 'delete articles']);
-        // Permission::create(['name' => 'publish articles']);
-        // Permission::create(['name' => 'unpublish articles']);
 
-        // $role1 = Role::create(['name' => 'writer']);
-        // $role1->givePermissionTo('edit articles');
-        // $role1->givePermissionTo('delete articles');
-
-        // $role2 = Role::create(['name' => 'admin']);
-        // $role2->givePermissionTo('publish articles');
-        // $role2->givePermissionTo('unpublish articles');
-
-        $role3 = Role::create(['name' => 'super-admin']);
+        $role4 = Role::create(['name' => 'super-admin']);
+        $role4->givePermissionTo('create');
+        $role4->givePermissionTo('edit');
+        $role4->givePermissionTo('delete');
+        $role4->givePermissionTo('read');
+        $role4->givePermissionTo('manage');
 
         // $user = \App\Models\User::factory()->create([
         //     'name' => 'Example User',
@@ -65,11 +60,11 @@ class PermissionsDemoSeeder extends Seeder
         // ]);
         // $user->assignRole($role2);
 
-        $user = \App\Models\User::factory()->create([
-            'name' => 'Example Super-Admin User',
-            'email' => 'superadmin@example.com',
-        ]);
-        $user->assignRole($role3);
+        // $user = \App\Models\User::factory()->create([
+        //     'name' => 'Example Super-Admin User',
+        //     'email' => 'superadmin@example.com',
+        // ]);
+        // $user->assignRole($role3);
 
         // $this->call([
         //     PermissionsDemoSeeder::class,
