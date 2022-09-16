@@ -184,7 +184,20 @@
       </Dialog>
     </TransitionRoot>
 
-    <div class="hidden w-64 bg-gray-800 border-r md:block fixed top-0 bottom-0 left-0 right-0 ">
+    <div
+      class="
+        hidden
+        w-64
+        bg-gray-800
+        border-r
+        md:block
+        fixed
+        top-0
+        bottom-0
+        left-0
+        right-0
+      "
+    >
       <div class="py-4 px-6">
         <a href="/">
           <ApplicationLogo class="w-48 h-9" />
@@ -204,7 +217,7 @@
         >
           <component
             :is="item.icon"
-            class="mr-2 w-5 h-5 active:text-gray-500 group-hover:text-gray-400 "
+            class="mr-2 w-5 h-5 active:text-gray-500 group-hover:text-gray-400"
           />
           {{ item.label }}
         </jet-nav-link>
@@ -525,6 +538,12 @@ export default {
       mainNavigation: [
         // { href: route("dashboard"), label: "Dashboard", icon: HomeIcon },
         {
+          href: route("users"),
+          routeName: "users",
+          label: "Users",
+          icon: UserGroupIcon,
+        },
+        {
           href: route("companies"),
           routeName: "companies",
           label: "Companies",
@@ -553,6 +572,12 @@ export default {
           href: route("trial.index"),
           routeName: "trial.index",
           label: "Read Excel",
+          icon: CloudUploadIcon,
+        },
+        {
+          href: route("templates"),
+          routeName: "templates",
+          label: "Template",
           icon: CloudUploadIcon,
         },
         {

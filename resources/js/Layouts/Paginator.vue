@@ -31,7 +31,7 @@
           />
         </svg>
       </span>
-      <inertia-link
+      <Link
         v-else
         :href="previousPageUrl"
         class="
@@ -64,9 +64,9 @@
             fill-rule="evenodd"
           />
         </svg>
-      </inertia-link>
+      </Link>
 
-      <inertia-link
+      <Link
         v-if="hasMorePages"
         :href="nextPageUrl"
         class="
@@ -100,7 +100,7 @@
             fill-rule="evenodd"
           />
         </svg>
-      </inertia-link>
+      </Link>
       <span
         v-else
         class="
@@ -175,7 +175,7 @@
               />
             </svg>
           </span>
-          <inertia-link
+          <Link
             v-else
             :href="previousPageUrl"
             class="
@@ -209,15 +209,18 @@
                 fill-rule="evenodd"
               />
             </svg>
-          </inertia-link>
+          </Link>
 
           <div v-for="link in balances.links" :key="link.id">
             <div v-if="link.label != 'Previous'">
-              <inertia-link
+              <Link
                 v-if="
                   !isFirstOrLastOrDots(index, balances.links.length, link.label)
                 "
-                :class="{ 'bg-gray-600  text-white hover:text-white hover:bg-gray-600': link.active === true }"
+                :class="{
+                  'bg-gray-600  text-white hover:text-white hover:bg-gray-600':
+                    link.active === true,
+                }"
                 :href="link.url"
                 class="
                   relative
@@ -244,7 +247,7 @@
                 "
               >
                 {{ link.label }}
-              </inertia-link>
+              </Link>
               <span
                 v-else-if="link.label === '...'"
                 aria-disabled="true"
@@ -268,7 +271,7 @@
               </span>
             </div>
           </div>
-          <inertia-link
+          <Link
             v-if="hasMorePages"
             :href="nextPageUrl"
             class="
@@ -302,7 +305,7 @@
                 fill-rule="evenodd"
               />
             </svg>
-          </inertia-link>
+          </Link>
           <span
             v-else
             aria-disabled="true"
@@ -340,9 +343,11 @@
 
 <script>
 import TermsOfService from "@/Pages/TermsOfService";
+import { Head, Link } from "@inertiajs/inertia-vue3";
+
 export default {
   name: "balances",
-  components: { TermsOfService },
+  components: { TermsOfService, Head, Link },
   props: {
     balances: {
       current_page: Number,
