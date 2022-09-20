@@ -14,6 +14,7 @@ use App\Http\Controllers\AccountGroupController;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\TemplateController;
 use App\Http\Controllers\FileMangementController;
+use App\Http\Controllers\TeamController;
 use App\Http\Controllers\DefaultFoldersCreation;
 use Illuminate\Support\Facades\Artisan;
 
@@ -265,11 +266,40 @@ Route::controller(FileMangementController::class)->group(function () {
     // Route::get('/filing/execution/{parent_name_id?}', 'folder')->name('folder');
     Route::get('filing/createFolder', 'createFolder')->name('filing.createFolder');
     Route::post('filing', 'storeFolder')->name('filing.storeFolder');
+    Route::get('/template-download/{id}','download_temp')->name('download_temp');
 });
 
 
 
 //File Management ------------------------- END --------------------------------------
+
+
+//TEAMS ----------------------- STARTS --------------------
+Route::get('teams', [TeamController::class, 'index'])
+    ->name('teams')
+    ->middleware('auth');
+
+Route::get('teams/create', [TeamController::class, 'create'])
+    ->name('teams.create')
+    ->middleware('auth');
+
+Route::post('teams', [TeamController::class, 'store'])
+    ->name('teams.store')
+    ->middleware('auth');
+
+Route::get('teams/{team}/edit', [TeamController::class, 'edit'])
+    ->name('teams.edit')
+    ->middleware('auth');
+
+Route::put('teams/{team}', [TeamController::class, 'update'])
+    ->name('teams.update')
+    ->middleware('auth');
+
+Route::delete('teams/{team}', [TeamController::class, 'destroy'])
+    ->name('teams.destroy')
+    ->middleware('auth');
+//TEAMS ----------------------- END --------------------
+
 
 
 Route::get('/routes', function() {

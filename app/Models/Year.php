@@ -13,6 +13,11 @@ class Year extends Model
         'begin', 'end','enabled','company_id','closed'
     ];
 
+    public function users()
+    {
+        return $this->belongsToMany('App\Models\User', 'years_users');
+    }
+
     public function company(){
         return $this->belongsTo('App\Models\Company', 'company_id');
     }

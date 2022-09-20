@@ -50,6 +50,8 @@ replace this
 with the code below to change the text on pagination bar
 	'previous' => 'Previous',
     'next' => 'Next',
+    
+if paginator doesn't work(its link is not clickable) then replace the "inertia-link" with "Link" beacuse of update in inertia
 
 
 ------------------------------------------------

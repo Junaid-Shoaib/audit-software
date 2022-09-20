@@ -178,6 +178,16 @@ class CreateCoreTables extends Migration
             $table->foreign('company_id')->references('id')->on('companies');
             $table->timestamps();
         });
+
+        Schema::create('years_users', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('year_id');
+            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('year_id')->references('id')->on('years');
+            $table->timestamps();
+        });
+
     }
 
     /**
@@ -188,6 +198,7 @@ class CreateCoreTables extends Migration
     public function down()
     {
         Schema::dropIfExists('companies_users');
+        Schema::dropIfExists('years_users');
         // Schema::dropIfExists('entries');
         // Schema::dropIfExists('documents');
         // Schema::dropIfExists('document_types');
