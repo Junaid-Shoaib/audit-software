@@ -8,6 +8,7 @@ use App\Models\Template;
 use App\Models\Company;
 use Inertia\Inertia;
 use File;
+use Illuminate\Support\Facades\Storage;
 
 class TemplateController extends Controller
 {
@@ -64,13 +65,14 @@ class TemplateController extends Controller
         // dd($request);
             $path = strtolower($request->type);
             $name = $request->file('avatar')->getClientOriginalName();
-            if(file_exists(storage_path('app/public/'.$path.'/'.$name))){
+            if(file_exists(public_path('temp/'.$name))){
                 return back()->with('success', $name.' Already Taken');
             }else{
-                $pathWithFileName = $request->file('avatar')->storeAs($path, $name, 'public');
+                $request->file('avatar')->storeAs('/', $name, 'temp');
+                File::copy(public_path().'/temp/'. $name, storage_path('app/public/'.$path.'/'.$name));
                 Template::create([
                     'name' => $name,
-                    'path' => $pathWithFileName,
+                    'path' => $path.'/'.$name,
                     'type' => strtolower($request->type),
                     'year_id' => session('year_id'),
                     'company_id' => session('company_id'),
@@ -84,33 +86,26 @@ class TemplateController extends Controller
     {
         // dd($id);
         $file_obj = Template::find($id);
-        return response()->download(storage_path('app/public/' . $file_obj->path));
+        return response()->download(public_path().'/temp/' . $file_obj->name);
     }
 
 
     public function destroy($id)
     {
         try {
-
-                $temp = Template::find($id)->first();
-                // dd($temp->path);
-                if(File::exists(storage_path('app/public/'.$temp->path))){
-                // dd($temp->path);
+                    $temp = Template::find($id);
+                if(File::exists(public_path().'/temp/'.$temp->name)){
+                    File::delete(public_path().'/temp/'.$temp->name);
                     File::delete(storage_path('app/public/'.$temp->path));
                     $temp->delete();
                     return back()->with('success', $temp->name . ' deleted');
                 }else{
-                    dd('File does not exists.');
+                    return Redirect::route('templates')->with('File does not exists.');
                 }
-
-
         } catch(Throwable $e) {
             return back()->with('error', $e);
         }
         return back()->with('error', 'Something went wrong, check network connection and try again');
     }
-
-
-
 
 }

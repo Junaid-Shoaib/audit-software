@@ -10,7 +10,9 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\FileManager;
 use App\Models\Template;
 use App\Models\Company;
+use App\Models\Year;
 use Inertia\Inertia;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
@@ -418,6 +420,41 @@ class FileMangementController extends Controller
             ]);
 
     }
+
+
+    public function download_temp($id){
+        $template = Template::find($id);
+        if($template){
+          $extension =   explode(".",($template->name));
+          $year = Year::where('company_id', session('company_id'))
+          ->where('id', session('year_id'))->first();
+          $start = $year->begin ? new Carbon($year->begin) : null;
+          $end = $year->end ? new Carbon($year->end) : null;
+          $names = str_replace(["&"], "&amp;", $year->company->name);
+          $name = $year->company->name;
+          if(strtolower($extension[1]) == 'docx' || strtolower($extension[1]) == 'docs'){
+            $templateProcessor = new  \PhpOffice\PhpWord\TemplateProcessor(public_path('temp/' . $template->name));
+            $templateProcessor->setValue('client', $names);
+            $templateProcessor->setValue('start', $start->format("F j Y"));
+            $templateProcessor->setValue('end', $end->format("F j Y"));
+            $templateProcessor->saveAs(storage_path('app/public/' . $template->path));
+            return response()->download(storage_path('app/public/' . $template->path));
+            }
+            else{
+                $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load(public_path('temp/' . $template->name));
+                $worksheet = $spreadsheet->getActiveSheet();
+                $worksheet->getCell('C2')->setValue($name);
+                $worksheet->getCell('C3')->setValue($start->format("F j Y"). ' - '.$end->format("F j Y"));
+                $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xls');
+                $writer->save(storage_path('app/public/' . $template->path));
+                return response()->download(storage_path('app/public/' . $template->path));
+            }
+        }else{
+            // PhpOffice\PhpExcel\TemplateProcessor($tmpfile);
+        };
+    }
+
+
 
 
 }

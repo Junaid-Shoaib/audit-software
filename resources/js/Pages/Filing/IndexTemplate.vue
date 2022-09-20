@@ -66,9 +66,18 @@
                 <td style="width: 37%" class="px-4 border">{{ item.type }}</td>
                 <!-- <td class=" px-4 border">{{ item.accountGroup.name }}</td> -->
                 <td style="width: 23%" class="px-4 border text-center rounded-r-2xl">
-                  <button class="editbutton px-4 m-1" @click="edit(item.id)">
-                    <span>Edit</span>
-                  </button>
+                   <a v-if="item.path" class="
+                       border
+                      bg-indigo-300
+                      rounded-xl
+                      px-4
+                      text-white
+                      font-bold
+                      m-1
+                      hover:text-white hover:bg-indigo-400
+                    "
+                     :href="'/template-download/' +item.id"
+                     >Download</a>
                   <button
                     class="deletebutton px-4 m-1"
                     @click="destroy(item.id)"
