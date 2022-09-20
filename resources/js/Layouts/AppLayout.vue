@@ -544,6 +544,12 @@ export default {
           icon: UserGroupIcon,
         },
         {
+          href: route("teams"),
+          routeName: "teams",
+          label: "Teams",
+          icon: UserGroupIcon,
+        },
+        {
           href: route("companies"),
           routeName: "companies",
           label: "Companies",
