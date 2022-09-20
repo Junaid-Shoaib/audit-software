@@ -73,7 +73,7 @@ class TemplateSeeder extends Seeder
           $planing->type = 'planing';
           $planing->company_id = session('company_id');
           $planing->year_id = session('year_id');
-          File::copy(public_path('/planning-temp/'. $value), storage_path('app/public/planing/'.$value));
+          File::copy(public_path('/temp/'. $value), storage_path('app/public/planing/'.$value));
           $planing->save();
         }
 
