@@ -155,9 +155,6 @@ class CompanyController extends FileMangementController
             session(['year_id' => $year->id]);
 
             Storage::makeDirectory('/public/' . $company->id);
-            Storage::makeDirectory('/public/' . 'planing');
-            Storage::makeDirectory('/public/' . 'execution');
-            Storage::makeDirectory('/public/' . 'completion');
             Storage::makeDirectory('/public/' . $company->id . '/' . $year->id);
 
 
