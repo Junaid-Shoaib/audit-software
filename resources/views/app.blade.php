@@ -15,9 +15,10 @@
         <!-- Scripts -->
         @routes
         <script src="{{ mix('js/app.js') }}" defer></script>
+
         @inertiaHead
     </head>
-    <body class="font-sans antialiased">
+    <body style="zoom: 90%" class="font-sans antialiased">
         @inertia
 
         @env ('local')
