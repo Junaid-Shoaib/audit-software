@@ -2,9 +2,7 @@
   <app-layout>
     <template #header>
       <div class="grid grid-cols-2 items-center">
-        <h2 class="header">
-          Upload Trial in Excel
-        </h2>
+        <h2 class="header">Upload Trial in Excel</h2>
       </div>
     </template>
 
@@ -14,28 +12,37 @@
       <!-- <jet-button @click="create" class="ml-2">Create Account</jet-button> -->
 
       <div class="">
-          <!-- overflow-x-auto -->
-        <div class="obsolute  mt-2 ml-2 sm:rounded-2xl">
+        <!-- overflow-x-auto -->
+        <div class="obsolute mt-2 ml-2 sm:rounded-2xl">
           <div
-              class="
-                ml-2
-                bg-red-100
-                border border-red-400
-                text-red-700
-                px-4
-                py-2
-                rounded
-                obsolute
-              "
-              role="alert"
-              v-if="errors.file"
-            >
-              {{ errors.file }}
-            </div>
+            class="
+              ml-2
+              bg-red-100
+              border border-red-400
+              text-red-700
+              px-4
+              py-2
+              rounded
+              obsolute
+            "
+            role="alert"
+            v-if="errors.file"
+          >
+            {{ errors.file }}
+          </div>
           <form @submit.prevent="submit">
             <div class="p-8 -mr-6 -mb-8 flex flex-wrap">
-
-              <input class="border-solid border-2 border-indigo-300 rounded-xl px-4 py-2 m-4" type="file" v-on:change="onFileChange" />
+              <input
+                class="
+                  border-solid border-2 border-indigo-300
+                  rounded-xl
+                  px-2
+                  py-2
+                  m-4
+                "
+                type="file"
+                v-on:change="onFileChange"
+              />
               <!-- <progress
                 v-if="form2.progress"
                 :value="form2.progress.percentage"
@@ -43,17 +50,14 @@
               >
                 {{ form2.progress.percentage }}%
               </progress> -->
-              <button
-                class="trailbutton"
-                type="submit"
-              >
+              <button class="trailbutton" type="submit">
                 Upload Trial Balance
               </button>
-                <a class="trailbutton"
-                href="/trialpattern">Download Trail Template</a>
+              <a class="trailbutton py-3" href="/trialpattern"
+                >Download Trail Template</a
+              >
 
-                 <a class="trailbutton"
-                href="/lead">Lead Schedule</a>
+              <a class="trailbutton py-3" href="/lead">Lead Schedule</a>
 
               <!-- <button
                 class="border bg-indigo-300 rounded-xl px-4 py-2 m-4"
@@ -63,7 +67,6 @@
               </button> -->
             </div>
           </form>
-
         </div>
         <!-- <paginator class="mt-6" :balances="balances" /> -->
       </div>

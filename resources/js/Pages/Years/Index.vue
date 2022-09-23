@@ -62,13 +62,13 @@
         </select> -->
         <!-- <div v-if="errors.type">{{ errors.type }}</div> -->
         <div class="">
-          <div class="obsolute  mt-2 ml-2 sm:rounded-2xl">
+          <div class="obsolute mt-2 ml-2 sm:rounded-2xl">
             <table class="table2">
               <thead>
                 <tr class="tablerowhead">
                   <th class="py-1 px-4 rounded-l-2xl">Company</th>
-                  <th class="py-1 px-4 ">Begin</th>
-                  <th class="py-1 px-4 ">End</th>
+                  <th class="py-1 px-4">Begin</th>
+                  <th class="py-1 px-4">End</th>
                   <th class="py-1 px-4 rounded-r-2xl">Action</th>
                 </tr>
               </thead>
@@ -89,29 +89,21 @@
                   </td>
                   <td class="w-4/12px-4 border w-2/6 rounded-r-2xl text-center">
                     <button
-                      class="
-                        editbutton
-                        px-4
-                        m-1
-                      "
+                      class="editbutton px-4 m-1"
                       @click="edit(item.id)"
                       type="button"
                     >
                       <span>Edit</span>
                     </button>
                     <button
-                      class="
-                        deletebutton
-                        px-4
-                        m-1
-                      "
+                      class="deletebutton px-4 m-1"
                       @click="destroy(item.id)"
                       type="button"
                       v-if="item.delete"
                     >
                       <span>Delete</span>
                     </button>
-                    <button
+                    <!-- <button
                       v-if="item.closed == 0"
                       class="
                         border
@@ -121,17 +113,17 @@
                         rounded-xl
                         px-4
                         m-1
-                        hover:bg-gray-700 
+                        hover:bg-gray-700
                       "
                       @click="close(item.id)"
                       type="button"
                     >
                       <span>Close Fiscal</span>
-                    </button>
+                    </button> -->
                   </td>
                 </tr>
                 <tr v-if="balances.data.length === 0">
-                  <td class="border-t px-6 py-4 " colspan="4">
+                  <td class="border-t px-6 py-4" colspan="4">
                     No Record found.
                   </td>
                 </tr>

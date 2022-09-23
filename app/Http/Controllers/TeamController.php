@@ -15,94 +15,99 @@ class TeamController extends Controller
 {
     public function index()
     {
-        //Validating request
-        request()->validate([
-            'direction' => ['in:asc,desc'],
-            'field' => ['in:name,email']
-        ]);
+        if(Company::first())
+        {
+            //Validating request
+            request()->validate([
+                'direction' => ['in:asc,desc'],
+                'field' => ['in:name,email']
+            ]);
 
-        // auth()->user()->companies()->getQuery()->paginate(10)
-        $year = Year::find(session('year_id'));
+            $year = Year::find(session('year_id'));
 
-        // dd($year->users());
-        $query =
-        $year->users()->getQuery()->paginate(10)
-          ->withQueryString()
-                ->through(
-                        fn ($user) =>
-                        [
-                            'id' => $user->id,
-                            'name' => $user->name,
-                            'email' => $user->email,
-                            $cur_user = User::find($user->user_id),
-                            'role' => $cur_user->getRoleNames()[0],
-                            // dd($user, $cur_user->getRoleNames()),
-                            // 'delete' => Year::where('company_id', $comp->id)->first() != null ? true : false,
-                        ],
-                    );
+            $query =
+            $year->users()->getQuery()->paginate(10)
+            ->withQueryString()
+                    ->through(
+                            fn ($user) =>
+                            [
+                                'id' => $user->id,
+                                'name' => $user->name,
+                                'email' => $user->email,
+                                $cur_user = User::find($user->user_id),
+                                'role' => $cur_user->getRoleNames()[0],
+                                // 'delete' => Year::where('company_id', $comp->id)->first() != null ? true : false,
+                            ],
+                        );
 
-        //         echo "<pre>";
-        // print_r($query);
-        // exit();
+            if (request('search')) {
+                $query->where('name', 'LIKE', '%' . request('search') . '%');
+            }
 
-        if (request('search')) {
-            $query->where('name', 'LIKE', '%' . request('search') . '%');
+            if (request()->has(['field', 'direction'])) {
+                $query->orderBy(
+                    request('field'),
+                    request('direction')
+                );
+            }
+
+            return Inertia::render('Teams/Index', [
+                // 'can' => [
+                //     'edit' => auth()->user()->can('edit'),
+                //     'create' => auth()->user()->can('create'),
+                //     'delete' => auth()->user()->can('delete'),
+                //     'read' => auth()->user()->can('read'),
+                // ],
+                'balances' => $query,
+                'filters' => request()->all(['search', 'field', 'direction']),
+                'company' => Company::where('id', session('company_id'))->first(),
+                'companies' => Auth::user()->companies,
+                'year' => Year::where('company_id', session('company_id'))->where('id', session('year_id'))->first(),
+                'years' => Year::where('company_id', session('company_id'))->get(),
+                'team_exists' => count($query) > 0 ? true : false,
+            ]);
+        } else {
+            return Redirect::route('companies')->with('warning', 'Create Company first');
         }
-
-        if (request()->has(['field', 'direction'])) {
-            $query->orderBy(
-                request('field'),
-                request('direction')
-            );
-        }
-
-        // $tem =count($query) > 0;
-        // dd($tem);
-        return Inertia::render('Teams/Index', [
-            // 'can' => [
-            //     'edit' => auth()->user()->can('edit'),
-            //     'create' => auth()->user()->can('create'),
-            //     'delete' => auth()->user()->can('delete'),
-            //     'read' => auth()->user()->can('read'),
-            // ],
-            'balances' => $query,
-            'filters' => request()->all(['search', 'field', 'direction']),
-            'company' => Company::where('id', session('company_id'))->first(),
-            'companies' => Auth::user()->companies,
-            'year' => Year::where('company_id', session('company_id'))->where('id', session('year_id'))->first(),
-            'years' => Year::where('company_id', session('company_id'))->get(),
-            'team_exists' => count($query) > 0 ? true : false,
-        ]);
     }
 
 
     public function create()
     {
-        // $groups = \App\Models\AccountGroup::where('company_id', session('company_id'))->map->only('id', 'name')->get();
-        // $groups = AccountGroup::where('company_id', session('company_id'))->tree()->get()->toTree();
-        // $partners = User::first();
-        // dd($partners->getRoleNames()[0]);
-        $partners = User::role('partner')->get();
-        $staff = User::role('staff')->get()->toArray();
-        $managers = User::role('manager')->get();
+        $partner = User::role('partner')->first();
+        $staf = User::role('staff')->first();
+        $manager = User::role('manager')->first();
 
+        if($partner && $manager && $staf)
+        {
+            $partners = User::role('partner')->get();
+            $staff = User::role('staff')->get()->toArray();
+            $managers = User::role('manager')->get();
 
-        // where('company_id', session('company_id'))->tree()->get()->toTree();
-        // $group_first = AccountGroup::all()->where('company_id', session('company_id'))->map->only('id', 'name')->first();
-
-        // if ($group_first) {
             return Inertia::render('Teams/Create', [
                 'partners' => $partners,
                 'staff' => $staff,
                 'managers' => $managers,
 
-                'partner' => User::role('partner')->first(),
-                'staf' => User::role('staff')->first(),
-                'manager' => User::role('manager')->first(),
+                'partner' => $partner,
+                'staf' => $staf,
+                'manager' => $manager,
             ]);
-        // } else {
-        //     return Redirect::route('accountgroups.create')->with('success', 'ACCOUNTGROUP NOT FOUND, Please create account group first.');
-        // }
+        } else {
+            if(!$partner)
+            {
+                return Redirect::route('teams')->with('warning', 'Partner not found, Can\'t create team without partner.');
+            } elseif(!$manager)
+            {
+                return Redirect::route('teams')->with('warning', 'Manager not found, Can\'t create team without manager.');
+            } elseif(!$staf)
+            {
+                return Redirect::route('teams')->with('warning', 'Staff not found, Can\'t create team without staff.');
+            } else
+            {
+                return Redirect::route('teams')->with('warning', 'User not found, May some members are missing to create a team.');
+            }
+        }
     }
 
     public function store()
@@ -130,4 +135,55 @@ class TeamController extends Controller
         return Redirect::route('teams')->with('success', 'Team created.');
     }
 
+    public function edit()
+    {
+        $year = Year::find(session('year_id'));
+
+        $partner = $year->users()->role('partner')->first();
+        $manager = $year->users()->role('manager')->first();
+        $staf = $year->users()->role('staff')->get();
+
+        $partners = User::role('partner')->get();
+        $staff = User::role('staff')->get();
+        $managers = User::role('manager')->get();
+
+        return Inertia::render('Teams/Edit', [
+            'partners' => $partners,
+            'staff' => $staff,
+            'managers' => $managers,
+
+            'partner' => $partner,
+            'staf' => $staf,
+            'manager' => $manager,
+        ]);
+    }
+
+    public function update()
+    {
+        Request::validate([
+            'partner' => ['required'],
+            'manager' => ['required'],
+            'staff' => ['required'],
+        ]);
+
+        $year = Year::find(session('year_id'));
+        $pre_users = $year->users()->get();
+        foreach($pre_users as $pre_user)
+        {
+            $year->users()->detach($pre_user->id);
+        }
+
+        $partner_id = Request::input('partner')['id'];
+        $manager_id = Request::input('manager')['id'];
+        $staff = Request::input('staff');
+
+        $year->users()->attach($partner_id);
+        $year->users()->attach($manager_id);
+        foreach($staff as $staf)
+        {
+            $year->users()->attach($staf['id']);
+        }
+
+        return Redirect::route('teams')->with('success', 'Team updated.');
+    }
 }

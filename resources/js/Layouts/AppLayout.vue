@@ -196,11 +196,14 @@
         bottom-0
         left-0
         right-0
+        overflow-y-auto
+        flex-1
       "
     >
       <div class="py-4 px-6">
         <a href="/">
-          <ApplicationLogo class="w-48 h-9" />
+          <h1 class="text-white text-xl text-center font-bold">MZ-Audit</h1>
+          <!-- <ApplicationLogo class="w-48 h-9" /> -->
         </a>
       </div>
 
@@ -252,13 +255,18 @@
             items-center
             px-16
             pl-8
+            w-full
             rounded-r-full
             py-2.5
             text-white
-            hover:text-blue-500 hover:bg-white
+            hover:text-gray-400 hover:bg-white
             group
           "
         >
+          <component
+            :is="LogoutIcon"
+            class="mr-2 w-5 h-5 active:text-gray-500 group-hover:text-gray-400"
+          />
           Logout
         </button>
       </div>
@@ -399,10 +407,15 @@
               focus:ring-black
             "
           >
-            <img
+            <!-- <img
               class="inline w-10 h-10 rounded-full"
               src="https://pbs.twimg.com/profile_images/1333896976602193922/MtWztkxt_400x400.jpg"
               alt=""
+            /> -->
+            <img
+              class="inline w-10 h-10 rounded-full"
+              :src="$page.props.user.profile_photo_url"
+              :alt="$page.props.user.name"
             />
           </MenuButton>
 

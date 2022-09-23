@@ -35,49 +35,41 @@
     <FlashMessage />
 
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 py-2">
-      <form @submit.prevent="form.get(route('teams.create'))">
-        <jet-button
-          v-if="team_exists"
-          type="submit"
-          @click="create"
-          class="ml-2 buttondesign"
-          >Edit Team</jet-button
-        >
-        <jet-button
-          v-else
-          type="submit"
-          @click="create"
-          class="ml-2 buttondesign"
-          >Add Team</jet-button
-        >
-        <div class="">
-          <div class="obsolute mt-2 ml-2 sm:rounded-2xl">
-            <table class="table2">
-              <thead>
-                <tr class="tablerowhead">
-                  <th class="py-1 px-4 rounded-l-2xl">Name</th>
-                  <th class="py-1 px-4">Email</th>
-                  <th class="py-1 px-4">Role</th>
-                  <!-- <th class="py-1 px-4">End</th>
+      <!-- <form @submit.prevent="form.get(route('teams.create'))"> -->
+      <jet-button v-if="team_exists" @click="edit" class="ml-2 buttondesign"
+        >Edit your Team</jet-button
+      >
+      <jet-button v-else @click="create" class="ml-2 buttondesign"
+        >Add Team</jet-button
+      >
+      <div class="">
+        <div class="obsolute mt-2 ml-2 sm:rounded-2xl">
+          <table class="table2">
+            <thead>
+              <tr class="tablerowhead">
+                <th class="py-1 px-4 rounded-l-2xl">Name</th>
+                <th class="py-1 px-4">Email</th>
+                <th class="py-1 px-4">Role</th>
+                <!-- <th class="py-1 px-4">End</th>
                   <th class="py-1 px-4 rounded-r-2xl">Action</th> -->
-                </tr>
-              </thead>
-              <tbody>
-                <tr
-                  class="tablerowbody2"
-                  v-for="item in balances.data"
-                  :key="item.id"
-                >
-                  <td class="w-4/12 px-4 border rounded-l-2xl w-2/5">
-                    {{ item.name }}
-                  </td>
-                  <td class="w-2/12 px-4 border w-2/6 text-center">
-                    {{ item.email }}
-                  </td>
-                  <td class="w-2/12 px-4 border w-2/6 text-center">
-                    {{ item.role }}
-                  </td>
-                  <!-- <td class="w-2/12 px-4 border w-2/6 text-center">
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                class="tablerowbody2"
+                v-for="item in balances.data"
+                :key="item.id"
+              >
+                <td class="w-4/12 px-4 border rounded-l-2xl w-2/5">
+                  {{ item.name }}
+                </td>
+                <td class="w-2/12 px-4 border w-2/6 text-center">
+                  {{ item.email }}
+                </td>
+                <td class="w-2/12 px-4 border w-2/6 text-center">
+                  {{ item.role }}
+                </td>
+                <!-- <td class="w-2/12 px-4 border w-2/6 text-center">
                     {{ item.end }}
                   </td>
                   <td class="w-4/12px-4 border w-2/6 rounded-r-2xl text-center">
@@ -114,18 +106,16 @@
                       <span>Close Fiscal</span>
                     </button>
                   </td> -->
-                </tr>
-                <tr v-if="balances.data.length === 0">
-                  <td class="border-t px-6 py-4" colspan="4">
-                    No Record found.
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <paginator class="mt-6" :balances="balances" />
+              </tr>
+              <tr v-if="balances.data.length === 0">
+                <td class="border-t px-6 py-4" colspan="4">No Record found.</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-      </form>
+        <paginator class="mt-6" :balances="balances" />
+      </div>
+      <!-- </form> -->
     </div>
   </app-layout>
 </template>
@@ -180,12 +170,12 @@ export default {
 
   methods: {
     create() {
-      this.$inertia.get(route("users.create"));
+      this.$inertia.get(route("teams.create"));
     },
 
-    // edit(id) {
-    //   this.$inertia.get(route("years.edit", id));
-    // },
+    edit() {
+      this.$inertia.get(route("teams.edit"));
+    },
 
     // destroy(id) {
     //   this.$inertia.delete(route("years.destroy", id));

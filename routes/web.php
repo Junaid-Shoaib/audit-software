@@ -287,11 +287,11 @@ Route::post('teams', [TeamController::class, 'store'])
     ->name('teams.store')
     ->middleware('auth');
 
-Route::get('teams/{team}/edit', [TeamController::class, 'edit'])
+Route::get('teams/edit', [TeamController::class, 'edit'])
     ->name('teams.edit')
     ->middleware('auth');
 
-Route::put('teams/{team}', [TeamController::class, 'update'])
+Route::put('teams', [TeamController::class, 'update'])
     ->name('teams.update')
     ->middleware('auth');
 

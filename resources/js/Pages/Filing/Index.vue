@@ -3,13 +3,11 @@
   <app-layout>
     <template #header>
       <div class="grid grid-cols-2 items-center">
-        <h2 class="header">
-          {{ parent.name }} - {{ parent.type }}
-        </h2>
+        <h2 class="header">{{ parent.name }} - {{ parent.type }}</h2>
         <div class="justify-end">
           <multiselect
             style="width: 50%; z-index: 10"
-            class="float-right rounded-md border border-black "
+            class="float-right rounded-md border border-black"
             placeholder="Select Company."
             v-model="co_id"
             track-by="id"
@@ -25,11 +23,17 @@
     <FlashMessage />
 
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 py-2">
-
-      <jet-button v-if="parent.type == 'File'" @click="uploadFile" class="ml-2 buttondesign"
+      <jet-button
+        v-if="parent.type == 'File'"
+        @click="uploadFile"
+        class="ml-2 buttondesign"
         >Upload File</jet-button
       >
-      <jet-button v-else type="button" @click="createFolder" class="ml-2 buttondesign"
+      <jet-button
+        v-else
+        type="button"
+        @click="createFolder"
+        class="ml-2 buttondesign"
         >Create Folder</jet-button
       >
       <jet-button type="button" @click="templates" class="ml-2 buttondesign"
@@ -41,7 +45,7 @@
           <table class="table2">
             <thead>
               <tr class="tablerowhead">
-                <th class="py-1 px-4 rounded-l-2xl ">{{ parent.type }} Name</th>
+                <th class="py-1 px-4 rounded-l-2xl">{{ parent.type }} Name</th>
                 <th class="py-1 px-4 rounded-r-2xl">Action</th>
               </tr>
             </thead>
@@ -58,27 +62,25 @@
                   v-if="parent.type == 'File'"
                   class="w-4/12px-4 border w-2/6 text-center rounded-r-2xl"
                 >
-                  <button
+                  <a
                     class="
                       border
                       bg-indigo-300
-                      rounded-xl
+                      rounded-md
                       px-4
                       text-white
                       font-bold
                       m-1
                       hover:text-white hover:bg-indigo-400
                     "
-                    @click="downloadFile(item.id)"
-                    type="button"
+                    :href="'/filing/downloadFile/' + item.id"
+                    >Download</a
                   >
-                    <span>Download</span>
-                  </button>
                   <button
                     class="
                       border
                       bg-red-500
-                      rounded-xl
+                      rounded-md
                       px-4
                       m-1
                       text-white
@@ -93,7 +95,10 @@
                   </button>
                 </td>
 
-                <td v-else class="w-4/12px-4 border w-2/6 text-center rounded-r-2xl">
+                <td
+                  v-else
+                  class="w-4/12px-4 border w-2/6 text-center rounded-r-2xl"
+                >
                   <button
                     class="
                       border
@@ -111,13 +116,7 @@
                     <span>View</span>
                   </button>
                   <button
-                    class="
-                      deletebutton
-                      px-4
-
-                      m-1
-
-                    "
+                    class="deletebutton px-4 m-1"
                     @click="deleteFileFolder(item.id)"
                     type="button"
                   >
@@ -191,7 +190,7 @@ export default {
       this.$inertia.get(route("filing.createFolder"));
     },
 
-     templates() {
+    templates() {
       this.$inertia.get(route("index_temp", this.parent.name));
     },
 

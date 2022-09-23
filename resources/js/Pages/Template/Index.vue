@@ -22,11 +22,21 @@
     <FlashMessage />
 
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 py-2">
-      <jet-button @click="create" class="ml-2 buttondesign">Create Template</jet-button>
+      <jet-button @click="create" class="ml-2 buttondesign"
+        >Create Template</jet-button
+      >
 
       <input
         type="text"
-        class="ml-4 h-8 px-2 w-80 border-gray-800 ring-gray-800 ring-1 outline-none"
+        class="
+          ml-4
+          h-8
+          px-2
+          w-80
+          border-gray-800
+          ring-gray-800 ring-1
+          outline-none
+        "
         v-model="params.search"
         @change="search_data"
         aria-label="Search"
@@ -34,7 +44,15 @@
       />
       <button
         @click="search_data"
-        class="border-2 pb-2.5 pt-1 bg-gray-800 border-gray-800 px-1 hover:bg-gray-700"
+        class="
+          border-2
+          pb-2.5
+          pt-1
+          bg-gray-800
+          border-gray-800
+          px-1
+          hover:bg-gray-700
+        "
       >
         <svg
           class="w-8 h-4 text-white"
@@ -59,26 +77,36 @@
               </tr>
             </thead>
             <tbody>
-              <tr class="tablerowbody2" v-for="item in balances.data" :key="item.id">
+              <tr
+                class="tablerowbody2"
+                v-for="item in balances.data"
+                :key="item.id"
+              >
                 <!-- <td class="py-1 px-4 border text-center">{{ item.id }}</td> -->
                 <td style="width: 40%" class="px-4 border rounded-l-2xl">
                   {{ item.name }}
                 </td>
                 <td style="width: 23%" class="px-4 border">{{ item.type }}</td>
                 <!-- <td class=" px-4 border">{{ item.accountGroup.name }}</td> -->
-                <td style="width: 37%" class="px-4 border text-center rounded-r-2xl">
-                  <a v-if="item.path" class="
-                       border
+                <td
+                  style="width: 37%"
+                  class="px-4 border text-center rounded-r-2xl"
+                >
+                  <a
+                    v-if="item.path"
+                    class="
+                      border
                       bg-indigo-300
-                      rounded-xl
+                      rounded-md
                       px-4
                       text-white
                       font-bold
                       m-1
                       hover:text-white hover:bg-indigo-400
                     "
-                     :href="'template/download/' +item.id"
-                     >Download</a>
+                    :href="'template/download/' + item.id"
+                    >Download</a
+                  >
 
                   <button
                     class="deletebutton px-4 m-1"
@@ -150,10 +178,9 @@ export default {
     },
 
     destroy(id) {
-        if(confirm("Do you really want to delete?")){
-            this.$inertia.delete(route("templates.destroy", id));
-            }
-
+      if (confirm("Do you really want to delete?")) {
+        this.$inertia.delete(route("templates.destroy", id));
+      }
     },
     coch() {
       this.$inertia.get(route("companies.coch", this.co_id["id"]));
