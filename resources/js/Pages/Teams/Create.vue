@@ -17,7 +17,7 @@
               >Partner :</label
             >
             <multiselect
-              style="width: 50%; z-index: 10"
+              style="width: 50%"
               class="float-right rounded-md border border-black"
               placeholder="Select Partner."
               v-model="form.partner"
@@ -51,7 +51,7 @@
               >Manager :</label
             >
             <multiselect
-              style="width: 50%; z-index: 10"
+              style="width: 50%"
               class="float-right rounded-md border border-black"
               placeholder="Select Manager."
               v-model="form.manager"
@@ -85,7 +85,7 @@
               >Staff :</label
             >
             <multiselect
-              style="width: 50%; z-index: 10"
+              style="width: 50%"
               class="float-right rounded-md border border-black"
               placeholder="Select Staff."
               v-model="form.staff"

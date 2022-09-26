@@ -205,7 +205,7 @@
               <option value="staff">Staff</option>
               <option value="manager">Manager</option>
               <option value="partner">Partner</option>
-              <option value="super-admin">Super-Admin</option>
+              <!-- <option value="super-admin">Super-Admin</option> -->
             </select>
             <div v-if="errors.role">{{ errors.role }}</div>
           </div>

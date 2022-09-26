@@ -103,7 +103,7 @@
                     class="
                       border
                       bg-indigo-300
-                      rounded-xl
+                      rounded-md
                       px-4
                       m-1
                       text-white
