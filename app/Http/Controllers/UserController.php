@@ -19,7 +19,7 @@ class UserController extends Controller
 {
     public function index()
     {
-        if(auth()->user()->can('manage'))
+        if(auth()->user()->can('manage') || auth()->user()->can('edit'))
         {
             //Validating request
             request()->validate([

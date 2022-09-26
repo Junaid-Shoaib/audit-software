@@ -7,6 +7,7 @@ use Inertia\Inertia;
 use App\Models\User;
 use App\Models\Company;
 use App\Models\Year;
+use App\Models\Setting;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Auth;
@@ -119,9 +120,40 @@ class TeamController extends Controller
         ]);
 
         $year = Year::find(session('year_id'));
+        $company = Company::find(session('company_id'));
 
         $partner_id = Request::input('partner')['id'];
         $manager_id = Request::input('manager')['id'];
+
+        // dd($company->users()->where('user_id', '2')->first());
+        if($company->users()->where('user_id', $partner_id)->first())
+        {
+            $company->users()->attach($partner_id);
+            Setting::create([
+                'key' => 'active_company',
+                'value' => $company->id,
+                'user_id' => $partner_id,
+            ]);
+            Setting::create([
+                'key' => 'active_year',
+                'value' => $year->id,
+                'user_id' => $partner_id,
+            ]);
+        }
+        if($company->users()->where('user_id', $manager_id)->first())
+        {
+            $company->users()->attach($manager_id);
+            Setting::create([
+                'key' => 'active_company',
+                'value' => $company->id,
+                'user_id' => $manager_id,
+            ]);
+            Setting::create([
+                'key' => 'active_year',
+                'value' => $year->id,
+                'user_id' => $manager_id,
+            ]);
+        }
 
         $year->users()->attach($partner_id);
         $year->users()->attach($manager_id);
@@ -130,8 +162,21 @@ class TeamController extends Controller
         foreach($staff as $staf)
         {
             $year->users()->attach($staf['id']);
+            if($company->users()->where('user_id', $staf['id'])->first())
+            {
+                $company->users()->attach($staf['id']);
+                Setting::create([
+                    'key' => 'active_company',
+                    'value' => $company->id,
+                    'user_id' => $staf['id'],
+                ]);
+                Setting::create([
+                    'key' => 'active_year',
+                    'value' => $year->id,
+                    'user_id' => $staf['id'],
+                ]);
+            }
         }
-
         return Redirect::route('teams')->with('success', 'Team created.');
     }
 

@@ -108,7 +108,7 @@ defineProps({
             drop-shadow-[4px_4px_16px_rgba(0,0,255)]
           "
         >
-          BKR INTERNATIONAL
+          MZ-AUDIT
         </p>
         <!-- <img src="../../../public/images/logo8.png" class="w-80 h-28 ml-5 " alt=""> -->
       </div>

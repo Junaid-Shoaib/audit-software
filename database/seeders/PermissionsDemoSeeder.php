@@ -6,6 +6,8 @@ use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
+use Illuminate\Support\Facades\Hash;
+use App\Models\User;
 
 class PermissionsDemoSeeder extends Seeder
 {
@@ -48,11 +50,47 @@ class PermissionsDemoSeeder extends Seeder
         $role4->givePermissionTo('read');
         $role4->givePermissionTo('manage');
 
+        $user = new User();
+        $user->name = 'haris';
+        $user->email = 'haris@gmail.com';
+        $user->password = Hash::make('mzk123456');
+        $user->save();
+        $user->assignRole($role4);
+
+        $user = new User();
+        $user->name = 'Partner';
+        $user->email = 'partner@gmail.com';
+        $user->password = Hash::make('mzk123456');
+        $user->save();
+        $user->assignRole($role3);
+
+        $user = new User();
+        $user->name = 'Manager';
+        $user->email = 'manager@gmail.com';
+        $user->password = Hash::make('mzk123456');
+        $user->save();
+        $user->assignRole($role2);
+
+        $user = new User();
+        $user->name = 'Staff1';
+        $user->email = 'staff1@gmail.com';
+        $user->password = Hash::make('mzk123456');
+        $user->save();
+        $user->assignRole($role1);
+
+        $user = new User();
+        $user->name = 'Staff2';
+        $user->email = 'staff2@gmail.com';
+        $user->password = Hash::make('mzk123456');
+        $user->save();
+        $user->assignRole($role1);
+
         // $user = \App\Models\User::factory()->create([
-        //     'name' => 'Example User',
-        //     'email' => 'test@example.com',
+        //     'name' => 'haris',
+        //     'email' => 'haris@gmail.com',
+        //     'password' => Hash::make('mzk123456'),
         // ]);
-        // $user->assignRole($role1);
+        // $user->assignRole($role4);
 
         // $user = \App\Models\User::factory()->create([
         //     'name' => 'Example Admin User',
