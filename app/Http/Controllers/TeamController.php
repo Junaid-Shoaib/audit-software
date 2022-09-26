@@ -125,8 +125,7 @@ class TeamController extends Controller
         $partner_id = Request::input('partner')['id'];
         $manager_id = Request::input('manager')['id'];
 
-        // dd($company->users()->where('user_id', '2')->first());
-        if($company->users()->where('user_id', $partner_id)->first())
+        if(!$company->users()->where('user_id', $partner_id)->first())
         {
             $company->users()->attach($partner_id);
             Setting::create([
@@ -140,7 +139,7 @@ class TeamController extends Controller
                 'user_id' => $partner_id,
             ]);
         }
-        if($company->users()->where('user_id', $manager_id)->first())
+        if(!$company->users()->where('user_id', $manager_id)->first())
         {
             $company->users()->attach($manager_id);
             Setting::create([
@@ -162,7 +161,7 @@ class TeamController extends Controller
         foreach($staff as $staf)
         {
             $year->users()->attach($staf['id']);
-            if($company->users()->where('user_id', $staf['id'])->first())
+            if(!$company->users()->where('user_id', $staf['id'])->first())
             {
                 $company->users()->attach($staf['id']);
                 Setting::create([
