@@ -389,7 +389,6 @@ class FileMangementController extends Controller
         ->where('id', session('year_id'))->first();
         if(count($year->users)){
 
-
             request()->validate([
                     'direction' => ['in:asc,desc'],
                     'field' => ['in:name,email']
@@ -402,8 +401,8 @@ class FileMangementController extends Controller
                 }
                 $balances = $query
                     ->where('type',$type)
-                    ->paginate(10)
-                    ->through(
+                    ->get()
+                    ->map(
                         function ($temp) {
                             return
                                 [
@@ -414,10 +413,14 @@ class FileMangementController extends Controller
                                 ];
                         }
                     );
+                // dd($balances);
+                $balances_name = Template::where('type',$type)->get()->pluck('name');
 
                 return Inertia::render('Filing/IndexTemplate', [
                     'filters' => request()->all(['search', 'field', 'direction']),
                     'balances' => $balances,
+                    'balances_name' => $balances_name,
+
                     'company' => Company::where('id', session('company_id'))->first(),
                     'companies' => auth()->user()->companies,
                     'type' => $type,
@@ -429,6 +432,22 @@ class FileMangementController extends Controller
 
     }
 
+    public function multi_download_temp(){
+        dd(count(Request::input('selected_arr')));
+        // if($request->has('download')) {
+            $zip   = new ZipArchive;
+            $fileName = 'attachment.zip';
+            if ($zip->open(public_path($fileName), ZipArchive::CREATE) === TRUE) {
+              $files = File::files(public_path('uploads/file'));
+              foreach ($files as $key => $value) {
+                $relativeName = basename($value);
+                $zip->addFile($value, $relativeName);
+              }
+              $zip->close();
+            }
+            return response()->download(public_path($fileName));
+        // }
+    }
 
     public function download_temp($id){
 

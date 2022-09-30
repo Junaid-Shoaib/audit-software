@@ -155,6 +155,7 @@ class CompanyController extends FileMangementController
             session(['year_id' => $year->id]);
 
             Storage::makeDirectory('/public/' . $company->id);
+
             Storage::makeDirectory('/public/' . $company->id . '/' . $year->id);
 
 
@@ -292,24 +293,16 @@ class CompanyController extends FileMangementController
 
 
     public function trial_pattern(){
-        return response()->download(public_path('/trial.xlsx'));
+        return response()->download(public_path('/trial_upload.xlsx'));
     }
 
 
     public function lead_schedule(){
 
         $acc_grps =  AccountGroup::where('company_id', session('company_id'))
-        // ->where('year_id',session('year_id'))
-        // ->where('type_id',1)
         ->tree()->get()->toTree()->toArray();
-        // dd($acc_grps);
-
-// dd($acc_grps);
-                // $a = Company::where('id', session('company_id'))->first();
-
         $pdf = App::make('dompdf.wrapper');
         $pdf->loadView('lead_schedule',compact('acc_grps'));
-        // $pdf->loadView('lead-schdule', $data);
         return $pdf->stream('v.pdf');
     }
 

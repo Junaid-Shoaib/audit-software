@@ -164,7 +164,7 @@ defineProps({
               drop-shadow-[4px_4px_16px_rgba(0,0,255)]
             "
           >
-            Copyright @ 2022, BKR INTERNATIONAL
+            Copyright @ Alpha 0.022092711
           </p>
         </div>
       </div>

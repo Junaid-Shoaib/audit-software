@@ -61,13 +61,18 @@
           />
         </svg>
       </button>
+
+      <input type='checkbox' @click='checkAll()' v-model='isCheckAll'> Check All
+
       <div class="">
         <div class="obsolute mt-2 ml-2 sm:rounded-2xl">
+               <button type='button' @click='submitValue()' >Print Selected Values</button>
           <table class="table2">
             <thead>
               <tr class="tablerowhead">
                 <!-- <th class="py-2 px-4 border">ID</th> -->
-                <th class="py-1 px-4 rounded-l-2xl">Name of File</th>
+                <th class="py-1 px-4 rounded-l-2xl">Check</th>
+                <th class="py-1 px-4 ">Name of File</th>
                 <th class="py-1 px-4">Name of Folder</th>
                 <th class="py-1 px-4 rounded-r-2xl">Action</th>
               </tr>
@@ -75,14 +80,18 @@
             <tbody>
               <tr
                 class="tablerowbody2"
-                v-for="item in balances.data"
+                v-for="item in balances"
                 :key="item.id"
               >
+              <td style="width: 10%" class="px-4 border rounded-l-2xl">
+                  <input type="checkbox" v-bind:value="item.name"  v-model="form.selected_arr" @change="updateCheckall()"/>
+
+                </td>
                 <!-- <td class="py-1 px-4 border text-center">{{ item.id }}</td> -->
-                <td style="width: 40%" class="px-4 border rounded-l-2xl">
+                <td style="width: 40%" class="px-4 border ">
                   {{ item.name }}
                 </td>
-                <td style="width: 37%" class="px-4 border">{{ item.type }}</td>
+                <td style="width: 27%" class="px-4 border">{{ item.type }}</td>
                 <!-- <td class=" px-4 border">{{ item.accountGroup.name }}</td> -->
                 <td
                   style="width: 23%"
@@ -112,14 +121,14 @@
                   </button>
                 </td>
               </tr>
-              <tr v-if="balances.data.length === 0">
+              <tr v-if="(balances.length == 0)">
                 <td class="border-t px-6 py-4" colspan="4">No Record found.</td>
               </tr>
             </tbody>
           </table>
         </div>
       </div>
-      <paginator class="mt-6" :balances="balances" />
+      <!-- <paginator class="mt-6" :balances="balances" /> -->
     </div>
   </app-layout>
 </template>
@@ -130,6 +139,7 @@ import JetButton from "@/Jetstream/Button";
 import Paginator from "@/Layouts/Paginator";
 import FlashMessage from "@/Layouts/FlashMessage";
 import { pickBy } from "lodash";
+import { useForm } from "@inertiajs/inertia-vue3";
 import { throttle } from "lodash";
 import Multiselect from "@suadelabs/vue3-multiselect";
 
@@ -137,7 +147,8 @@ export default {
   components: {
     AppLayout,
     JetButton,
-    Paginator,
+    useForm,
+    // Paginator,
     throttle,
     pickBy,
     Multiselect,
@@ -147,6 +158,7 @@ export default {
   props: {
     type: Object,
     data: Object,
+    balances_name: Object,
     balances: Object,
     filters: Object,
     can: Object,
@@ -154,9 +166,14 @@ export default {
     company: Object,
   },
 
+
+
   data() {
     return {
       // co_id: this.$page.props.co_id,
+      selected: [],
+      isCheckAll: false,
+    //    selectedlang: "",
       co_id: this.company,
       options: this.companies,
 
@@ -168,7 +185,45 @@ export default {
     };
   },
 
+
+setup(props) {
+    const form = useForm({
+     selected_arr : [],
+    });
+
+    return { form };
+  },
+
+
   methods: {
+
+      checkAll: function(){
+      this.isCheckAll = !this.isCheckAll;
+      this.form.selected_arr = [];
+      if(this.isCheckAll){ // Check all
+        for (var key in this.balances_name) {
+          this.form.selected_arr.push(this.balances_name[key]);
+        }
+      }
+    },
+    updateCheckall: function(){
+      if(this.form.selected_arr.length == this.balances_name.length){
+         this.isCheckAll = true;
+      }else{
+         this.isCheckAll = false;
+      }
+    },
+    submitValue: function(){
+    //   this.selectedlang = "";
+    //  for (var key in this.selected) {
+    //      this.selectedlang += this.selected[key]+", ";
+    //   }
+    console.log(this.selected);
+       this.$inertia.post(route("multi_download_temp"),this.form);
+    },
+
+
+
     // coch() {
     //   this.$inertia.get(route("companies.coch", this.co_id["id"]));
     // },
