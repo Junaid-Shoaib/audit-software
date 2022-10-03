@@ -267,7 +267,8 @@ Route::controller(FileMangementController::class)->group(function () {
     Route::get('filing/createFolder', 'createFolder')->name('filing.createFolder');
     Route::post('filing', 'storeFolder')->name('filing.storeFolder');
     Route::get('/template-download/{id}','download_temp')->name('download_temp');
-    Route::post('/multiple-template-download','multi_download_temp')->name('multi_download_temp');
+    Route::get('/multiple-template-download','multi_download_temp')->name('multi_download_temp');
+    Route::post('/include-templates','include_templates')->name('include_templates');
 });
 
 

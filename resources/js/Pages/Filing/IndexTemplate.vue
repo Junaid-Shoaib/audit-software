@@ -61,39 +61,57 @@
           />
         </svg>
       </button>
+      <input hidden id="selected" @click="checkAll()" v-model="isCheckAll" />
+     <label  class="ml-4 px-4 submitbutton"  for="selected"> Select All</label>
+       <form
+       class="mt-2"
+        @submit.prevent="submitValue"
+        v-bind:action="'/multiple-template-download'"
+        ref="form_range"
+      >
+        <input
+        hidden
+        v-model="form.selected_arr"
+        name="selected_arr"
+        />
+        <!-- target="_blank" -->
+        <button class="ml-4 px-4 submitbutton" type="button" @click="includeTemps()">
+            Include Templates
+          </button>
+        <button class="ml-4 px-4 submitbutton" type="submit">Download</button>
+      </form>
 
-      <input type='checkbox' @click='checkAll()' v-model='isCheckAll'> Check All
 
-      <div class="">
+          <div class="">
         <div class="obsolute mt-2 ml-2 sm:rounded-2xl">
-               <button type='button' @click='submitValue()' >Print Selected Values</button>
           <table class="table2">
             <thead>
               <tr class="tablerowhead">
                 <!-- <th class="py-2 px-4 border">ID</th> -->
                 <th class="py-1 px-4 rounded-l-2xl">Check</th>
-                <th class="py-1 px-4 ">Name of File</th>
+                <th class="py-1 px-4">Name of File</th>
                 <th class="py-1 px-4">Name of Folder</th>
-                <th class="py-1 px-4 rounded-r-2xl">Action</th>
+                <!-- <th class="py-1 px-4 rounded-r-2xl">Action</th> -->
               </tr>
             </thead>
             <tbody>
-              <tr
-                class="tablerowbody2"
-                v-for="item in balances"
-                :key="item.id"
-              >
-              <td style="width: 10%" class="px-4 border rounded-l-2xl">
-                  <input type="checkbox" v-bind:value="item.name"  v-model="form.selected_arr" @change="updateCheckall()"/>
-
+              <tr class="tablerowbody2" v-for="item in balances" :key="item.id">
+                <td style="width: 10%" class="px-4 border rounded-l-2xl">
+                  <input
+                    type="checkbox"
+                    v-bind:value="item.name"
+                    v-model="form.selected_arr"
+                    @change="updateCheckall()"
+                    name="selected_arr"
+                  />
                 </td>
                 <!-- <td class="py-1 px-4 border text-center">{{ item.id }}</td> -->
-                <td style="width: 40%" class="px-4 border ">
+                <td style="width: 40%" class="px-4 border">
                   {{ item.name }}
                 </td>
-                <td style="width: 27%" class="px-4 border">{{ item.type }}</td>
+                <td style="width: 27%" class="px-4 border text-center">{{ item.type }}</td>
                 <!-- <td class=" px-4 border">{{ item.accountGroup.name }}</td> -->
-                <td
+                <!-- <td
                   style="width: 23%"
                   class="px-4 border text-center rounded-r-2xl"
                 >
@@ -119,16 +137,15 @@
                   >
                     <span>Delete</span>
                   </button>
-                </td>
+                </td> -->
               </tr>
-              <tr v-if="(balances.length == 0)">
+              <tr v-if="balances.length == 0">
                 <td class="border-t px-6 py-4" colspan="4">No Record found.</td>
               </tr>
             </tbody>
           </table>
         </div>
       </div>
-      <!-- <paginator class="mt-6" :balances="balances" /> -->
     </div>
   </app-layout>
 </template>
@@ -166,67 +183,50 @@ export default {
     company: Object,
   },
 
-
-
   data() {
     return {
-      // co_id: this.$page.props.co_id,
+
       selected: [],
       isCheckAll: false,
-    //    selectedlang: "",
+      //    selectedlang: "",
       co_id: this.company,
       options: this.companies,
-
+      form: {
+        selected_arr: [],
+      },
       params: {
         search: this.filters.search,
-        // field: this.filters.field,
-        // direction: this.filters.direction,
       },
     };
   },
 
 
-setup(props) {
-    const form = useForm({
-     selected_arr : [],
-    });
-
-    return { form };
-  },
-
-
   methods: {
-
-      checkAll: function(){
+    checkAll: function () {
       this.isCheckAll = !this.isCheckAll;
       this.form.selected_arr = [];
-      if(this.isCheckAll){ // Check all
+      if (this.isCheckAll) {
+        // Check all
         for (var key in this.balances_name) {
           this.form.selected_arr.push(this.balances_name[key]);
         }
       }
     },
-    updateCheckall: function(){
-      if(this.form.selected_arr.length == this.balances_name.length){
-         this.isCheckAll = true;
-      }else{
-         this.isCheckAll = false;
+    updateCheckall: function () {
+      if (this.form.selected_arr.length == this.balances_name.length) {
+        this.isCheckAll = true;
+      } else {
+        this.isCheckAll = false;
       }
     },
-    submitValue: function(){
-    //   this.selectedlang = "";
-    //  for (var key in this.selected) {
-    //      this.selectedlang += this.selected[key]+", ";
-    //   }
-    console.log(this.selected);
-       this.$inertia.post(route("multi_download_temp"),this.form);
+    submitValue: function () {
+      this.$refs.form_range.submit();
     },
 
+includeTemps: function () {
+      this.$inertia.post(route("include_templates"), this.form);
+    },
 
-
-    // coch() {
-    //   this.$inertia.get(route("companies.coch", this.co_id["id"]));
-    // },
 
     sort(field) {
       this.params.field = field;

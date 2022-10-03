@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 // use Illuminate\Http\Request;
+use Illuminate\Http\Request as Req;
+
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Response;
@@ -13,6 +15,7 @@ use App\Models\Company;
 use App\Models\Year;
 use Inertia\Inertia;
 use Carbon\Carbon;
+use ZipArchive;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
@@ -428,79 +431,242 @@ class FileMangementController extends Controller
           }else{
             return back()->with('warning' , 'Please Create Team First');
           }
-
-
     }
 
-    public function multi_download_temp(){
-        dd(count(Request::input('selected_arr')));
-        // if($request->has('download')) {
-            $zip   = new ZipArchive;
-            $fileName = 'attachment.zip';
-            if ($zip->open(public_path($fileName), ZipArchive::CREATE) === TRUE) {
-              $files = File::files(public_path('uploads/file'));
-              foreach ($files as $key => $value) {
-                $relativeName = basename($value);
-                $zip->addFile($value, $relativeName);
-              }
-              $zip->close();
-            }
-            return response()->download(public_path($fileName));
-        // }
-    }
-
-    public function download_temp($id){
-
-
-        $template = Template::find($id);
-        if($template){
-          $extension =   explode(".",($template->name));
-        $year = Year::where('company_id', session('company_id'))
-          ->where('id', session('year_id'))->first();
-          $partner = $year->users()->role('partner')->first();
-          $manager = $year->users()->role('manager')->first();
-          $staff = $year->users()->role('staff')->first();
-        //   dd($partner->name , $manager->name , $staff->name);
-
-
-          if($partner != null && $manager != null && $staff != null){
-          $start = $year->begin ? new Carbon($year->begin) : null;
-          $end = $year->end ? new Carbon($year->end) : null;
-          $names = str_replace(["&"], "&amp;", $year->company->name);
-          $name = $year->company->name;
-          if(strtolower($extension[1]) == 'docx' || strtolower($extension[1]) == 'docs'){
-            $templateProcessor = new  \PhpOffice\PhpWord\TemplateProcessor(public_path('temp/' . $template->name));
-            $templateProcessor->setValue('client', $names);
-            $templateProcessor->setValue('partner', ucwords($partner->name));
-            $templateProcessor->setValue('manager', ucwords($manager->name));
-            $templateProcessor->setValue('user', ucwords($staff->name));
-            $templateProcessor->setValue('start', $start->format("F j Y"));
-            $templateProcessor->setValue('end', $end->format("F j Y"));
-            $templateProcessor->saveAs(storage_path('app/public/' . $template->path));
-            return response()->download(storage_path('app/public/' . $template->path));
-            }
-            else{
-                $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load(public_path('temp/' . $template->name));
-                $worksheet = $spreadsheet->getActiveSheet();
-                $worksheet->getCell('C2')->setValue($name);
-                $worksheet->getCell('C3')->setValue($start->format("F j Y"). ' - '.$end->format("F j Y"));
-                $worksheet->getCell('C5')->setValue(ucwords($staff->name));
-                $worksheet->getCell('C6')->setValue(ucwords($manager->name));
-                $worksheet->getCell('C7')->setValue(ucwords($partner->name));
-                $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xls');
-                $writer->save(storage_path('app/public/' . $template->path));
+        public function multi_download_temp(Req $request){
+            $request->validate([
+                'selected_arr' => 'required',
+            ]);
+            if($request){
+              $arr = explode(",",$request->selected_arr);
+              if(count($arr) == 1){
+                $template = $this->download_temp($arr);
                 return response()->download(storage_path('app/public/' . $template->path));
+              }else{
+                //   dd();
+                if(File::exists(public_path().'/templates.zip')){
+                    File::delete(public_path().'/templates.zip');
+                }
+                $templates = Template::whereIn('name',$arr)->get();
+                $this->file_temp($templates);
+
+                // if($request->has('download')) {
+                    $zip   = new ZipArchive;
+                    $fileName = 'templates.zip';
+                    if ($zip->open(public_path($fileName), ZipArchive::CREATE) === TRUE) {
+                    foreach ($templates as $key => $template) {
+                    $file = storage_path('app/public/' . $template->path);
+                        // $relativeName = basename($value);
+                        $zip->addFile($file, $template->name);
+                    }
+                    $zip->close();
+                    }
+                    return response()->download(public_path($fileName));
+                }
+
+              }
+
+
+
+
+        }
+
+
+        public function file_temp($templates){
+
+
+            // $template = Template::find($id);
+            if($templates){
+                $year = Year::where('company_id', session('company_id'))
+                ->where('id', session('year_id'))->first();
+                $partner = $year->users()->role('partner')->first();
+                $manager = $year->users()->role('manager')->first();
+                $staff = $year->users()->role('staff')->first();
+            foreach ($templates as $key => $template) {
+                # code...
+            $extension =   explode(".",($template->name));
+            //   dd($partner->name , $manager->name , $staff->name);
+
+            if($partner != null && $manager != null && $staff != null){
+            $start = $year->begin ? new Carbon($year->begin) : null;
+            $end = $year->end ? new Carbon($year->end) : null;
+            $names = str_replace(["&"], "&amp;", $year->company->name);
+            $name = $year->company->name;
+            if(strtolower($extension[1]) == 'docx' || strtolower($extension[1]) == 'docs'){
+                $templateProcessor = new  \PhpOffice\PhpWord\TemplateProcessor(public_path('temp/' . $template->name));
+                $templateProcessor->setValue('client', $names);
+                $templateProcessor->setValue('partner', ucwords($partner->name));
+                $templateProcessor->setValue('manager', ucwords($manager->name));
+                $templateProcessor->setValue('user', ucwords($staff->name));
+                $templateProcessor->setValue('start', $start->format("F j Y"));
+                $templateProcessor->setValue('end', $end->format("F j Y"));
+                $templateProcessor->saveAs(storage_path('app/public/' . $template->path));
+                // return response()->download(storage_path('app/public/' . $template->path));
+                }
+                else{
+                    $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load(public_path('temp/' . $template->name));
+                    $worksheet = $spreadsheet->getActiveSheet();
+                    $worksheet->getCell('C2')->setValue($name);
+                    $worksheet->getCell('C3')->setValue($start->format("F j Y"). ' - '.$end->format("F j Y"));
+                    $worksheet->getCell('C5')->setValue(ucwords($staff->name));
+                    $worksheet->getCell('C6')->setValue(ucwords($manager->name));
+                    $worksheet->getCell('C7')->setValue(ucwords($partner->name));
+                    $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xls');
+                    $writer->save(storage_path('app/public/' . $template->path));
+                    // return response()->download(storage_path('app/public/' . $template->path));
+                }
+            }else{
+                    return back()->with('warning', 'Please Create Team First');
             }
-          }else{
-                return back()->with('warning', 'Please Create Team First');
-          }
+            }
+
+            }else{
+                return back()->with('warning', 'tempalate Not Fount');
+            };
+        }
 
 
 
-        }else{
-            return back()->with('warning', 'tempalate Not Fount');
-        };
-    }
+
+        public function download_temp($templates){
+            // dd($templates[0]);
+            $template = Template::where('name',$templates[0])->first();
+            if($template){
+            $extension =   explode(".",($template->name));
+            //   dd($extension);
+            $year = Year::where('company_id', session('company_id'))
+            ->where('id', session('year_id'))->first();
+            $partner = $year->users()->role('partner')->first();
+            $manager = $year->users()->role('manager')->first();
+            $staff = $year->users()->role('staff')->first();
+            //   dd($partner->name , $manager->name , $staff->name);
+
+
+            if($partner != null && $manager != null && $staff != null){
+            $start = $year->begin ? new Carbon($year->begin) : null;
+            $end = $year->end ? new Carbon($year->end) : null;
+            $names = str_replace(["&"], "&amp;", $year->company->name);
+            $name = $year->company->name;
+            if(strtolower($extension[1]) == 'docx' || strtolower($extension[1]) == 'docs'){
+                $templateProcessor = new  \PhpOffice\PhpWord\TemplateProcessor(public_path('temp/' . $template->name));
+                $templateProcessor->setValue('client', $names);
+                $templateProcessor->setValue('partner', ucwords($partner->name));
+                $templateProcessor->setValue('manager', ucwords($manager->name));
+                $templateProcessor->setValue('user', ucwords($staff->name));
+                $templateProcessor->setValue('start', $start->format("F j Y"));
+                $templateProcessor->setValue('end', $end->format("F j Y"));
+                $templateProcessor->saveAs(storage_path('app/public/' . $template->path));
+                return $template;
+                    }
+                else{
+                    $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load(public_path('temp/' . $template->name));
+                    $worksheet = $spreadsheet->getActiveSheet();
+                    $worksheet->getCell('C2')->setValue($name);
+                    $worksheet->getCell('C3')->setValue($start->format("F j Y"). ' - '.$end->format("F j Y"));
+                    $worksheet->getCell('C5')->setValue(ucwords($staff->name));
+                    $worksheet->getCell('C6')->setValue(ucwords($manager->name));
+                    $worksheet->getCell('C7')->setValue(ucwords($partner->name));
+                    $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xls');
+                    $writer->save(storage_path('app/public/' . $template->path));
+                    return response()->download(storage_path('app/public/' . $template->path));
+                }
+            }else{
+                    return back()->with('warning', 'Please Create Team First');
+            }
+            }else{
+                return back()->with('warning', 'tempalate Not Fount');
+            };
+        }
+
+
+        public function include_templates()
+        {
+            $templatesArray = Request::input('selected_arr');
+            $templates = Template::whereIn('name', $templatesArray)->get();
+
+            if(count($templates) > 0)
+            {
+                // dd(count(Request::input('selected_arr')), $templatesArray, $templates, count($templates));
+                for($i = 0; $i < count($templates); $i++)
+                {
+                    $template = Template::where('name', $templatesArray[$i])->first();
+                    if($template)
+                    {
+                        $extension = explode(".",($template->name));
+                        $year = Year::where('company_id', session('company_id'))
+                            ->where('id', session('year_id'))->first();
+                        $partner = $year->users()->role('partner')->first();
+                        $manager = $year->users()->role('manager')->first();
+                        $staff = $year->users()->role('staff')->first();
+
+                        if($partner != null && $manager != null && $staff != null)
+                        {
+                            //------------ creating path to save file
+                            $parent = FileManager::where('company_id', session('company_id'))
+                                ->where('year_id', session('year_id'))
+                                ->where('name', $template->type)
+                                ->where('is_folder', '0')
+                                ->first();
+                            $path = session('company_id') . '/' . session('year_id') . '/' . $parent->id . '/' . $template->name;
+                            //------------ creating path to save file
+
+                            $start = $year->begin ? new Carbon($year->begin) : null;
+                            $end = $year->end ? new Carbon($year->end) : null;
+                            $names = str_replace(["&"], "&amp;", $year->company->name);
+                            $name = $year->company->name;
+                            if(strtolower($extension[1]) == 'docx' || strtolower($extension[1]) == 'docs')
+                            {
+                                $templateProcessor = new  \PhpOffice\PhpWord\TemplateProcessor(public_path('temp/' . $template->name));
+                                $templateProcessor->setValue('client', $names);
+                                $templateProcessor->setValue('partner', ucwords($partner->name));
+                                $templateProcessor->setValue('manager', ucwords($manager->name));
+                                $templateProcessor->setValue('user', ucwords($staff->name));
+                                $templateProcessor->setValue('start', $start->format("F j Y"));
+                                $templateProcessor->setValue('end', $end->format("F j Y"));
+                                $templateProcessor->saveAs(storage_path('app/public/' . $path));
+                                // return response()->download(storage_path('app/public/' . $template->path));
+                            }
+                            else{
+                                $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load(public_path('temp/' . $template->name));
+                                $worksheet = $spreadsheet->getActiveSheet();
+                                $worksheet->getCell('C2')->setValue($name);
+                                $worksheet->getCell('C3')->setValue($start->format("F j Y"). ' - '.$end->format("F j Y"));
+                                $worksheet->getCell('C5')->setValue(ucwords($staff->name));
+                                $worksheet->getCell('C6')->setValue(ucwords($manager->name));
+                                $worksheet->getCell('C7')->setValue(ucwords($partner->name));
+                                $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xls');
+                                // $writer->save(storage_path('app/public/' . $template->path));
+                                $writer->save(storage_path('app/public/' . $path));
+                                // return response()->download(storage_path('app/public/' . $template->path));
+                            }
+                            //----------------------------------------------
+                            $file_exists = FileManager::where('name', $template->name)
+                                ->where('company_id', session('company_id'))
+                                ->where('year_id', session('year_id'))->first();
+                            if(!$file_exists)
+                            {
+                                $folderObj = FileManager::create([
+                                    'name' => $template->name,
+                                    'is_folder' => 1,
+                                    'parent_id' => $parent->id,
+                                    'path' => $path,
+                                    'year_id' => session('year_id'),
+                                    'company_id' => session('company_id'),
+                                ]);
+                            }
+                            //-----------------------------------------------
+                        }else{
+                            return back()->with('warning', 'Please Create Team First');
+                        }
+                    }else{
+                        return back()->with('warning', 'Tempalate Not Found');
+                    };
+                }
+                return back()->with('success', 'Templates included successfully');
+            } else {
+                return back()->with('warning', 'Tempalate Not Selected');
+            }
+        }
 
 
 
