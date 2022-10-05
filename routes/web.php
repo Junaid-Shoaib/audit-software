@@ -260,7 +260,7 @@ Route::get('/filing/folder/{folder_id?}', [FileMangementController::class, 'fold
     ->middleware('auth');
 
 
-Route::controller(FileMangementController::class)->group(function () {
+Route::middleware('auth')->controller(FileMangementController::class)->group(function () {
     Route::get('/filing/{parent_name_id}', 'filing')->name('filing');
     Route::get('/template/{type}','index_temp')->name('index_temp');
     // Route::get('/filing/execution/{parent_name_id?}', 'folder')->name('folder');

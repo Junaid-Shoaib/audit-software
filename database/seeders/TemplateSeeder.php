@@ -24,7 +24,7 @@ class TemplateSeeder extends Seeder
         Storage::makeDirectory('/public/' . 'completion');
         $planings = [
             '0' => 'Acceptance Memo.docx',
-            '1' => 'Accounting Estimates.docx',
+            '1' => 'Accounting Estimates - Planning.docx',
             '2' => 'Classification of Company (Third Schedule).docx',
             '3' => 'Client Acceptance _ Continuance.docx',
             '4' => 'Client Meeting Minutes.docx',
@@ -44,7 +44,7 @@ class TemplateSeeder extends Seeder
             '18' => 'Fraud Risk Assessment.docx',
             '19' => 'Fraud Risk Factors Checklist.docx',
             '20' => 'General Purpose CIS Template.docx',
-            '21' => 'Going Concern.docx',
+            '21' => 'Going Concern - Planning.docx',
 			'22' => 'Going Concern Assessment.docx',
             '23' => 'Group Audit and Use of Work of Component Auditors.docx',
             '24' => 'Internal Control Template.docx',
@@ -64,7 +64,7 @@ class TemplateSeeder extends Seeder
             '38' => 'Professional Ethics and Independence.docx',
             '39' => 'Register of Non-Audit Services.docx',
             '40' => 'Register of Number of Years of Involvement.docx',
-            '41' => 'Related Parties.docx',
+            '41' => 'Related Parties - Planning.docx',
             '42' => 'Risk Assessment.docx',
             '43' => 'Risk Assessment Analytical Procedures.docx',
             '44' => 'Risk Assessment Analytics - Guidance.xlsx',
@@ -89,6 +89,48 @@ class TemplateSeeder extends Seeder
           $planing->year_id = session('year_id');
           File::copy(public_path('/temp/'. $value), storage_path('app/public/planing/'.$value));
           $planing->save();
+        }
+
+        $completion = [
+            '01' => 'Accounting Estimates - Completion.docx',
+            '02' => 'Audit Report.docx',
+            '03' => 'Communications - Completion.docx',
+            '04' => 'Completion Checklists.docx',
+            '05' => 'Completion Checklists 1.docx',
+            '06' => 'Concluding on Preliminary Assessments.docx',
+            '07' => 'Final Review of Financial Statements.docx',
+            '08' => 'Fraud.docx',
+            '09' => 'Going Concern - Completion.docx',
+            '10' => 'Justification for the Audit Report.docx',
+            '11' => 'Laws and Regulations.docx',
+            '12' => 'Overall Conclusion Analytical Procedures.docx',
+            '13' => 'Overall Conclusion Analytics - Guidance.xlsx',
+            '14' => 'Overall Conclusion Analytics - Ratio Analysis.xlsx',
+            '15' => 'Overall Conclusion Analytics - Trend Analysis.xlsx',
+            '16' => 'Points Forward to Next Year.docx',
+            '17' => 'Points Forward to Next Year 1.docx',
+            '18' => 'Register of Laws and Regulations.docx',
+            '19' => 'Related Parties - Completion.docx',
+            '20' => 'Significant Matters.docx',
+            '21' => 'Significant Matters 1.docx',
+            '22' => 'Subsequent Events.docx',
+            '23' => 'Subsequent Events Checklist.docx',
+            '24' => 'Summary of Misstatements.docx',
+            '25' => 'Summary of Misstatements 1.docx',
+            '26' => 'Summary Review Memorandum for Partner.docx',
+            '27' => 'Summary Review Memorandum for Partner 1.docx',
+            '28' => 'Written Representations.docx',
+        ];
+
+        foreach ($completion as $key => $value) {
+            $completion = new Template();
+            $completion->name = $value;
+            $completion->path = 'completion/'.$value;
+            $completion->type = 'completion';
+            $completion->company_id = session('company_id');
+            $completion->year_id = session('year_id');
+            File::copy(public_path('/temp/'. $value), storage_path('app/public/completion/'.$value));
+            $completion->save();
         }
 
 
@@ -167,8 +209,6 @@ class TemplateSeeder extends Seeder
             $execution->year_id = session('year_id');
             File::copy(public_path('/temp/'. $value), storage_path('app/public/execution/'.$value));
             $execution->save();
-          }
-
-        //
+        }
     }
 }
