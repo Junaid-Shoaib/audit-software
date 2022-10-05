@@ -2,7 +2,7 @@
   <app-layout>
     <template #header>
       <div class="grid grid-cols-2 items-center">
-        <h2 class="header">Template</h2>
+        <h2 class="header">{{ type }} Templates</h2>
         <!-- <div class="justify-end">
           <multiselect
             style="width: 50%"
@@ -20,6 +20,24 @@
     </template>
 
     <FlashMessage />
+    <div
+      class="
+        ml-2
+        bg-red-100
+        border border-red-400
+        text-red-700
+        px-4
+        py-2
+        rounded
+        relative
+        text-center
+      "
+      role="alert"
+      v-if="errors.folder"
+    >
+      {{ errors.folder }}
+    </div>
+
 
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 py-2">
       <input
@@ -62,27 +80,37 @@
         </svg>
       </button>
       <input hidden id="selected" @click="checkAll()" v-model="isCheckAll" />
-     <label  class="ml-4 px-4 submitbutton"  for="selected"> Select All</label>
-       <form
-       class="mt-2"
+      <label class="ml-4 px-4 submitbutton" for="selected"> Select All</label>
+      <form
+        class="mt-2"
         @submit.prevent="submitValue"
         v-bind:action="'/multiple-template-download'"
         ref="form_range"
       >
-        <input
-        hidden
-        v-model="form.selected_arr"
-        name="selected_arr"
-        />
-        <!-- target="_blank" -->
-        <button class="ml-4 px-4 submitbutton" type="button" @click="includeTemps()">
-            Include Templates
-          </button>
+        <input hidden v-model="form.selected_arr" name="selected_arr" />
+        <multiselect
+          v-if="type == 'Execution'"
+          style="width: 25%"
+          class="rounded-md border border-black float-left"
+          placeholder="Select Folder."
+          v-model="form.folder"
+          track-by="id"
+          label="name"
+          :options="folders"
+        >
+        </multiselect>
+
+        <button
+          class="ml-4 px-4 submitbutton"
+          type="button"
+          @click="includeTemps()"
+        >
+          Include Templates
+        </button>
         <button class="ml-4 px-4 submitbutton" type="submit">Download</button>
       </form>
 
-
-          <div class="">
+      <div class="">
         <div class="obsolute mt-2 ml-2 sm:rounded-2xl">
           <table class="table2">
             <thead>
@@ -109,7 +137,9 @@
                 <td style="width: 40%" class="px-4 border">
                   {{ item.name }}
                 </td>
-                <td style="width: 27%" class="px-4 border text-center">{{ item.type }}</td>
+                <td style="width: 27%" class="px-4 border text-center">
+                  {{ item.type }}
+                </td>
                 <!-- <td class=" px-4 border">{{ item.accountGroup.name }}</td> -->
                 <!-- <td
                   style="width: 23%"
@@ -181,25 +211,29 @@ export default {
     can: Object,
     companies: Array,
     company: Object,
+    folders: Object,
+    errors: Object,
   },
 
   data() {
     return {
-
       selected: [],
       isCheckAll: false,
       //    selectedlang: "",
       co_id: this.company,
       options: this.companies,
+      folders: this.folders,
+      //   type: this.balances_name,
       form: {
         selected_arr: [],
+        folder: null,
+        type: this.type,
       },
       params: {
         search: this.filters.search,
       },
     };
   },
-
 
   methods: {
     checkAll: function () {
@@ -223,10 +257,9 @@ export default {
       this.$refs.form_range.submit();
     },
 
-includeTemps: function () {
+    includeTemps: function () {
       this.$inertia.post(route("include_templates"), this.form);
     },
-
 
     sort(field) {
       this.params.field = field;

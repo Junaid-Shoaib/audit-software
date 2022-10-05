@@ -127,6 +127,7 @@ class FileMangementController extends Controller
             $folders = FileManager::where('company_id', session('company_id'))
                 ->where('year_id', session('year_id'))
                 ->where('parent_id', $execution['id'])
+                ->where('is_folder', '0')
                 ->get();
 
             if($folder_id)
@@ -387,37 +388,59 @@ class FileMangementController extends Controller
 
 
     public function index_temp($type)
-    {      //Validating request
+    {
+        $execution = FileManager::all()->where('company_id', session('company_id'))
+            ->where('year_id', session('year_id'))
+            ->where('name', 'execution')
+            ->map(function ($obj) {
+                return [
+                    'id' => $obj->id,
+                    'name' => ucfirst($obj->name),
+                    'is_folder' => $obj->is_folder,
+                    'parent_id' => $obj->parent_id,
+                    'type' => $obj->name == 'execution' ? 'Folder' : 'File',
+                ];
+            })
+            ->first();
+
+        $folders = FileManager::where('company_id', session('company_id'))
+            ->where('year_id', session('year_id'))
+            ->where('parent_id', $execution['id'])
+            ->where('is_folder', '0')
+            ->get();
+
+        //Validating request
         $year = Year::where('company_id', session('company_id'))
-        ->where('id', session('year_id'))->first();
-        if(count($year->users)){
-
+            ->where('id', session('year_id'))->first();
+        if(count($year->users))
+        {
             request()->validate([
-                    'direction' => ['in:asc,desc'],
-                    'field' => ['in:name,email']
-                ]);
+                'direction' => ['in:asc,desc'],
+                'field' => ['in:name,email']
+            ]);
 
-                //Searching request
-                $query = Template::query();
-                if (request('search')) {
-                    $query->where('name', 'LIKE', '%' . request('search') . '%');
-                }
-                $balances = $query
-                    ->where('type',$type)
-                    ->get()
-                    ->map(
-                        function ($temp) {
-                            return
-                                [
-                                    'id' => $temp->id,
-                                    'name' => $temp->name,
-                                    'path' => $temp->path,
-                                    'type' => $temp->type,
-                                ];
-                        }
-                    );
+            //Searching request
+            $query = Template::query();
+            if (request('search')) {
+                $query->where('name', 'LIKE', '%' . request('search') . '%');
+            }
+            $balances = $query
+                ->where('type',lcfirst($type))
+                ->get()
+                ->map(
+                    function ($temp) {
+                        return
+                            [
+                                'id' => $temp->id,
+                                'name' => $temp->name,
+                                'path' => $temp->path,
+                                'type' => $temp->type,
+                            ];
+                    }
+                );
                 // dd($balances);
                 $balances_name = Template::where('type',$type)->get()->pluck('name');
+
 
                 return Inertia::render('Filing/IndexTemplate', [
                     'filters' => request()->all(['search', 'field', 'direction']),
@@ -426,50 +449,48 @@ class FileMangementController extends Controller
 
                     'company' => Company::where('id', session('company_id'))->first(),
                     'companies' => auth()->user()->companies,
-                    'type' => $type,
+                    'type' => ucfirst($type),
+                    'folders' => $folders,
                 ]);
           }else{
             return back()->with('warning' , 'Please Create Team First');
           }
     }
 
-        public function multi_download_temp(Req $request){
-            $request->validate([
-                'selected_arr' => 'required',
-            ]);
-            if($request){
-              $arr = explode(",",$request->selected_arr);
-              if(count($arr) == 1){
+    public function multi_download_temp(Req $request)
+    {
+        if($request->selected_arr != null)
+        {
+            $arr = explode(",",$request->selected_arr);
+            if(count($arr) == 1)
+            {
                 $template = $this->download_temp($arr);
                 return response()->download(storage_path('app/public/' . $template->path));
-              }else{
-                //   dd();
-                if(File::exists(public_path().'/templates.zip')){
+            } else {
+                if(File::exists(public_path().'/templates.zip'))
+                {
                     File::delete(public_path().'/templates.zip');
                 }
                 $templates = Template::whereIn('name',$arr)->get();
                 $this->file_temp($templates);
 
-                // if($request->has('download')) {
-                    $zip   = new ZipArchive;
-                    $fileName = 'templates.zip';
-                    if ($zip->open(public_path($fileName), ZipArchive::CREATE) === TRUE) {
-                    foreach ($templates as $key => $template) {
-                    $file = storage_path('app/public/' . $template->path);
-                        // $relativeName = basename($value);
-                        $zip->addFile($file, $template->name);
-                    }
-                    $zip->close();
-                    }
-                    return response()->download(public_path($fileName));
+            // if($request->has('download')) {
+                $zip   = new ZipArchive;
+                $fileName = 'templates.zip';
+                if ($zip->open(public_path($fileName), ZipArchive::CREATE) === TRUE) {
+                foreach ($templates as $key => $template) {
+                $file = storage_path('app/public/' . $template->path);
+                    // $relativeName = basename($value);
+                    $zip->addFile($file, $template->name);
                 }
-
-              }
-
-
-
-
+                $zip->close();
+                }
+                return response()->download(public_path($fileName));
+            }
+        } else {
+            return back()->with('warning', 'Tempalate Not Selected');
         }
+    }
 
 
         public function file_temp($templates){
@@ -528,10 +549,11 @@ class FileMangementController extends Controller
 
 
 
-        public function download_temp($templates){
-            // dd($templates[0]);
-            $template = Template::where('name',$templates[0])->first();
-            if($template){
+    public function download_temp($templates)
+    {
+        $template = Template::where('name',$templates[0])->first();
+        if($template)
+        {
             $extension =   explode(".",($template->name));
             //   dd($extension);
             $year = Year::where('company_id', session('company_id'))
@@ -581,6 +603,14 @@ class FileMangementController extends Controller
 
         public function include_templates()
         {
+            $type = Request::input('type');
+            if($type == 'Execution')
+            {
+                Request::validate([
+                    'folder' => ['required'],
+                ]);
+            }
+            $folder = Request::input('folder');
             $templatesArray = Request::input('selected_arr');
             $templates = Template::whereIn('name', $templatesArray)->get();
 
@@ -607,7 +637,12 @@ class FileMangementController extends Controller
                                 ->where('name', $template->type)
                                 ->where('is_folder', '0')
                                 ->first();
-                            $path = session('company_id') . '/' . session('year_id') . '/' . $parent->id . '/' . $template->name;
+                            if($type == 'Execution')
+                            {
+                                $path = session('company_id') . '/' . session('year_id') . '/' . $parent->id . '/' . $folder['id'] . '/' . $template->name;
+                            } else {
+                                $path = session('company_id') . '/' . session('year_id') . '/' . $parent->id . '/' . $template->name;
+                            }
                             //------------ creating path to save file
 
                             $start = $year->begin ? new Carbon($year->begin) : null;
@@ -643,16 +678,40 @@ class FileMangementController extends Controller
                             $file_exists = FileManager::where('name', $template->name)
                                 ->where('company_id', session('company_id'))
                                 ->where('year_id', session('year_id'))->first();
-                            if(!$file_exists)
+                            if($type == 'Execution')
                             {
-                                $folderObj = FileManager::create([
-                                    'name' => $template->name,
-                                    'is_folder' => 1,
-                                    'parent_id' => $parent->id,
-                                    'path' => $path,
-                                    'year_id' => session('year_id'),
-                                    'company_id' => session('company_id'),
-                                ]);
+                                $file_exists = FileManager::where('name', $template->name)
+                                    ->where('company_id', session('company_id'))
+                                    ->where('year_id', session('year_id'))
+                                    ->where('parent_id', $folder['id'])
+                                    ->first();
+                                if(!$file_exists)
+                                {
+                                    $folderObj = FileManager::create([
+                                        'name' => $template->name,
+                                        'is_folder' => 1,
+                                        'parent_id' => $folder['id'],
+                                        'path' => $path,
+                                        'year_id' => session('year_id'),
+                                        'company_id' => session('company_id'),
+                                    ]);
+                                }
+                            } else {
+                                $file_exists = FileManager::where('name', $template->name)
+                                    ->where('company_id', session('company_id'))
+                                    ->where('year_id', session('year_id'))
+                                    ->first();
+                                if(!$file_exists)
+                                {
+                                    $folderObj = FileManager::create([
+                                        'name' => $template->name,
+                                        'is_folder' => 1,
+                                        'parent_id' => $parent->id,
+                                        'path' => $path,
+                                        'year_id' => session('year_id'),
+                                        'company_id' => session('company_id'),
+                                    ]);
+                                }
                             }
                             //-----------------------------------------------
                         }else{
@@ -662,7 +721,14 @@ class FileMangementController extends Controller
                         return back()->with('warning', 'Tempalate Not Found');
                     };
                 }
-                return back()->with('success', 'Templates included successfully');
+                if($type == 'Execution')
+                {
+                    return Redirect::route("filing.folder", [$folder['id']])->with('success', 'Templates included successfully');
+                }else {
+                    return Redirect::route("filing", [lcfirst($type)])->with('success', 'Templates included successfully');
+                    // return back()->with('success', 'Templates included successfully');
+                }
+
             } else {
                 return back()->with('warning', 'Tempalate Not Selected');
             }
