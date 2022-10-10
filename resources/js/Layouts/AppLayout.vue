@@ -593,12 +593,12 @@ export default {
           label: "Read Excel",
           icon: CloudUploadIcon,
         },
-        {
-          href: route("templates"),
-          routeName: "templates",
-          label: "Template",
-          icon: CloudUploadIcon,
-        },
+        // {
+        //   href: route("templates"),
+        //   routeName: "templates",
+        //   label: "Template",
+        //   icon: CloudUploadIcon,
+        // },
         {
           href: route("filing", ["planing"]),
           routeName: "filing.planing",
