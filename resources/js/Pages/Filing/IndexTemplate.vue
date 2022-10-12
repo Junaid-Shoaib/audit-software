@@ -39,77 +39,96 @@
     </div>
 
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 py-2">
-        <div class="flex flex-row items-center ">
-            <div class="basis-3/6">
-                    <input
-                        type="text"
-                        class="
-                     ml-4 h-8 px-2 w-50 border-gray-800 ring-gray-800 ring-1 outline-none
-                        "
-                        v-model="params.search"
-                        @change="search_data"
-                        aria-label="Search"
-                        placeholder="Search File Name"
-                    />
-                    <button
-                        @click="search_data"
-                        class="
-                        border-2
-                        pb-2.5
-                        pt-1
-                        bg-gray-800
-                        border-gray-800
-                        px-1
-                        hover:bg-gray-700
-                        "
-                    >
-                        <svg
-                        class="w-8 h-4 text-white"
-                        fill="currentColor"
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 25 20"
-                        >
-                        <path
-                            d="M16.32 14.9l5.39 5.4a1 1 0 0 1-1.42 1.4l-5.38-5.38a8 8 0 1 1 1.41-1.41zM10 16a6 6 0 1 0 0-12 6 6 0 0 0 0 12z"
-                        />
-                        </svg>
-                    </button>
-            </div>
-            <div class="basis-1/6">
-                <input hidden id="selected" @click="checkAll()" v-model="isCheckAll" />
-                <label class="px-2 py-2 submitbutton" for="selected"> Select All</label>
-            </div>
-            <div class="basis-6/6 w-full">
-                <form
-                    class=""
-                    @submit.prevent="submitValue"
-                    v-bind:action="'/multiple-template-download'"
-                    ref="form_range"
-                >
-                    <input hidden v-model="form.selected_arr" name="selected_arr" />
-                    <multiselect
-                    v-if="type == 'Execution'"
-                    style="width: 44%; min-height: 20px !important; padding: 0 8px !important;margin-left:4px"
-                    class=" float-left"
-                    placeholder="Select Folder."
-                    v-model="form.folder"
-                    track-by="id"
-                    label="name"
-                    :options="folders"
-                    >
-                    </multiselect>
+      <div class="flex flex-row items-center">
+        <div class="flex-none">
+          <input
+            type="text"
+            class="
+              ml-4
+              h-8
+              px-2
+              w-50
+              border-gray-800
+              ring-gray-800 ring-1
+              outline-none
+            "
+            v-model="params.search"
+            @change="search_data"
+            aria-label="Search"
+            placeholder="Search File Name"
+          />
+          <button
+            @click="search_data"
+            class="
+              border-2
+              pb-2.5
+              pt-1
+              bg-gray-800
+              border-gray-800
+              px-1
+              hover:bg-gray-700
+            "
+          >
+            <svg
+              class="w-8 h-4 text-white"
+              fill="currentColor"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 25 20"
+            >
+              <path
+                d="M16.32 14.9l5.39 5.4a1 1 0 0 1-1.42 1.4l-5.38-5.38a8 8 0 1 1 1.41-1.41zM10 16a6 6 0 1 0 0-12 6 6 0 0 0 0 12z"
+              />
+            </svg>
+          </button>
 
-                    <button
-                    class="ml-2 px-2 py-2 submitbutton"
-                    type="button"
-                    @click="includeTemps()"
-                    >
-                    Include Templates
-                    </button>
-                    <button class="ml-2 px-2  py-2 submitbutton" type="submit">Download</button>
-                </form>
-            </div>
+          <input
+            hidden
+            id="selected"
+            @click="checkAll()"
+            v-model="isCheckAll"
+          />
+          <label class="px-2 py-2 ml-2 submitbutton" for="selected">
+            Select All</label
+          >
         </div>
+        <div class="flex-1">
+          <form
+            class=""
+            @submit.prevent="submitValue"
+            v-bind:action="'/multiple-template-download'"
+            ref="form_range"
+          >
+            <input hidden v-model="form.selected_arr" name="selected_arr" />
+            <multiselect
+              v-if="type == 'Execution'"
+              style="
+                width: 44%;
+                min-height: 20px !important;
+                padding: 0 8px !important;
+                margin-left: 4px;
+              "
+              class="float-left"
+              placeholder="Select Folder."
+              v-model="form.folder"
+              track-by="id"
+              label="name"
+              :options="folders"
+            >
+            </multiselect>
+
+            <button
+              class="ml-2 px-2 py-2 submitbutton"
+              type="button"
+              @click="includeTemps()"
+            >
+              Include Templates
+            </button>
+            <button class="ml-2 px-2 py-2 submitbutton" type="submit">
+              Download
+            </button>
+          </form>
+        </div>
+      </div>
       <div class="">
         <div class="obsolute mt-2 ml-2 sm:rounded-2xl">
           <table class="table2">

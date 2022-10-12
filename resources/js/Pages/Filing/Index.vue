@@ -39,6 +39,28 @@
       <jet-button type="button" @click="templates" class="ml-2 buttondesign"
         >Templates</jet-button
       >
+      <input hidden id="selected" @click="checkAll()" v-model="isCheckAll" />
+      <label class="px-2 py-2 ml-2 submitbutton" for="selected">
+        Select All</label
+      >
+      <!-- <div class="flex-1">
+        <form
+          class=""
+          @submit.prevent="submitValue"
+          v-bind:action="'/multiple-template-download'"
+          ref="form_range"
+        > -->
+      <!-- <input hidden v-model="form.selected_arr" name="selected_arr" /> -->
+
+      <button
+        class="ml-2 px-2 py-2 submitbutton"
+        type="button"
+        @click="Approve()"
+      >
+        Approve
+      </button>
+      <!-- </form>
+      </div> -->
 
       <div class="">
         <div class="obsolute mt-2 ml-2 sm:rounded-2xl">
@@ -46,6 +68,8 @@
             <thead>
               <tr class="tablerowhead">
                 <th class="py-1 px-4 rounded-l-2xl">{{ parent.type }} Name</th>
+                <th class="py-1 px-4">Approval</th>
+                <th class="py-1 px-4">Review</th>
                 <th class="py-1 px-4 rounded-r-2xl">Action</th>
               </tr>
             </thead>
@@ -57,6 +81,35 @@
               >
                 <td class="w-4/12 px-4 border rounded-l-2xl w-2/5">
                   {{ item.name }}
+                </td>
+                <td class="w-4/12 px-4 border w-2/5">
+                  <input
+                    v-if="item.approve"
+                    type="checkbox"
+                    v-bind:value="item.name"
+                    name="selected_arr"
+                    :disabled="item.approve"
+                    checked
+                  />
+                  <input
+                    v-else
+                    type="checkbox"
+                    v-bind:value="item.name"
+                    v-model="form.selected_arr"
+                    @change="updateCheckall()"
+                    name="selected_arr"
+                  />
+                </td>
+                <td class="px-4 border">
+                  <label v-if="item.review" class="ml-2">{{
+                    item.review
+                  }}</label>
+                  <input
+                    v-else
+                    class="border rounded-md :hover-text-black"
+                    type="text"
+                    placeholder="Enter review"
+                  />
                 </td>
                 <td
                   v-if="parent.type == 'File'"
@@ -162,10 +215,12 @@ export default {
   },
 
   props: {
+    type: Object,
     balances: Object,
     companies: Object,
     company: Object,
     parent: Object,
+    balances_name: Object,
   },
 
   data() {
@@ -173,15 +228,46 @@ export default {
       co_id: this.company,
       options: this.companies,
       folder_id: this.parent.id,
+      selected: [],
+      isCheckAll: false,
+      form: {
+        selected_arr: [],
+        type: this.parent.name,
+      },
     };
   },
 
-  setup(props) {
-    const form = useForm({});
-    return { form };
-  },
+  //   setup(props) {
+  //     const form = useForm({});
+  //     return { form };
+  //   },
 
   methods: {
+    checkAll: function () {
+      this.isCheckAll = !this.isCheckAll;
+      this.form.selected_arr = [];
+      if (this.isCheckAll) {
+        // Check all
+
+        for (var key in this.balances_name) {
+          if (!this.balances.data[key].approve) {
+            this.form.selected_arr.push(this.balances_name[key]);
+          }
+        }
+      }
+    },
+    updateCheckall: function () {
+      if (this.form.selected_arr.length == this.balances_name.length) {
+        this.isCheckAll = true;
+      } else {
+        this.isCheckAll = false;
+      }
+    },
+
+    Approve: function () {
+      this.$inertia.post(route("approve_files"), this.form);
+    },
+
     uploadFile() {
       this.$inertia.get(route("filing.uploadFile", this.folder_id));
     },
