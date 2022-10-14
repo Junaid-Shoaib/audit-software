@@ -59,6 +59,15 @@
       >
         Approve
       </button>
+
+      <button
+        v-if="this.user_role != 'staff'"
+        class="ml-2 px-2 py-2 submitbutton"
+        type="button"
+        @click="Reject()"
+      >
+        Reject
+      </button>
       <!-- </form>
       </div> -->
 
@@ -69,7 +78,9 @@
               <tr class="tablerowhead">
                 <th class="py-1 px-4 rounded-l-2xl">{{ parent.type }} Name</th>
                 <th class="py-1 px-4">Approval</th>
-                <th class="py-1 px-4">Review</th>
+                <th v-if="this.user_role != 'partner'" class="py-1 px-4">
+                  Review
+                </th>
                 <th class="py-1 px-4 rounded-r-2xl">Action</th>
               </tr>
             </thead>
@@ -82,8 +93,9 @@
                 <td class="w-4/12 px-4 border rounded-l-2xl w-2/5">
                   {{ item.name }}
                 </td>
-                <td class="w-4/12 px-4 border w-2/5">
+                <td class="w-1/12 px-4 border text-center">
                   <input
+                    class="text-green-600"
                     v-if="item.approve"
                     type="checkbox"
                     v-bind:value="item.name"
@@ -92,6 +104,7 @@
                     checked
                   />
                   <input
+                    class="focus:ring-green-500"
                     v-else
                     type="checkbox"
                     v-bind:value="item.name"
@@ -100,16 +113,16 @@
                     name="selected_arr"
                   />
                 </td>
-                <td class="px-4 border">
-                  <label v-if="item.review" class="ml-2">{{
-                    item.review
-                  }}</label>
-                  <input
-                    v-else
-                    class="border rounded-md :hover-text-black"
-                    type="text"
-                    placeholder="Enter review"
-                  />
+                <td
+                  v-if="this.user_role != 'partner'"
+                  class="px-4 border w-3/12 text-center"
+                >
+                  <Popper v-if="item.review" :content="item.review">
+                    <button>Open Review</button>
+                  </Popper>
+
+                  <!-- <label class="ml-2">{{ item.review }}</label> -->
+                  <!-- <label v-else class="ml-2">{{ item.review }}</label> -->
                 </td>
                 <td
                   v-if="parent.type == 'File'"
@@ -200,6 +213,8 @@ import { useForm } from "@inertiajs/inertia-vue3";
 import Multiselect from "@suadelabs/vue3-multiselect";
 import Paginator from "@/Layouts/Paginator";
 import FlashMessage from "@/Layouts/FlashMessage";
+import Popper from "vue3-popper";
+import "/css/theme.css";
 // import { Head, Link } from "@inertiajs/inertia-vue3";
 
 export default {
@@ -210,6 +225,7 @@ export default {
     Multiselect,
     Paginator,
     FlashMessage,
+    Popper,
     // Link,
     // Head,
   },
@@ -220,6 +236,7 @@ export default {
     companies: Object,
     company: Object,
     parent: Object,
+    user_role: Object,
     balances_name: Object,
   },
 
@@ -265,7 +282,28 @@ export default {
     },
 
     Approve: function () {
-      this.$inertia.post(route("approve_files"), this.form);
+      if (this.form.selected_arr.length >> 0) {
+        this.$inertia.post(route("approve_files"), this.form);
+      } else {
+        alert("Please select file");
+      }
+    },
+
+    Reject: function () {
+      if (this.form.selected_arr.length >> 0) {
+        let review = prompt(
+          "Review for rejecting files"
+          //   "Reason for rejecting file"
+        );
+        review = review.trim();
+        if (review != null && review != "") {
+          this.$inertia.post(route("reject_files", review), this.form);
+        } else {
+          alert("Please enter some review for rejecting files");
+        }
+      } else {
+        alert("Please select file");
+      }
     },
 
     uploadFile() {

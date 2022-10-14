@@ -270,6 +270,7 @@ Route::middleware('auth')->controller(FileMangementController::class)->group(fun
     Route::get('/multiple-template-download','multi_download_temp')->name('multi_download_temp');
     Route::post('/include-templates','include_templates')->name('include_templates');
     Route::post('/approve-files','approve_files')->name('approve_files');
+    Route::post('/reject-files/{review}','reject_files')->name('reject_files');
 });
 
 

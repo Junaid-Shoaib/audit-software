@@ -74,7 +74,9 @@ class FileMangementController extends Controller
                 $query->where('name', 'LIKE', '%' . request('search') . '%');
             }
 
-            $balances = $query
+            if(Auth::user()->roles[0]->name == "staff")
+            {
+                $balances = $query
                 ->where('company_id', session('company_id'))
                 ->where('year_id', session('year_id'))
                 ->where('parent_id', $parent['id'])
@@ -87,23 +89,88 @@ class FileMangementController extends Controller
                                 'name' => $obj->name,
                                 'is_folder' => $obj->is_folder,
                                 'parent_id' => $obj->parent_id,
-                                'review' => $obj->staff_approval == 1 ? $obj->manager_approval == 1 ? 'Approved' : 'Pending' : $obj->manager_review,
+                                // 'review' => $obj->staff_review == 1 ? $obj->manager_approval == 1 ? 'Approved' : 'Pending' : $obj->manager_review,
+                                'review' => $obj->manager_review == null ? '' : $obj->manager_review,
                                 // 'delete' => Entry::where('account_id', $account->id)->first() ? false : true,
+
                                  'approve' => $obj->staff_approval == 1 ? true : false,
                             ];
                     }
                 );
-            $balances_name = FileManager::where('company_id', session('company_id'))
+                $balances_name = FileManager::where('company_id', session('company_id'))
+                    ->where('year_id', session('year_id'))
+                    ->where('parent_id', $parent['id'])->get()->pluck('name');
+            }
+            else if(Auth::user()->roles[0]->name == "manager")
+            {
+                  $balances = $query
+                ->where('company_id', session('company_id'))
+                ->where('staff_approval', 1)
                 ->where('year_id', session('year_id'))
-                ->where('parent_id', $parent['id'])->get()->pluck('name');
+                ->where('parent_id', $parent['id'])
+                ->paginate(10)
+                ->through(
+                    function ($obj) {
+                        return
+                            [
+                                'id' => $obj->id,
+                                'name' => $obj->name,
+                                'is_folder' => $obj->is_folder,
+                                'parent_id' => $obj->parent_id,
+                                'review' => $obj->partner_review == null ? '' : $obj->partner_review,
+
+                                // 'review' => $obj->staff_approval == 1 ? $obj->manager_approval == 1 ? 'Approved' : 'Pending' : $obj->manager_review,
+                                // 'delete' => Entry::where('account_id', $account->id)->first() ? false : true,
+                                 'approve' => $obj->manager_approval == 1 ? true : false,
+                            ];
+                    }
+                );
+                $balances_name = FileManager::where('company_id', session('company_id'))
+                    ->where('year_id', session('year_id'))
+                    ->where('staff_approval', 1)
+                    ->where('parent_id', $parent['id'])->get()->pluck('name');
+            }
+            else if(Auth::user()->roles[0]->name == "partner")
+            {
+                  $balances = $query
+                ->where('company_id', session('company_id'))
+                ->where('year_id', session('year_id'))
+                ->where('staff_approval', 1)
+                ->where('manager_approval', 1)
+                ->where('parent_id', $parent['id'])
+                ->paginate(10)
+                ->through(
+                    function ($obj) {
+                        return
+                            [
+                                'id' => $obj->id,
+                                'name' => $obj->name,
+                                'is_folder' => $obj->is_folder,
+                                'parent_id' => $obj->parent_id,
+                                // 'review' => $obj->staff_approval == 1 ? $obj->manager_approval == 1 ? 'Approved' : 'Pending' : $obj->manager_review,
+                                // 'delete' => Entry::where('account_id', $account->id)->first() ? false : true,
+                                 'approve' => $obj->partner_approval == 1 ? true : false,
+                            ];
+                    }
+                );
+                $balances_name = FileManager::where('company_id', session('company_id'))
+                    ->where('year_id', session('year_id'))
+                    ->where('staff_approval', 1)
+                    ->where('manager_approval', 1)
+                    ->where('parent_id', $parent['id'])->get()->pluck('name');
+            }
+
 
             $first = FileManager::where('company_id', session('company_id'))
                 ->where('year_id', session('year_id'))
                 ->where('parent_id', $parent['id'])
                 ->first();
 
+              $user_roles =  Auth::user()->roles[0]->name;
+// dd($user_roles);
             return Inertia::render('Filing/Index', [
                 'balances' => $balances,
+                "user_role" => $user_roles,
                 'balances_name' => $balances_name,
                 'first' => $first,
                 'company' => Company::where('id', session('company_id'))->first(),
@@ -746,7 +813,7 @@ class FileMangementController extends Controller
     {
         $type = Request::input('type');
         $filesArray = Request::input('selected_arr');
-        dd($filesArray);
+        // dd($filesArray);
         $files = FileManager::where('company_id', session('company_id'))
             ->where('company_id', session('company_id'))
             ->whereIn('name', $filesArray)->get();
@@ -758,6 +825,8 @@ class FileMangementController extends Controller
                 foreach($files as $file)
                 {
                     $file->staff_approval = 1;
+                    $file->manager_review = null;
+
                     $file->save();
                 }
             }
@@ -766,6 +835,7 @@ class FileMangementController extends Controller
                 foreach($files as $file)
                 {
                     $file->manager_approval = 1;
+                    $file->partner_review = null;
                     $file->save();
                 }
             }
@@ -786,27 +856,61 @@ class FileMangementController extends Controller
         {
             return Redirect::route("filing.folder", [$folder['id']])->with('success', 'Templates included successfully');
         }else {
-            return Redirect::route("filing", [lcfirst($type)])->with('success', 'Templates included successfully');
+            return Redirect::route("filing", [lcfirst($type)])->with('success', 'Approval Request Send successfully');
             // return back()->with('success', 'Templates included successfully');
         }
     }
 
-    public function reject_file()
+    public function reject_files($review)
     {
-        // dd(Auth::user());           // USER OBJECT
-        // dd(Auth::user()->id);           // USER id
-        // dd(Auth::user()->roles[0]->name);       //----- getting role
-        if(Auth::user()->roles[0]->name == 'staff')
-        {
+       $type = Request::input('type');
+        $filesArray = Request::input('selected_arr');
+        // dd($filesArray);
+        $files = FileManager::where('company_id', session('company_id'))
+            ->where('company_id', session('company_id'))
+            ->whereIn('name', $filesArray)->get();
 
+        // dd($review, $type, $filesArray);
+        if(count($files) > 0)
+        {
+            // if(Auth::user()->roles[0]->name == 'staff')
+            // {
+            //     foreach($files as $file)
+            //     {
+            //         $file->staff_approval = 1;
+            //         $file->save();
+            //     }
+            // }
+            // else
+             if(Auth::user()->roles[0]->name == 'manager')
+            {
+                foreach($files as $file)
+                {
+                    $file->staff_approval = 0;
+                    $file->manager_review = $review;
+                    $file->save();
+                }
+            }
+            else if(Auth::user()->roles[0]->name == 'partner')
+            {
+                foreach($files as $file)
+                {
+                    $file->manager_approval = 0;
+                    $file->partner_review = $review;
+                    $file->save();
+                }
+            } else {
+                return back()->with('warning', 'You didn\'t belongs to authentic User');
+            }
+        } else {
+            return back()->with('warning', 'File Not Selected');
         }
-        else if(Auth::user()->roles[0]->name == 'manager')
+        if($type == 'Execution')
         {
-
-        }
-        else if(Auth::user()->roles[0]->name == 'partner')
-        {
-
+            return Redirect::route("filing.folder", [$folder['id']])->with('success', 'Templates included successfully');
+        }else {
+            return Redirect::route("filing", [lcfirst($type)])->with('success', 'Reject File successfully');
+            // return back()->with('success', 'Templates included successfully');
         }
     }
 
