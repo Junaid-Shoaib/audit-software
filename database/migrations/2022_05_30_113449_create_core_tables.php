@@ -146,6 +146,11 @@ class CreateCoreTables extends Migration
             $table->string('path');
             $table->tinyInteger('enabled')->default('1');
             $table->boolean('is_folder')->default(0)->nullable();
+            $table->string('partner_review')->nullable();
+            $table->string('manager_review')->nullable();
+            $table->tinyInteger('partner_approval')->default(0)->nullable();
+            $table->tinyInteger('manager_approval')->default(0)->nullable();
+            $table->tinyInteger('staff_approval')->default(0)->nullable();
             $table->unsignedBigInteger('company_id');
             $table->unsignedBigInteger('year_id');
             $table->unsignedBigInteger('parent_id')->nullable();
