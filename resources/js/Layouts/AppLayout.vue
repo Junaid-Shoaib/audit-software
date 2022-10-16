@@ -612,8 +612,8 @@ export default {
           icon: DocumentAddIcon,
         },
         {
-          href: route("filing.folder"),
-          routeName: "filing.folder",
+          href: route("filing", ["execution"]),
+          routeName: "filing.execution",
           label: "Execution",
           icon: CollectionIcon,
         },

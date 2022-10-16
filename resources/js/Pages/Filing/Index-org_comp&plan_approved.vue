@@ -3,27 +3,7 @@
   <app-layout>
     <template #header>
       <div class="grid grid-cols-2 items-center">
-        <div v-if="folders">
-          <multiselect
-            style="width: 50%"
-            class="float-left rounded-md border border-black"
-            placeholder="Select Folder."
-            v-model="form.folder"
-            track-by="id"
-            label="name"
-            :options="folders"
-            @update:model-value="foch"
-          >
-          </multiselect>
-          <jet-button
-            @click="folderModification"
-            class="ml-2 mt-1 buttondesign hover:scale-105"
-            >Folder Modification</jet-button
-          >
-        </div>
-        <h2 v-else class="float-left header">
-          {{ parent.name }} - {{ parent.type }}
-        </h2>
+        <h2 class="header">{{ parent.name }} - {{ parent.type }}</h2>
         <div class="justify-end">
           <multiselect
             style="width: 50%; z-index: 10"
@@ -43,8 +23,18 @@
     <FlashMessage />
 
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 py-2">
-      <jet-button @click="uploadFile" class="ml-2 buttondesign"
+      <jet-button
+        v-if="parent.type == 'File'"
+        @click="uploadFile"
+        class="ml-2 buttondesign"
         >Upload File</jet-button
+      >
+      <jet-button
+        v-else
+        type="button"
+        @click="createFolder"
+        class="ml-2 buttondesign"
+        >Create Folder</jet-button
       >
       <jet-button type="button" @click="templates" class="ml-2 buttondesign"
         >Templates</jet-button
@@ -53,6 +43,15 @@
       <label class="px-2 py-2 ml-2 submitbutton" for="selected">
         Select All</label
       >
+      <!-- <div class="flex-1">
+        <form
+          class=""
+          @submit.prevent="submitValue"
+          v-bind:action="'/multiple-template-download'"
+          ref="form_range"
+        > -->
+      <!-- <input hidden v-model="form.selected_arr" name="selected_arr" /> -->
+
       <button
         class="ml-2 px-2 py-2 submitbutton"
         type="button"
@@ -69,6 +68,8 @@
       >
         Reject
       </button>
+      <!-- </form>
+      </div> -->
 
       <div class="">
         <div class="obsolute mt-2 ml-2 sm:rounded-2xl">
@@ -119,8 +120,14 @@
                   <Popper v-if="item.review" :content="item.review">
                     <button>Open Review</button>
                   </Popper>
+
+                  <!-- <label class="ml-2">{{ item.review }}</label> -->
+                  <!-- <label v-else class="ml-2">{{ item.review }}</label> -->
                 </td>
-                <td class="w-4/12px-4 border w-2/6 text-center rounded-r-2xl">
+                <td
+                  v-if="parent.type == 'File'"
+                  class="w-4/12px-4 border w-2/6 text-center rounded-r-2xl"
+                >
                   <a
                     class="
                       border
@@ -149,6 +156,37 @@
                     @click="deleteFileFolder(item.id)"
                     type="button"
                   >
+                    <!-- v-if="item.delete" -->
+                    <span>Delete</span>
+                  </button>
+                </td>
+
+                <td
+                  v-else
+                  class="w-4/12px-4 border w-2/6 text-center rounded-r-2xl"
+                >
+                  <button
+                    class="
+                      border
+                      bg-indigo-300
+                      rounded-md
+                      px-4
+                      m-1
+                      text-white
+                      font-bold
+                      hover:text-white hover:bg-indigo-400
+                    "
+                    @click="viewFolder(item.id)"
+                    type="button"
+                  >
+                    <span>View</span>
+                  </button>
+                  <button
+                    class="deletebutton px-4 m-1"
+                    @click="deleteFileFolder(item.id)"
+                    type="button"
+                  >
+                    <!-- v-if="item.delete" -->
                     <span>Delete</span>
                   </button>
                 </td>
@@ -163,11 +201,11 @@
         </div>
         <paginator class="mt-6" :balances="balances" />
       </div>
+      <!-- </form> -->
     </div>
   </app-layout>
 </template>
 
-<style src="@suadelabs/vue3-multiselect/dist/vue3-multiselect.css"></style>
 <script>
 import AppLayout from "@/Layouts/AppLayout";
 import JetButton from "@/Jetstream/Button";
@@ -194,13 +232,12 @@ export default {
 
   props: {
     type: Object,
-    balances_name: Object,
     balances: Object,
     companies: Object,
     company: Object,
-    folders: Object,
     parent: Object,
     user_role: Object,
+    balances_name: Object,
   },
 
   data() {
@@ -210,14 +247,17 @@ export default {
       folder_id: this.parent.id,
       selected: [],
       isCheckAll: false,
-      folders: this.folders,
       form: {
         selected_arr: [],
-        folder: this.parent,
         type: this.parent.name,
       },
     };
   },
+
+  //   setup(props) {
+  //     const form = useForm({});
+  //     return { form };
+  //   },
 
   methods: {
     checkAll: function () {
@@ -225,6 +265,7 @@ export default {
       this.form.selected_arr = [];
       if (this.isCheckAll) {
         // Check all
+
         for (var key in this.balances_name) {
           if (!this.balances.data[key].approve) {
             this.form.selected_arr.push(this.balances_name[key]);
@@ -265,24 +306,20 @@ export default {
       }
     },
 
-    foch() {
-      this.$inertia.get(route("filing", this.form.folder["id"]));
-    },
-
     uploadFile() {
       this.$inertia.get(route("filing.uploadFile", this.folder_id));
     },
 
-    folderModification: function () {
-      this.$inertia.get(route("filing.folder"));
+    createFolder() {
+      this.$inertia.get(route("filing.createFolder"));
     },
 
     templates() {
-      if (this.parent.name == "Planing" || this.parent.name == "Completion") {
-        this.$inertia.get(route("index_temp", this.parent.name));
-      } else {
-        this.$inertia.get(route("index_temp", "Execution"));
-      }
+      this.$inertia.get(route("index_temp", this.parent.name));
+    },
+
+    viewFolder(id) {
+      this.$inertia.get(route("filing", id));
     },
 
     downloadFile: function (id) {
@@ -292,6 +329,14 @@ export default {
     deleteFileFolder: function (id) {
       this.$inertia.get(route("filing.deleteFileFolder", id));
     },
+
+    // edit(id) {
+    //   this.$inertia.get(route("years.edit", id));
+    // },
+
+    // destroy(id) {
+    //   this.$inertia.delete(route("years.destroy", id));
+    // },
 
     coch() {
       this.$inertia.get(route("companies.coch", this.co_id["id"]));

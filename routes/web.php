@@ -255,7 +255,7 @@ Route::get('filing/deleteFileFolder/{file_folder_id}', [FileMangementController:
     ->name('filing.deleteFileFolder')
     ->middleware('auth');
 
-Route::get('/filing/folder/{folder_id?}', [FileMangementController::class, 'folder'])
+Route::get('filing/folder', [FileMangementController::class, 'folder'])
     ->name('filing.folder')
     ->middleware('auth');
 

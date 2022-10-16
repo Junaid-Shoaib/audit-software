@@ -24,9 +24,8 @@ class FileMangementController extends Controller
 {
     public function filing($parent_name_id)
     {
-        $folders = null;
         //condition to deal with url parameter- it will be name if hiting the link from dashboard otherwise it will be id
-        if($parent_name_id == 'planing' || $parent_name_id == 'completion')
+        if($parent_name_id == 'planing' || $parent_name_id == 'execution' || $parent_name_id == 'completion')
         {
             $parent = FileManager::all()->where('company_id', session('company_id'))
                 ->where('year_id', session('year_id'))
@@ -38,13 +37,14 @@ class FileMangementController extends Controller
                         'is_folder' => $obj->is_folder,
                         'parent_id' => $obj->parent_id,
                         'type' => $obj->name == 'execution' ? 'Folder' : 'File',
+
                     ];
                 })
                 ->first();
         } else {
-            $execution = FileManager::all()->where('company_id', session('company_id'))
+            $parent = FileManager::all()->where('company_id', session('company_id'))
                 ->where('year_id', session('year_id'))
-                ->where('name', 'execution')
+                ->where('id', $parent_name_id)
                 ->map(function ($obj) {
                     return [
                         'id' => $obj->id,
@@ -52,47 +52,12 @@ class FileMangementController extends Controller
                         'is_folder' => $obj->is_folder,
                         'parent_id' => $obj->parent_id,
                         'type' => $obj->name == 'execution' ? 'Folder' : 'File',
+
                     ];
                 })
                 ->first();
-
-            $folders = FileManager::where('company_id', session('company_id'))
-                ->where('year_id', session('year_id'))
-                ->where('parent_id', $execution['id'])
-                ->where('is_folder', '0')
-                ->get();
-
-            if($parent_name_id == 'execution')
-            {
-                $parent = FileManager::all()->where('company_id', session('company_id'))
-                    ->where('year_id', session('year_id'))
-                    ->where('parent_id', $execution['id'])
-                    ->map(function ($obj) {
-                        return [
-                            'id' => $obj->id,
-                            'name' => ucfirst($obj->name),
-                            'is_folder' => $obj->is_folder,
-                            'parent_id' => $obj->parent_id,
-                            'type' => $obj->name == 'execution' ? 'Folder' : 'File',
-                        ];
-                    })
-                    ->first();
-            } else {
-                $parent = FileManager::all()->where('company_id', session('company_id'))
-                    ->where('year_id', session('year_id'))
-                    ->where('id', $parent_name_id)
-                    ->map(function ($obj) {
-                        return [
-                            'id' => $obj->id,
-                            'name' => ucfirst($obj->name),
-                            'is_folder' => $obj->is_folder,
-                            'parent_id' => $obj->parent_id,
-                            'type' => $obj->name == 'execution' ? 'Folder' : 'File',
-                        ];
-                    })
-                    ->first();
-            }
         }
+        // dd($parent);
 
         //if get parent then we can show their childrens otherwise we can't track folders or file
         if($parent)
@@ -114,7 +79,6 @@ class FileMangementController extends Controller
                 $balances = $query
                 ->where('company_id', session('company_id'))
                 ->where('year_id', session('year_id'))
-                ->where('is_folder', 1)
                 ->where('parent_id', $parent['id'])
                 ->paginate(10)
                 ->through(
@@ -128,25 +92,25 @@ class FileMangementController extends Controller
                                 // 'review' => $obj->staff_review == 1 ? $obj->manager_approval == 1 ? 'Approved' : 'Pending' : $obj->manager_review,
                                 'review' => $obj->manager_review == null ? '' : $obj->manager_review,
                                 // 'delete' => Entry::where('account_id', $account->id)->first() ? false : true,
+
                                  'approve' => $obj->staff_approval == 1 ? true : false,
                             ];
                     }
                 );
                 $balances_name = FileManager::where('company_id', session('company_id'))
                     ->where('year_id', session('year_id'))
-                    ->where('is_folder', 1)
                     ->where('parent_id', $parent['id'])->get()->pluck('name');
             }
             else if(Auth::user()->roles[0]->name == "manager")
             {
-                $balances = $query
-                    ->where('company_id', session('company_id'))
-                    ->where('year_id', session('year_id'))
-                    ->where('is_folder', 1)
-                    ->where('staff_approval', 1)
-                    ->where('parent_id', $parent['id'])
-                    ->paginate(10)
-                    ->through(function ($obj) {
+                  $balances = $query
+                ->where('company_id', session('company_id'))
+                ->where('staff_approval', 1)
+                ->where('year_id', session('year_id'))
+                ->where('parent_id', $parent['id'])
+                ->paginate(10)
+                ->through(
+                    function ($obj) {
                         return
                             [
                                 'id' => $obj->id,
@@ -154,6 +118,7 @@ class FileMangementController extends Controller
                                 'is_folder' => $obj->is_folder,
                                 'parent_id' => $obj->parent_id,
                                 'review' => $obj->partner_review == null ? '' : $obj->partner_review,
+
                                 // 'review' => $obj->staff_approval == 1 ? $obj->manager_approval == 1 ? 'Approved' : 'Pending' : $obj->manager_review,
                                 // 'delete' => Entry::where('account_id', $account->id)->first() ? false : true,
                                  'approve' => $obj->manager_approval == 1 ? true : false,
@@ -162,21 +127,20 @@ class FileMangementController extends Controller
                 );
                 $balances_name = FileManager::where('company_id', session('company_id'))
                     ->where('year_id', session('year_id'))
-                    ->where('is_folder', 1)
                     ->where('staff_approval', 1)
                     ->where('parent_id', $parent['id'])->get()->pluck('name');
             }
             else if(Auth::user()->roles[0]->name == "partner")
             {
-                $balances = $query
-                    ->where('company_id', session('company_id'))
-                    ->where('year_id', session('year_id'))
-                    ->where('is_folder', 1)
-                    ->where('staff_approval', 1)
-                    ->where('manager_approval', 1)
-                    ->where('parent_id', $parent['id'])
-                    ->paginate(10)
-                    ->through(function ($obj) {
+                  $balances = $query
+                ->where('company_id', session('company_id'))
+                ->where('year_id', session('year_id'))
+                ->where('staff_approval', 1)
+                ->where('manager_approval', 1)
+                ->where('parent_id', $parent['id'])
+                ->paginate(10)
+                ->through(
+                    function ($obj) {
                         return
                             [
                                 'id' => $obj->id,
@@ -191,33 +155,34 @@ class FileMangementController extends Controller
                 );
                 $balances_name = FileManager::where('company_id', session('company_id'))
                     ->where('year_id', session('year_id'))
-                    ->where('is_folder', 1)
                     ->where('staff_approval', 1)
                     ->where('manager_approval', 1)
                     ->where('parent_id', $parent['id'])->get()->pluck('name');
             }
+
 
             $first = FileManager::where('company_id', session('company_id'))
                 ->where('year_id', session('year_id'))
                 ->where('parent_id', $parent['id'])
                 ->first();
 
+              $user_roles =  Auth::user()->roles[0]->name;
+// dd($user_roles);
             return Inertia::render('Filing/Index', [
                 'balances' => $balances,
-                'user_role' => Auth::user()->roles[0]->name,
+                "user_role" => $user_roles,
                 'balances_name' => $balances_name,
                 'first' => $first,
                 'company' => Company::where('id', session('company_id'))->first(),
                 'companies' => Auth::user()->companies,
                 'parent' => $parent,
-                'folders' => $folders,
             ]);
         } else {
             return Redirect::route('companies')->with('warning', 'Please create company first to excess these folders.');
         }
     }
 
-    public function folder()
+    public function folder($folder_id = null)
     {
         if(Company::first())
         {
@@ -235,42 +200,99 @@ class FileMangementController extends Controller
                 })
                 ->first();
 
-            //Validating request
-            request()->validate([
-                'direction' => ['in:asc,desc'],
-                'field' => ['in:name,email']
-            ]);
-
-            //Searching request
-            $query = FileManager::query();
-            if (request('search')) {
-                $query->where('name', 'LIKE', '%' . request('search') . '%');
-            }
-
-            $balances = $query
-                ->where('company_id', session('company_id'))
+            $folders = FileManager::where('company_id', session('company_id'))
                 ->where('year_id', session('year_id'))
-                ->where('is_folder', 0)
                 ->where('parent_id', $execution['id'])
-                ->paginate(10)
-                ->through(
-                    function ($obj) {
-                        return
-                            [
+                ->where('is_folder', '0')
+                ->get();
+
+            if($folder_id)
+            {
+                if($folder_id == 1) {
+
+                return Redirect::route('filing', ['planing'])->with('success', 'File uploaded successfully');
+
+                } elseif($folder_id == 2) {
+                return Redirect::route('filing', ['completion'])->with('success', 'File uploaded successfully');
+
+                } else {
+
+
+                    $selected_folder = FileManager::where('company_id', session('company_id'))
+                        ->where('year_id', session('year_id'))
+                        ->where('id', $folder_id)
+                        ->where('parent_id', $execution['id'])
+                        ->get()
+                        ->map(function ($obj) {
+                            return [
                                 'id' => $obj->id,
-                                'name' => $obj->name,
+                                'name' => ucfirst($obj->name),
                                 'is_folder' => $obj->is_folder,
                                 'parent_id' => $obj->parent_id,
-                                // 'delete' => Entry::where('account_id', $account->id)->first() ? false : true,
+                                'type' => $obj->name == 'execution' ? 'Folder' : 'File',
                             ];
-                    }
-                );
+                        })
+                        ->first();
+                }
 
-            return Inertia::render('Filing/FolderIndex', [
-                'balances' => $balances,
-                'company' => Company::where('id', session('company_id'))->first(),
-                'companies' => Auth::user()->companies,
-            ]);
+            } else {
+                $selected_folder = FileManager::all()->where('company_id', session('company_id'))
+                    ->where('year_id', session('year_id'))
+                    ->where('parent_id', $execution['id'])
+                    ->map(function ($obj) {
+                        return [
+                            'id' => $obj->id,
+                            'name' => ucfirst($obj->name),
+                            'is_folder' => $obj->is_folder,
+                            'parent_id' => $obj->parent_id,
+                            'type' => $obj->name == 'execution' ? 'Folder' : 'File',
+                        ];
+                    })
+                    ->first();
+            }
+            //if get parent then we can show their childrens otherwise we can't track folders or file
+            if($selected_folder)
+            {
+                //Validating request
+                request()->validate([
+                    'direction' => ['in:asc,desc'],
+                    'field' => ['in:name,email']
+                ]);
+
+                //Searching request
+                $query = FileManager::query();
+                if (request('search')) {
+                    $query->where('name', 'LIKE', '%' . request('search') . '%');
+                }
+
+                $balances = $query
+                    ->where('company_id', session('company_id'))
+                    ->where('year_id', session('year_id'))
+                    ->where('parent_id', $selected_folder['id'])
+                    ->paginate(10)
+                    ->through(
+                        function ($obj) {
+                            return
+                                [
+                                    'id' => $obj->id,
+                                    'name' => $obj->name,
+                                    'is_folder' => $obj->is_folder,
+                                    'parent_id' => $obj->parent_id,
+                                    // 'delete' => Entry::where('account_id', $account->id)->first() ? false : true,
+                                ];
+                        }
+                    );
+
+                return Inertia::render('Filing/FolderIndex', [
+                    'folders' => $folders,
+                    'selected_folder' => $selected_folder,
+                    'balances' => $balances,
+                    'company' => Company::where('id', session('company_id'))->first(),
+                    'companies' => Auth::user()->companies,
+                ]);
+            } else {
+                return Redirect::route('companies')->with('warning', 'Please create company first to excess these folders.');
+            }
         } else {
             return Redirect::route('companies')->with('warning', 'Please create company first to excess these folders.');
         }
@@ -304,7 +326,8 @@ class FileMangementController extends Controller
         $folderObj->path = $folderObj->path . '/' . $folderObj->id;
         $folderObj->save();
         Storage::makeDirectory('/public/' . $folderObj->company_id . '/' . $folderObj->year_id . '/' . $folderObj->parent_id . '/' . $folderObj->id);
-        return Redirect::route("filing.folder")->with('success', 'Folder created.');
+        //sending parameter value "execution" because we can only create folder/directories in Executino folder that's why redirecting their
+        return Redirect::route("filing", ["execution"])->with('success', 'Folder created.');
     }
 
     public function uploadFile($folder_id)
@@ -343,7 +366,10 @@ class FileMangementController extends Controller
             'company_id' => session('company_id'),
         ]);
         //sending parameter value "$parent->id" because we have to show the folder where we upload the file
-        return Redirect::route("filing", [$parent->id])->with('success', 'File upload.');
+
+        // return Redirect::route("filing", [$parent->id])->with('success', 'File upload.');
+        //because of new logic
+        return Redirect::route("filing.folder", [$parent->id])->with('success', 'File upload.');
     }
 
     public function downloadFile($file_id)
@@ -384,7 +410,7 @@ class FileMangementController extends Controller
 
 
     // ------------- TO CREEATE DEFAULT FOLDER ON COMPANY and YEAR GENERATION -------
-    public function defaultFolders()
+        public function defaultFolders()
     {
         $constFoldersName = [
             'planing', 'completion', 'execution',

@@ -2,7 +2,24 @@
   <app-layout>
     <template #header>
       <div class="grid grid-cols-2 items-center">
-        <h2 class="header">Execution Directory</h2>
+        <div>
+          <multiselect
+            style="width: 50%; z-index: 10"
+            class="float-left rounded-md border border-black"
+            placeholder="Select Company."
+            v-model="selected_folder2"
+            track-by="id"
+            label="name"
+            :options="folders"
+            @update:model-value="foch"
+          >
+          </multiselect>
+
+          <jet-button @click="folderModification" class="ml-2 mt-1 buttondesign hover:scale-105"
+            >Folder Modification</jet-button
+          >
+        </div>
+
         <div class="justify-end">
           <multiselect
             style="width: 50%; z-index: 10"
@@ -22,8 +39,14 @@
     <FlashMessage />
 
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 py-2">
-      <jet-button type="button" @click="createFolder" class="ml-2 buttondesign"
-        >Create Folder</jet-button
+      <!-- <jet-button @click="create" class="mt-4 ml-8">Create</jet-button> -->
+
+      <!-- <form @submit.prevent="form.get(route('years.create'))"> -->
+      <!-- <div class="grid grid-cols-2"> -->
+
+      <jet-button @click="uploadFile" class="ml-2 buttondesign">Upload File</jet-button>
+         <jet-button type="button" @click="templates" class="ml-2 buttondesign"
+        >Templates</jet-button
       >
 
       <div class="">
@@ -31,7 +54,7 @@
           <table class="table2">
             <thead>
               <tr class="tablerowhead">
-                <th class="py-1 px-4 rounded-l-2xl">Folder Name</th>
+                <th class="py-1 px-4 rounded-l-2xl">File Name</th>
                 <th class="py-1 px-4 rounded-r-2xl">Action</th>
               </tr>
             </thead>
@@ -44,40 +67,48 @@
                 <td class="w-4/12 px-4 border rounded-l-2xl w-2/5">
                   {{ item.name }}
                 </td>
-                <td class="w-4/12px-4 border w-2/6 text-center rounded-r-2xl">
+                <td class="w-4/12px-4 border w-2/6 rounded-r-2xl text-center">
                   <button
                     class="
                       border
                       bg-indigo-300
-                      rounded-md
-                      px-4
-                      m-1
+                      rounded-xl
                       text-white
                       font-bold
+                      px-4
+                      m-1
                       hover:text-white hover:bg-indigo-400
                     "
-                    @click="viewFolder(item.id)"
+                    @click="downloadFile(item.id)"
                     type="button"
                   >
-                    <span>View</span>
+                    <span>Download</span>
                   </button>
                   <button
-                    class="deletebutton px-4 m-1"
+                    class="
+                      deletebutton
+                      px-4
+                      m-1
+                      "
                     @click="deleteFileFolder(item.id)"
                     type="button"
                   >
+                    <!-- v-if="item.delete" -->
                     <span>Delete</span>
                   </button>
                 </td>
               </tr>
               <tr v-if="balances.data.length === 0">
-                <td class="border-t px-6 py-4" colspan="4">No Record found.</td>
+                <td class="border-t px-6 py-4 " colspan="4">
+                  No Record found.
+                </td>
               </tr>
             </tbody>
           </table>
         </div>
         <paginator class="mt-6" :balances="balances" />
       </div>
+      <!-- </form> -->
     </div>
   </app-layout>
 </template>
@@ -105,6 +136,7 @@ export default {
   },
 
   props: {
+    folders: Object,
     selected_folder: Object,
     balances: Object,
     companies: Object,
@@ -115,6 +147,7 @@ export default {
     return {
       co_id: this.company,
       options: this.companies,
+      folders: this.folders,
       selected_folder2: this.selected_folder,
     };
   },
@@ -125,16 +158,30 @@ export default {
   },
 
   methods: {
-    createFolder() {
-      this.$inertia.get(route("filing.createFolder"));
+    uploadFile() {
+      this.$inertia.get(
+        route("filing.uploadFile", this.selected_folder2["id"])
+      );
     },
 
-    viewFolder(id) {
-      this.$inertia.get(route("filing", id));
+    foch() {
+      this.$inertia.get(route("filing.folder", this.selected_folder2["id"]));
+    },
+
+    downloadFile: function (id) {
+      this.$inertia.get(route("filing.downloadFile", id));
     },
 
     deleteFileFolder: function (id) {
       this.$inertia.get(route("filing.deleteFileFolder", id));
+    },
+
+    folderModification: function () {
+      this.$inertia.get(route("filing", ["execution"]));
+    },
+
+    templates() {
+      this.$inertia.get(route("index_temp", 'execution'));
     },
 
     coch() {
