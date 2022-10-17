@@ -82,7 +82,7 @@ class TemplateController extends Controller
     }
 
 
-    public function download_temp($id)
+    public function temp_download($id)
     {
         // dd($id);
         $file_obj = Template::find($id);

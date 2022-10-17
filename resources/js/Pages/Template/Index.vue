@@ -187,7 +187,7 @@ export default {
     },
 
     downloadFile: function (id) {
-      this.$inertia.get(route("download_temp", id));
+      this.$inertia.get(route("temp_download", id));
     },
 
     sort(field) {

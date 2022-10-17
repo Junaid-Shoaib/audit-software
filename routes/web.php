@@ -155,8 +155,8 @@ Route::post('templates', [TemplateController::class, 'store'])
     ->name('templates.store')
     ->middleware('auth');
 
-Route::get('template/download/{id}', [TemplateController::class, 'download_temp'])
-->name('download_temp')
+Route::get('template/download/{id}', [TemplateController::class, 'temp_download'])
+->name('temp_download')
 ->middleware('auth');
 
 
@@ -266,7 +266,7 @@ Route::middleware('auth')->controller(FileMangementController::class)->group(fun
     // Route::get('/filing/execution/{parent_name_id?}', 'folder')->name('folder');
     Route::get('filing/createFolder', 'createFolder')->name('filing.createFolder');
     Route::post('filing', 'storeFolder')->name('filing.storeFolder');
-    Route::get('/template-download/{id}','download_temp')->name('download_temp');
+    Route::get('/template-download/{id?}','download_temp')->name('download_temp');
     Route::get('/multiple-template-download','multi_download_temp')->name('multi_download_temp');
     Route::post('/include-templates','include_templates')->name('include_templates');
     Route::post('/approve-files','approve_files')->name('approve_files');
