@@ -212,7 +212,7 @@
           </Link>
 
           <div v-for="link in balances.links" :key="link.id">
-            <div v-if="link.label != 'Previous'">
+            <div v-if="link.label != 'Previous' && link.label != 'Next'">
               <Link
                 v-if="
                   !isFirstOrLastOrDots(index, balances.links.length, link.label)
