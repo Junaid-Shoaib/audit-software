@@ -590,7 +590,7 @@ export default {
         {
           href: route("trial.index"),
           routeName: "trial.index",
-          label: "Read Excel",
+          label: "Upload Trial",
           icon: CloudUploadIcon,
         },
         // {

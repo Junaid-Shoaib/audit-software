@@ -62,6 +62,7 @@ class FileMangementController extends Controller
                 ->where('is_folder', '0')
                 ->get();
 
+
             if($parent_name_id == 'execution')
             {
                 $parent = FileManager::all()->where('company_id', session('company_id'))
@@ -662,120 +663,111 @@ class FileMangementController extends Controller
         $folder = Request::input('folder');
         $templatesArray = Request::input('selected_arr');
         $templates = Template::whereIn('name', $templatesArray)->get();
-
         if(count($templates) > 0)
         {
             // dd(count(Request::input('selected_arr')), $templatesArray, $templates, count($templates));
-            for($i = 0; $i < count($templates); $i++)
+            foreach($templates as $template)
             {
-                $template = Template::where('name', $templatesArray[$i])->first();
-                if($template)
+                $extension = explode(".",($template->name));
+                $year = Year::where('company_id', session('company_id'))
+                    ->where('id', session('year_id'))->first();
+                $partner = $year->users()->role('partner')->first();
+                $manager = $year->users()->role('manager')->first();
+                $staff = $year->users()->role('staff')->first();
+
+                if($partner != null && $manager != null && $staff != null)
                 {
-                    $extension = explode(".",($template->name));
-                    $year = Year::where('company_id', session('company_id'))
-                        ->where('id', session('year_id'))->first();
-                    $partner = $year->users()->role('partner')->first();
-                    $manager = $year->users()->role('manager')->first();
-                    $staff = $year->users()->role('staff')->first();
-
-                    if($partner != null && $manager != null && $staff != null)
+                    //------------ creating path to save file
+                    $parent = FileManager::where('company_id', session('company_id'))
+                        ->where('year_id', session('year_id'))
+                        ->where('name', $template->type)
+                        ->where('is_folder', '0')
+                        ->first();
+                    if($type == 'Execution')
                     {
-                        //------------ creating path to save file
-                        $parent = FileManager::where('company_id', session('company_id'))
-                            ->where('year_id', session('year_id'))
-                            ->where('name', $template->type)
-                            ->where('is_folder', '0')
-                            ->first();
-                        if($type == 'Execution')
-                        {
-                            $path = session('company_id') . '/' . session('year_id') . '/' . $parent->id . '/' . $folder['id'] . '/' . $template->name;
-                        } else {
-                            $path = session('company_id') . '/' . session('year_id') . '/' . $parent->id . '/' . $template->name;
-                        }
-                        //------------ creating path to save file
+                        $path = session('company_id') . '/' . session('year_id') . '/' . $parent->id . '/' . $folder['id'] . '/' . $template->name;
+                    } else {
+                        $path = session('company_id') . '/' . session('year_id') . '/' . $parent->id . '/' . $template->name;
+                    }
+                    //------------ creating path to save file
 
-                        $start = $year->begin ? new Carbon($year->begin) : null;
-                        $end = $year->end ? new Carbon($year->end) : null;
-                        $names = str_replace(["&"], "&amp;", $year->company->name);
-                        $name = $year->company->name;
-                        if(strtolower($extension[1]) == 'docx' || strtolower($extension[1]) == 'docs')
-                        {
-                            $templateProcessor = new  \PhpOffice\PhpWord\TemplateProcessor(public_path('temp/' . $template->name));
-                            $templateProcessor->setValue('client', $names);
-                            $templateProcessor->setValue('partner', ucwords($partner->name));
-                            $templateProcessor->setValue('manager', ucwords($manager->name));
-                            $templateProcessor->setValue('user', ucwords($staff->name));
-                            $templateProcessor->setValue('start', $start->format("F j Y"));
-                            $templateProcessor->setValue('end', $end->format("F j Y"));
-                            $templateProcessor->saveAs(storage_path('app/public/' . $path));
-                            // return response()->download(storage_path('app/public/' . $template->path));
-                        }
-                        else{
-                            $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load(public_path('temp/' . $template->name));
-                            $worksheet = $spreadsheet->getActiveSheet();
-                            $worksheet->getCell('C2')->setValue($name);
-                            $worksheet->getCell('C3')->setValue($start->format("F j Y"). ' - '.$end->format("F j Y"));
-                            $worksheet->getCell('C5')->setValue(ucwords($staff->name));
-                            $worksheet->getCell('C6')->setValue(ucwords($manager->name));
-                            $worksheet->getCell('C7')->setValue(ucwords($partner->name));
-                            $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xls');
-                            // $writer->save(storage_path('app/public/' . $template->path));
-                            $writer->save(storage_path('app/public/' . $path));
-                            // return response()->download(storage_path('app/public/' . $template->path));
-                        }
-                        //----------------------------------------------
+                    $start = $year->begin ? new Carbon($year->begin) : null;
+                    $end = $year->end ? new Carbon($year->end) : null;
+                    $names = str_replace(["&"], "&amp;", $year->company->name);
+                    $name = $year->company->name;
+                    if(strtolower($extension[1]) == 'docx' || strtolower($extension[1]) == 'docs')
+                    {
+                        $templateProcessor = new  \PhpOffice\PhpWord\TemplateProcessor(public_path('temp/' . $template->name));
+                        $templateProcessor->setValue('client', $names);
+                        $templateProcessor->setValue('partner', ucwords($partner->name));
+                        $templateProcessor->setValue('manager', ucwords($manager->name));
+                        $templateProcessor->setValue('user', ucwords($staff->name));
+                        $templateProcessor->setValue('start', $start->format("F j Y"));
+                        $templateProcessor->setValue('end', $end->format("F j Y"));
+                        $templateProcessor->saveAs(storage_path('app/public/' . $path));
+                        // return response()->download(storage_path('app/public/' . $template->path));
+                    }
+                    else{
+                        $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load(public_path('temp/' . $template->name));
+                        $worksheet = $spreadsheet->getActiveSheet();
+                        $worksheet->getCell('C2')->setValue($name);
+                        $worksheet->getCell('C3')->setValue($start->format("F j Y"). ' - '.$end->format("F j Y"));
+                        $worksheet->getCell('C5')->setValue(ucwords($staff->name));
+                        $worksheet->getCell('C6')->setValue(ucwords($manager->name));
+                        $worksheet->getCell('C7')->setValue(ucwords($partner->name));
+                        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xls');
+                        // $writer->save(storage_path('app/public/' . $template->path));
+                        $writer->save(storage_path('app/public/' . $path));
+                        // return response()->download(storage_path('app/public/' . $template->path));
+                    }
+                    //----------------------------------------------
+                    if($type == 'Execution')
+                    {
                         $file_exists = FileManager::where('name', $template->name)
                             ->where('company_id', session('company_id'))
-                            ->where('year_id', session('year_id'))->first();
-                        if($type == 'Execution')
+                            ->where('year_id', session('year_id'))
+                            ->where('parent_id', $folder['id'])
+                            ->first();
+                        if(!$file_exists)
                         {
-                            $file_exists = FileManager::where('name', $template->name)
-                                ->where('company_id', session('company_id'))
-                                ->where('year_id', session('year_id'))
-                                ->where('parent_id', $folder['id'])
-                                ->first();
-                            if(!$file_exists)
-                            {
-                                $folderObj = FileManager::create([
-                                    'name' => $template->name,
-                                    'is_folder' => 1,
-                                    'parent_id' => $folder['id'],
-                                    'path' => $path,
-                                    'year_id' => session('year_id'),
-                                    'company_id' => session('company_id'),
-                                ]);
-                            }
-                        } else {
-                            $file_exists = FileManager::where('name', $template->name)
-                                ->where('company_id', session('company_id'))
-                                ->where('year_id', session('year_id'))
-                                ->first();
-                            if(!$file_exists)
-                            {
-                                $folderObj = FileManager::create([
-                                    'name' => $template->name,
-                                    'is_folder' => 1,
-                                    'parent_id' => $parent->id,
-                                    'path' => $path,
-                                    'year_id' => session('year_id'),
-                                    'company_id' => session('company_id'),
-                                ]);
-                            }
+                            $folderObj = FileManager::create([
+                                'name' => $template->name,
+                                'is_folder' => 1,
+                                'parent_id' => $folder['id'],
+                                'path' => $path,
+                                'year_id' => session('year_id'),
+                                'company_id' => session('company_id'),
+                            ]);
                         }
-                        //-----------------------------------------------
-                    }else{
-                        return back()->with('warning', 'Please Create Team First');
+                    } else {
+                        $file_exists = FileManager::where('name', $template->name)
+                            ->where('company_id', session('company_id'))
+                            ->where('year_id', session('year_id'))
+                            ->where('parent_id', $parent->id)
+                            ->first();
+                        if(!$file_exists)
+                        {
+                            $folderObj = FileManager::create([
+                                'name' => $template->name,
+                                'is_folder' => 1,
+                                'parent_id' => $parent->id,
+                                'path' => $path,
+                                'staff_approval' => Auth::user()->roles[0]->name == "manager" ? 1 : 0,
+                                'year_id' => session('year_id'),
+                                'company_id' => session('company_id'),
+                            ]);
+                        }
                     }
+                    //-----------------------------------------------
                 }else{
-                    return back()->with('warning', 'Tempalate Not Found');
-                };
+                    return back()->with('warning', 'Please Create Team First');
+                }
             }
             if($type == 'Execution')
             {
-                return Redirect::route("filing.folder", [$folder['id']])->with('success', 'Templates included successfully');
+                return Redirect::route("filing", [$folder['id']])->with('success', 'Templates included successfully');
             }else {
                 return Redirect::route("filing", [lcfirst($type)])->with('success', 'Templates included successfully');
-                // return back()->with('success', 'Templates included successfully');
             }
 
         } else {
@@ -786,10 +778,15 @@ class FileMangementController extends Controller
     public function approve_files()
     {
         $type = Request::input('type');
+        $folder = FileManager::where('company_id', session('company_id'))
+            ->where('year_id', session('year_id'))
+            ->where('is_folder', 0)
+            ->where('name', $type)->first();
         $filesArray = Request::input('selected_arr');
-        // dd($filesArray);
         $files = FileManager::where('company_id', session('company_id'))
-            ->where('company_id', session('company_id'))
+            ->where('year_id', session('year_id'))
+            ->where('parent_id', $folder->id)
+            ->where('is_folder', 1)
             ->whereIn('name', $filesArray)->get();
 
         if(count($files) > 0)
@@ -826,25 +823,29 @@ class FileMangementController extends Controller
         } else {
             return back()->with('warning', 'File Not Selected');
         }
-        if($type == 'Execution')
+        if($type == 'Planing' || $type == 'Completion')
         {
-            return Redirect::route("filing.folder", [$folder['id']])->with('success', 'Templates included successfully');
+            return Redirect::route("filing", [lcfirst($type)])->with('success', 'Files approved successfully');
         }else {
-            return Redirect::route("filing", [lcfirst($type)])->with('success', 'Approval Request Send successfully');
-            // return back()->with('success', 'Templates included successfully');
+            return Redirect::route("filing", [$folder->id])->with('success', 'Files approved successfully');
         }
     }
 
     public function reject_files($review)
     {
-       $type = Request::input('type');
+        $type = Request::input('type');
+        $folder = FileManager::where('company_id', session('company_id'))
+            ->where('year_id', session('year_id'))
+            ->where('is_folder', 0)
+            ->where('name', $type)->first();
         $filesArray = Request::input('selected_arr');
-        // dd($filesArray);
         $files = FileManager::where('company_id', session('company_id'))
-            ->where('company_id', session('company_id'))
+            ->where('year_id', session('year_id'))
+            ->where('parent_id', $folder->id)
+            ->where('is_folder', 1)
             ->whereIn('name', $filesArray)->get();
 
-        // dd($review, $type, $filesArray);
+
         if(count($files) > 0)
         {
             // if(Auth::user()->roles[0]->name == 'staff')
@@ -879,12 +880,11 @@ class FileMangementController extends Controller
         } else {
             return back()->with('warning', 'File Not Selected');
         }
-        if($type == 'Execution')
+        if($type == 'Planing' || $type == 'Completion')
         {
-            return Redirect::route("filing.folder", [$folder['id']])->with('success', 'Templates included successfully');
+            return Redirect::route("filing", [lcfirst($type)])->with('success', 'File rejected successfully');
         }else {
-            return Redirect::route("filing", [lcfirst($type)])->with('success', 'Reject File successfully');
-            // return back()->with('success', 'Templates included successfully');
+            return Redirect::route("filing", [$folder->id])->with('success', 'File rejected successfully');
         }
     }
 
