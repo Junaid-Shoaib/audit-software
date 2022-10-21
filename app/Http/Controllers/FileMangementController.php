@@ -110,7 +110,7 @@ class FileMangementController extends Controller
                 $query->where('name', 'LIKE', '%' . request('search') . '%');
             }
 
-            if(Auth::user()->roles[0]->name == "staff")
+            if(Auth::user()->roles[0]->name == "staff" || Auth::user()->roles[0]->name == "super-admin")
             {
                 $balances = $query
                 ->where('company_id', session('company_id'))

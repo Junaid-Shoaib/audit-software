@@ -617,6 +617,13 @@ export default {
           label: "Execution",
           icon: CollectionIcon,
         },
+        {
+          href: route("details"),
+          routeName: "details",
+          label: "Details",
+          icon: CollectionIcon,
+        },
+
         // {
         //   href: route("logout"),
         //   routeName: "logout",

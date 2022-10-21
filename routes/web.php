@@ -15,6 +15,7 @@ use App\Http\Controllers\AccountController;
 use App\Http\Controllers\TemplateController;
 use App\Http\Controllers\FileMangementController;
 use App\Http\Controllers\TeamController;
+use App\Http\Controllers\DetailController;
 use App\Http\Controllers\DefaultFoldersCreation;
 use Illuminate\Support\Facades\Artisan;
 
@@ -303,6 +304,38 @@ Route::delete('teams/{team}', [TeamController::class, 'destroy'])
     ->name('teams.destroy')
     ->middleware('auth');
 //TEAMS ----------------------- END --------------------
+
+//Details ----------------------- STARTS --------------------
+Route::get('details', [DetailController::class, 'index'])
+    ->name('details')
+    ->middleware('auth');
+
+Route::get('details/create', [DetailController::class, 'create'])
+    ->name('details.create')
+    ->middleware('auth');
+
+Route::post('details', [DetailController::class, 'store'])
+    ->name('details.store')
+    ->middleware('auth');
+
+Route::get('details/edit', [DetailController::class, 'edit'])
+    ->name('details.edit')
+    ->middleware('auth');
+
+Route::put('details/{detail}', [DetailController::class, 'update'])
+    ->name('details.update')
+    ->middleware('auth');
+
+Route::delete('details/{detail}', [DetailController::class, 'destroy'])
+    ->name('details.destroy')
+    ->middleware('auth');
+
+
+Route::get('download-details/{account_id}', [DetailController::class, 'download_details'])
+    ->name('download.details')
+    ->middleware('auth');
+
+//Details ----------------------- END --------------------
 
 
 
