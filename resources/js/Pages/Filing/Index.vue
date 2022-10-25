@@ -136,6 +136,7 @@
                     >Download</a
                   >
                   <button
+                    v-if="this.user_role == 'partner'"
                     class="
                       border
                       bg-red-500
@@ -243,6 +244,7 @@ export default {
     Approve: function () {
       if (this.form.selected_arr.length >> 0) {
         this.$inertia.post(route("approve_files"), this.form);
+        this.form.selected_arr = [];
       } else {
         alert("Please select file");
       }
@@ -257,6 +259,7 @@ export default {
         review = review.trim();
         if (review != null && review != "") {
           this.$inertia.post(route("reject_files", review), this.form);
+          this.form.selected_arr = [];
         } else {
           alert("Please enter some review for rejecting files");
         }
