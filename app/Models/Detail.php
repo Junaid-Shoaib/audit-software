@@ -20,5 +20,17 @@ class Detail extends Model
     public function year(){
         return $this->belongsTo('App\Models\Year', 'year_id');
     }
+
+    public function account(){
+        return $this->belongsTo('App\Models\Account', 'account_id');
+    }
+
+
+
+    public function accountgroup() {
+        return $this->hasMany('App\Models\Account', 'account_id')
+        ->groupBy('account_id')
+        ->orderBy('account_id', 'desc');
+    }
 }
 

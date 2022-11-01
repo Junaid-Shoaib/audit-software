@@ -318,7 +318,7 @@ Route::post('details', [DetailController::class, 'store'])
     ->name('details.store')
     ->middleware('auth');
 
-Route::get('details/edit', [DetailController::class, 'edit'])
+Route::get('details/edit/{account_id}', [DetailController::class, 'edit'])
     ->name('details.edit')
     ->middleware('auth');
 
@@ -326,7 +326,7 @@ Route::put('details/{detail}', [DetailController::class, 'update'])
     ->name('details.update')
     ->middleware('auth');
 
-Route::delete('details/{detail}', [DetailController::class, 'destroy'])
+Route::delete('details/{account_id}', [DetailController::class, 'destroy'])
     ->name('details.destroy')
     ->middleware('auth');
 

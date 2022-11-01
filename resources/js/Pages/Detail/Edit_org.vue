@@ -3,7 +3,7 @@
     <template #header>
       <h2 class="header">Modify Details</h2>
     </template>
-    <!-- <div class="w-4/5 overflow-hidden pb-2"> -->
+    <!-- <div class="max-w-7xl mx-auto pb-2"> -->
     <div class="mt-5 ml-7 flex-row">
       <!-- <div class="flex-1 inline-block">
         <inertia-link
@@ -27,7 +27,7 @@
         >Add row</jet-button
       >
       <multiselect
-        style="width: 10%"
+        style="width: 25%"
         class="float-left rounded-md border border-black"
         placeholder="Select Account."
         v-model="form.account"
@@ -40,7 +40,7 @@
     </div>
 
     <!-- <div class="relative mt-5 flex-row border-t border-b border-gray-200"> -->
-    <div class="sm:px-6 lg:px-8 py-2">
+    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 py-2">
       <form @submit.prevent="submit">
         <div class="obsolute mt-2 ml-2 sm:rounded-2xl">
           <!-- <div class=""> -->
