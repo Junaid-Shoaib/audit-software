@@ -249,26 +249,21 @@
                   class="px-4 border text-center rounded-r-2xl"
                 >
                   <!-- class="border bg-indigo-300 rounded-xl px-4 py-1 m-1" -->
-                  <button class="editbutton px-4 m-1" @click="edit(item.id)">
+                  <button
+                    class="editbutton px-4 m-1"
+                    @click="edit(item.account_id)"
+                  >
                     <!-- v-if="can['edit']" -->
                     <!-- v-if="can.edit" -->
                     <span>Edit</span>
                   </button>
-                  <!-- <button
-                        class="
-                            border
-                            bg-red-400
-                            rounded-xl
-                            px-4
-                            py-1
-                            m-1
-                            hover:text-white hover:bg-red-500
-                        "
-                        @click="destroy(item.id)"
-                        :v-if="item.delete"
-                        >
-                        <span>Delete</span>
-                        </button> -->
+                  <button
+                    class="deletebutton px-4 m-1"
+                    @click.prevent="destroy(item.account_id)"
+                  >
+                    <!-- :v-if="item.delete" -->
+                    <span>Delete</span>
+                  </button>
                 </td>
               </tr>
               <tr v-if="balances.data.length === 0">

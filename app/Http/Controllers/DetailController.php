@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-// use Illuminate\Http\Request;
+use Illuminate\Http\Request as Req;
 use App\Models\Detail;
 use App\Models\Account;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -15,6 +15,9 @@ use Inertia\Inertia;
 use \PhpOffice\PhpSpreadsheet\Style;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\DB;
+
+use App\Models\Trial;
 
 
 class DetailController extends Controller
@@ -86,13 +89,53 @@ class DetailController extends Controller
 
     public function create()
     {
-        // $fiscals = ['June', 'March', 'September', 'December'];
-        // $fiscal_first = 'June';
+        // $accounts = Account::where('company_id', session('company_id'))->get();
+        // $account_first = Account::where('company_id', session('company_id'))->first();
+        // return Inertia::render('Detail/Create', [
+        //     'accounts' => $accounts, 'account_first' => $account_first
+        // ]);
+        $account = Account::where('company_id', session('company_id'))->first();
         $accounts = Account::where('company_id', session('company_id'))->get();
-        $account_first = Account::where('company_id', session('company_id'))->first();
-
-        return Inertia::render('Detail/Create', [
-            'accounts' => $accounts, 'account_first' => $account_first
+        $query = Detail::all()->where('company_id', session('company_id'))
+            ->where('year_id', session('year_id'))
+            ->where('account_id', $account->id)
+            ->map(
+                fn ($obj) =>
+                [
+                    'id' => $obj->id,
+                    'date' => $obj->date,
+                    'description' => $obj->description,
+                    'cheque' => $obj->cheque,
+                    'voucher_no' => $obj->voucher_no,
+                    'amount' => $obj->amount,
+                    'cash' => $obj->cash,
+                    'bank' => $obj->bank,
+                    'adjustment' => $obj->adjustment,
+                    'modeOfPay' => $obj->cash == 0 ?  $obj->bank == '1' ? 'bank' :
+                                                    'adjustment' : "cash",
+                    'a' => $obj->a == 1 ? true : false,
+                    'b' => $obj->b == 1 ? true : false,
+                    'c' => $obj->c == 1 ? true : false,
+                    'd' => $obj->d == 1 ? true : false,
+                    'e' => $obj->e == 1 ? true : false,
+                    'f' => $obj->f == 1 ? true : false,
+                    'remark' => $obj->remark,
+                    'company_id' => $obj->company_id,
+                    'year_id' => $obj->year_id,
+                    'account_id' => $obj->account_id,
+                ],
+            );
+        $i = 0;
+        $details = [];
+        foreach ($query as $detail) {
+            $details[$i] = $detail;
+            $i++;
+        }
+         return Inertia::render('Detail/Edit', [
+            'balances' => $details,
+            'accounts' => $accounts,
+            'account' => $account,
+            'filters' => request()->all(['search', 'field', 'direction'])
         ]);
     }
 
@@ -116,7 +159,7 @@ class DetailController extends Controller
             // 'e' =>['required'],
             // 'f' =>['required'],
             'remark' =>['required'],
-            'account_id' =>['required'],
+            // 'account_id' =>['required'],
             // 'conclusion' =>['required'],
         ]);
         $detail = Detail::create([
@@ -147,19 +190,127 @@ class DetailController extends Controller
         return Redirect::route('details')->with('success', 'Detail created');
     }
 
-    public function edit(Detail $detail)
+    public function edit($account_id)
     {
-        //
+        // $details = Detail::where('account_id', $account_id)->get();
+        $query = Detail::all()->where('company_id', session('company_id'))
+            ->where('year_id', session('year_id'))
+            ->where('account_id', $account_id)
+        // getQuery()
+        // ->paginate(10)
+        //     ->withQueryString()
+            ->map(
+                fn ($obj) =>
+                [
+                    'id' => $obj->id,
+                    'date' => $obj->date,
+                    'description' => $obj->description,
+                    'cheque' => $obj->cheque,
+                    'voucher_no' => $obj->voucher_no,
+                    'amount' => $obj->amount,
+                    'cash' => $obj->cash,
+                    'bank' => $obj->bank,
+                    'adjustment' => $obj->adjustment,
+                    'modeOfPay' => $obj->cash == 0 ?  $obj->bank == '1' ? 'bank' :
+                                                    'adjustment' : "cash",
+
+                                        // $obj->adjustment == 1 ? 'adjustment' :
+                    'a' => $obj->a == 1 ? true : false,
+                    'b' => $obj->b == 1 ? true : false,
+                    'c' => $obj->c == 1 ? true : false,
+                    'd' => $obj->d == 1 ? true : false,
+                    'e' => $obj->e == 1 ? true : false,
+                    'f' => $obj->f == 1 ? true : false,
+                    'remark' => $obj->remark,
+                    'company_id' => $obj->company_id,
+                    'year_id' => $obj->year_id,
+                    'account_id' => $obj->account_id,
+                    // 'delete' => Year::where('company_id', $comp->id)->first() != null ? true : false,
+                ],
+            );
+
+        $i = 0;
+        $details = [];
+        foreach ($query as $detail) {
+            $details[$i] = $detail;
+            $i++;
+        }
+         return Inertia::render('Detail/Edit', [
+            'balances' => $details,
+            'accounts' => Account::where('company_id', session('company_id'))->get(),
+            'account' => Account::find($account_id),
+            'filters' => request()->all(['search', 'field', 'direction'])
+        ]);
     }
 
-    public function update(Request $request, Detail $detail)
+    public function update(Req $req, $account_id)
     {
-        //
+        // dd($account_id, $req->balances);
+        Request::validate([
+            'balances.*.date' =>['required'],
+            'balances.*.description' =>['required'],
+            'balances.*.cheque' =>['required'],
+            'balances.*.voucher_no' =>['required'],
+            'balances.*.amount' =>['required'],
+            'balances.*.remark' =>['required'],
+            // 'balances.*.account_id' =>['required'],
+            'balances.*.modeOfPay' =>['required', 'not_in:0'],
+            // 'conclusion' =>['required'],
+        ]);
+
+        $preDetails = Detail::where('company_id', session('company_id'))
+            ->where('year_id', session('year_id'))
+            ->where('account_id', $account_id)->get();
+
+
+        DB::transaction(function () use ($req, $account_id, $preDetails) {
+            try {
+                foreach ($preDetails as $preDetail) {
+                    $preDetail->delete();
+                }
+
+                $data = $req->balances;
+                foreach ($data as $detail) {
+                    Detail::create([
+                        'company_id' => session('company_id'),
+                        'year_id' => session('year_id'),
+
+                        'account_id' => $account_id,
+                        'date' => $detail['date'],
+                        'description' => $detail['description'],
+                        'cheque' => $detail['cheque'],
+                        'voucher_no' => $detail['voucher_no'],
+                        'amount' => $detail['amount'],
+                        'cash' => $detail['modeOfPay'] == 'cash' ? 1 : 0,
+                        'bank' => $detail['modeOfPay'] == 'bank' ? 1 : 0,
+                        'adjustment' => $detail['modeOfPay'] == 'adjustment' ? 1 : 0,
+                        'a' => $detail['a'] ? 1 : 0,
+                        'b' => $detail['b'] ? 1 : 0,
+                        'c' => $detail['c'] ? 1 : 0,
+                        'd' => $detail['d'] ? 1 : 0,
+                        'e' => $detail['e'] ? 1 : 0,
+                        'f' => $detail['f'] ? 1 : 0,
+                        'remark' => $detail['remark'],
+                        // 'conclusion' => $detail['conclusion'],
+                    ]);
+                }
+            } catch (Exception $e) {
+                return $e;
+            }
+        });
+        return Redirect::route('details')->with('success', 'Detail created');
     }
 
-    public function destroy(Detail $detail)
+    public function destroy($account_id)
     {
-        //
+        $details = Detail::where('company_id', session('company_id'))
+            ->where('year_id', session('year_id'))
+            ->where('account_id', $account_id)->get();
+
+        foreach ($details as $detail) {
+            $detail->delete();
+        }
+        return Redirect::back()->with('success', 'Details deleted.');
     }
 
     public function download_details($account_id)
@@ -168,7 +319,7 @@ class DetailController extends Controller
         $account = Account::where('id' , $account_id)
                     ->where('company_id' , session('company_id'))->first();
         if($account){
-                $details = Detail::where('company_id' , session('company_id'))->get();
+                $details = Detail::where('company_id' , session('company_id'))->where('account_id' , $account_id)->get();
                 $detail_first = Detail::where('company_id' , session('company_id'))->first();
                 if(count($details) > 0)
                 {
@@ -190,13 +341,32 @@ class DetailController extends Controller
     public function generate_details($details,$account , $detail_first)
     {
 
+        $debit = Trial::where('account_id', $account->id)->sum('cls_debit');
+        $credit = Trial::where('account_id', $account->id)->sum('cls_credit');
+         $res = $debit - $credit;
+
+        //  dd(str_replace("-" ," ", $res));
+
         $spreadsheet = new Spreadsheet();
 
 
             // formating price cell
+            $spreadsheet->getDefaultStyle()->getFont()->setSize(9);
             $FORMAT_ACCOUNTING = '_(* #,##0.00_);_(* \(#,##0.00\);_(* "-"??_);_(@_)';
             $spreadsheet->getActiveSheet()->getStyle('F:F')->getNumberFormat()->setFormatCode($FORMAT_ACCOUNTING);
+            $spreadsheet->getDefaultStyle()->getAlignment()->setHorizontal('left');
 
+            $Webdings = array(
+                'font'  => array(
+                    'bold' => true,
+                    'name' => 'Webdings'
+                ));
+
+                $font = array(
+                    'font'  => array(
+                        'bold' => true,
+                        'name' => 'Arial'
+                    ));
             // page setup
             $spreadsheet->getActiveSheet()->getPageSetup()
                 ->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
@@ -220,16 +390,26 @@ class DetailController extends Controller
                 }
             }
 
-
-
+            $now = Carbon::now()->format("M d Y");
+        $spreadsheet->getActiveSheet()->getStyle('A4:P7')->applyFromArray($font);
         $spreadsheet->getActiveSheet()->mergeCells('A1:C1');
         $spreadsheet->getActiveSheet()->mergeCells('A2:C2');
         $spreadsheet->getActiveSheet()->mergeCells('A3:C3');
         $spreadsheet->getActiveSheet()->fromArray(['Muniff Ziauddin & Co.'], NULL, 'A1');
+        $spreadsheet->getActiveSheet()->getStyle('A1')->applyFromArray($font);
         $spreadsheet->getActiveSheet()->fromArray(['Chartered Accountants'], NULL, 'A2');
         $spreadsheet->getActiveSheet()->fromArray(['An Independent Member Firm of BKR International'], NULL, 'A3');
         $spreadsheet->getActiveSheet()->fromArray(['CLIENT:'], NULL, 'A4');
+        $spreadsheet->getActiveSheet()->fromArray(['Prepared By:'], NULL, 'H4');
+        $spreadsheet->getActiveSheet()->mergeCells('H4:I4');
+        $spreadsheet->getActiveSheet()->fromArray([ucfirst(auth()->user()->name)], NULL, 'J4');
+        $spreadsheet->getActiveSheet()->fromArray(['Date:'], NULL, 'M4');
+        $spreadsheet->getActiveSheet()->fromArray([$now], NULL, 'N4');
         $spreadsheet->getActiveSheet()->fromArray(['PERIOD:'], NULL, 'A5');
+        $spreadsheet->getActiveSheet()->fromArray(['Reviewed By:'], NULL, 'H5');
+        $spreadsheet->getActiveSheet()->mergeCells('H5:I5');
+        $spreadsheet->getActiveSheet()->fromArray(['Date:'], NULL, 'M5');
+        $spreadsheet->getActiveSheet()->fromArray([$now], NULL, 'N5');
         $spreadsheet->getActiveSheet()->fromArray(['SUBJECT:'], NULL, 'A6');
         $spreadsheet->getActiveSheet()->fromArray(['Account Number:'], NULL, 'A7');
         $end = $detail_first->company->year->end ? new Carbon($detail_first->company->year->end) : null;
@@ -258,15 +438,15 @@ class DetailController extends Controller
                             'cheque' => $det->cheque,
                             'voucher_no' => $det->voucher_no,
                             'amount' => $det->amount,
-                            'cash' => $det->cash == 1 ? 1 : 'O',
-                            'bank' => $det->bank == 1 ? 1 : 'O',
-                            'adjustment' => $det->adjustment == 1 ? 1 : 'O',
-                            'A' => $det->a == 1 ? 1 : 'O',
-                            'B' => $det->b == 1 ? 1 : 'O',
-                            'C' => $det->c == 1 ? 1 : 'O',
-                            'D' => $det->d == 1 ? 1 : 'O',
-                            'E' => $det->e == 1 ? 1 : 'O',
-                            'F' => $det->f == 1 ? 1 : 'O',
+                            'cash' => $det->cash == 1 ? 'a' : 'r',
+                            'bank' => $det->bank == 1 ?  'a' : 'r',
+                            'adjustment' => $det->adjustment == 1 ?  'a' : 'r',
+                            'A' => $det->a == 1 ? 'a' : 'r',
+                            'B' => $det->b == 1 ? 'a' : 'r',
+                            'C' => $det->c == 1 ? 'a' : 'r',
+                            'D' => $det->d == 1 ? 'a' : 'r',
+                            'E' => $det->e == 1 ? 'a' : 'r',
+                            'F' => $det->f == 1 ? 'a' : 'r',
                             'remarks' => $det->remark,
                         ];
                     }
@@ -291,14 +471,18 @@ class DetailController extends Controller
                     ),
                 );
 
+
          $spreadsheet->getActiveSheet()->fromArray($details, NULL, 'A11');
          $spreadsheet->getActiveSheet()->getStyle('A10:P'.$last_rec )->applyFromArray($styleArray);
          $last_rec += 1;
          $total =   $last_rec;
+
+         $spreadsheet->getActiveSheet()->getStyle('G10' . ':' .'O'. $last_rec)->applyFromArray($Webdings);
          $spreadsheet->getActiveSheet()->fromArray(['Sub-Total'], NULL, 'E'.$last_rec);
         //  $spreadsheet->getActiveSheet()->fromArray(['Sub-Total'], NULL, 'F'.$last_rec);
          $spreadsheet->getActiveSheet()->setCellValue('F'.$last_rec, '=sum(F11 : F'. $last_rec .')');
          $spreadsheet->getActiveSheet()->getStyle('A'.$last_rec . ':' . 'P'.$last_rec )->applyFromArray($styleArray);
+         $spreadsheet->getActiveSheet()->getStyle('A'.$last_rec . ':' . 'P'.$last_rec )->applyFromArray($font);
         $last_rec += 1;
         $spreadsheet->getActiveSheet()->fromArray(['LEGENDS'], NULL, 'B'.$last_rec);
         $last_rec += 1;
@@ -310,12 +494,11 @@ class DetailController extends Controller
          $spreadsheet->getActiveSheet()->setCellValue('I'.$last_rec, '=(F'. $total .')');
          $spreadsheet->getActiveSheet()->getStyle('F'.$last_rec . ':' . 'J'.$last_rec )->applyFromArray($styleArray);
         $spreadsheet->getActiveSheet()->fromArray(['Note:'], NULL, 'L'.$last_rec);
-        $spreadsheet->getActiveSheet()->fromArray(['True'], NULL, 'M'.$last_rec);
+        $spreadsheet->getActiveSheet()->fromArray(['a'], NULL, 'M'.$last_rec);
+        $spreadsheet->getActiveSheet()->getStyle('M'.$last_rec)->applyFromArray($Webdings);
          $spreadsheet->getActiveSheet()->getStyle('M'.$last_rec )->applyFromArray($styleArray);
          $spreadsheet->getActiveSheet()->mergeCells('N'.$last_rec . ':' .'O'.$last_rec);
         $spreadsheet->getActiveSheet()->fromArray(['Yes'], NULL, 'N'.$last_rec);
-
-
 
 
         $last_rec += 1;
@@ -324,22 +507,24 @@ class DetailController extends Controller
         $spreadsheet->getActiveSheet()->mergeCells('F'.$last_rec . ':' .'H'.$last_rec);
         $spreadsheet->getActiveSheet()->fromArray(['Ledger Balance:'], NULL, 'F'.$last_rec);
         $spreadsheet->getActiveSheet()->mergeCells('I'.$last_rec . ':' .'J'.$last_rec);
-        $spreadsheet->getActiveSheet()->setCellValue('I'.$last_rec, '=(F'. $total .')');
+        $spreadsheet->getActiveSheet()->setCellValue('I'.$last_rec, str_replace("-" ," ", $res));
         $spreadsheet->getActiveSheet()->getStyle('F'.$last_rec . ':' . 'J'.$last_rec )->applyFromArray($styleArray);
-            $spreadsheet->getActiveSheet()->fromArray(['False'], NULL, 'M'.$last_rec);
+            $spreadsheet->getActiveSheet()->fromArray(['r'], NULL, 'M'.$last_rec);
+            $spreadsheet->getActiveSheet()->getStyle('M'.$last_rec)->applyFromArray($Webdings);
          $spreadsheet->getActiveSheet()->getStyle('M'.$last_rec )->applyFromArray($styleArray);
          $spreadsheet->getActiveSheet()->mergeCells('N'.$last_rec . ':' .'O'.$last_rec);
         $spreadsheet->getActiveSheet()->fromArray(['No'], NULL, 'N'.$last_rec);
 
 
-
+        $pre = $last_rec;
         $last_rec += 1;
         $spreadsheet->getActiveSheet()->fromArray(['C:'], NULL, 'B'.$last_rec);
         $spreadsheet->getActiveSheet()->fromArray(['Supporting Document'], NULL, 'C'.$last_rec);
          $spreadsheet->getActiveSheet()->mergeCells('F'.$last_rec . ':' .'H'.$last_rec);
         $spreadsheet->getActiveSheet()->fromArray(['% Vouched:'], NULL, 'F'.$last_rec);
         $spreadsheet->getActiveSheet()->mergeCells('I'.$last_rec . ':' .'J'.$last_rec);
-         $spreadsheet->getActiveSheet()->setCellValue('I'.$last_rec, '=(F'. $total .')');
+         $spreadsheet->getActiveSheet()->setCellValue('I'.$last_rec, '=(F'. $total .'/'.'I'.$pre . '* 100 )');
+
          $spreadsheet->getActiveSheet()->getStyle('F'.$last_rec . ':' . 'J'.$last_rec )->applyFromArray($styleArray);
         $spreadsheet->getActiveSheet()->fromArray(['N.A'], NULL, 'M'.$last_rec);
          $spreadsheet->getActiveSheet()->getStyle('M'.$last_rec )->applyFromArray($styleArray);

@@ -38,22 +38,54 @@ class Excel extends Controller
             return Redirect::route('companies')->with('warning', 'Create Company first');
         }
     }
+
     public function __invoke(Request $request)
     {
         // return Inertia::render('TrialExcel/Index');
         $request->validate([
             'file'=> 'required|mimes:xlsx, xls'
         ]);
+        $colms = [
+            0 => 'Account Type',
+            1 => 'Account Group',
+            // 2 => 'Sub-group',
+            // 3 => 'Sub-sub-group',
+            // 4 => 'Sub-sub-sub-group',
+            // 5 => 'Account',
+            // 6 => 'Account Number',
+            // 7 => 'opening debt',
+            // 8 => 'opening credit',
+            // 9 => 'current movement',
+            // 10 => 'debt',
+            // 11 => 'current',
+            // 12 => 'movement',
+            // 13 => 'credit',
+            // 14 => 'closing',
+            // 15 => 'debt',
+            // 16 => 'closing',
+            // 17 => 'credit',
+        ];
 
-
+        $accArray = [];
+        // dd($accArray);
+        $accInc=0;
+        $fgn_grp_id = null;
         $reader = ReaderEntityFactory::createXLSXReader();
-        // $reader->open('trial.xlsx');
         $reader->open($request->file('file'));
 
-        foreach ($reader->getSheetIterator() as $sheet) {
+        foreach ($reader->getSheetIterator() as $key => $sheet) {
             // only read data from 1st sheet
+            // dd($sheet);
+
             if ($sheet->getIndex() === 0) { // index is 0-based
                 foreach ($sheet->getRowIterator() as $rowIndex => $row) {
+                    if($rowIndex === 1)
+                    {
+                        if($colms[0] !=  $row->getCellAtIndex(0)->getValue() && $colms[1] !=  $row->getCellAtIndex(1)->getValue())
+                        {
+                            return redirect()->route('trial.index')->with('error', 'Please Do Not Match Sheet Columns');
+                        }
+                    }
                     if($rowIndex === 1) continue; // skip headers row
                     $total_col = count($row->getCells());
                     for($i=0 ; $i <= $total_col-7 ; $i++){
@@ -61,11 +93,6 @@ class Excel extends Controller
                         //   $col.$i
                     }
 
-                    // $col1 = $row->getCellAtIndex(0)->getValue();
-                    // $col2 = $row->getCellAtIndex(1)->getValue();
-                    // $col3 = $row->getCellAtIndex(2)->getValue();
-                    // $col4 = $row->getCellAtIndex(3)->getValue();
-                    // $col5 = $row->getCellAtIndex(4)->getValue();
                     $check_cols = false;
                     foreach($cols as $col){
                         if($col)
@@ -81,13 +108,13 @@ class Excel extends Controller
                         if($acc_type_name){
                             $acc_type = AccountType::where('name', $acc_type_name)->first();
                         }
-
-                        //fgn_grp_id Its Mean Parent ID
                         $fgn_grp_id;
                         //Account Group
+                        $acc_grp_name =  null;
                         $acc_grp_name = $row->getCellAtIndex(1)->getValue();
                         if($acc_grp_name)
                         {
+                            // dd($acc_grp_name);
                             $acc_grp_exist = AccountGroup::where('name', $acc_grp_name)->
                                 where('company_id', session('company_id'))->
                                 first();
@@ -107,11 +134,13 @@ class Excel extends Controller
                         }
                         for($j= 2 ; $j <= $total_col-9; $j++){
 
+                            $acc_sub_grp_name = null;
                             $acc_sub_grp_name = $row->getCellAtIndex($j)->getValue();
                             if($acc_sub_grp_name)
                             {
                                 $acc_sub_grp_exist = AccountGroup::where('name', $acc_sub_grp_name)->
-                                    where('parent_id', $acc_grp->id)->
+                                    where('parent_id', $parent[$j-1])->
+                                    // where('parent_id', $acc_grp->id)->
                                     where('company_id', session('company_id'))->
                                     first();
                                 if(!$acc_sub_grp_exist)
@@ -135,8 +164,15 @@ class Excel extends Controller
                         //Accounts
                         $acc_name = $row->getCellAtIndex($total_col-8)->getValue();
                         $acc_num = $row->getCellAtIndex($total_col-7)->getValue();
+
+
+
                         if($acc_name && $acc_num)
                         {
+
+                            $accArray[$accInc] = $acc_name;
+                            $accInc++;
+
                             $acc_exist = Account::
                                 where('group_id', $fgn_grp_id)->
                                 where('company_id', session('company_id'))->
@@ -185,6 +221,7 @@ class Excel extends Controller
 
                                 $trial_exists->account_id = $acc->id;
                                 $trial_exists->company_id = session('company_id');
+                                $trial_exists->save();
 
                             } else {
                                 Trial::create([
@@ -214,12 +251,32 @@ class Excel extends Controller
             }
             $reader->close();
         }
+        $accResets = Account::whereNotIn('name', $accArray)->get();
+        // dd($accResets);
+        if($accResets){
+            foreach($accResets as $accReset){
+                $trial_exists1 = Trial::where('company_id', session('company_id'))
+                                    ->where('account_id', $accReset->id)->first();
+                                if($trial_exists1)
+                                {
 
+                                    $trial_exists1->opn_debit = 0;
+                                    $trial_exists1->opn_credit = 0;
+
+                                    $trial_exists1->remain_debit = 0;
+                                    $trial_exists1->remain_credit = 0;
+
+                                    $trial_exists1->cls_debit = 0;
+                                    $trial_exists1->cls_credit = 0;
+                                    $trial_exists1->save();
+                                }
+            }
+        }
         return Redirect::route('accounts');
     }
 
-
-    public function lead(){
+    public function lead()
+    {
         $acc_grps =  AccountGroup::with('accounts','accounts.trials')->where('company_id', session('company_id'))
         ->tree()->get()->toTree()->toArray();
         // dd($acc_grps);
@@ -228,13 +285,12 @@ class Excel extends Controller
                 $this->excel1($acc_grp, $key,$spreadsheet);
             }
 
-    $writer = new Xlsx($spreadsheet);
-    $writer->save(storage_path('app/public/' . 'lead.xlsx'));
-    return response()->download(storage_path('app/public/'. 'lead.xlsx'));
+        $writer = new Xlsx($spreadsheet);
+        $writer->save(storage_path('app/public/' . 'lead.xlsx'));
+        return response()->download(storage_path('app/public/'. 'lead.xlsx'));
 
-    //-----------------------------------------------------------------
-
-}
+        //-----------------------------------------------------------------
+    }
 
     public $opn=0;
     public $cls=0;

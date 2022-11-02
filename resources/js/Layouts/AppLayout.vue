@@ -188,6 +188,7 @@
       class="
         hidden
         w-64
+        z-50
         bg-gray-800
         border-r
         md:block
