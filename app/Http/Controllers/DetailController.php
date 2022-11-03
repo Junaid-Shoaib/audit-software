@@ -10,9 +10,11 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use Carbon\Carbon;
 use App\Models\Company;
+use App\Models\FileManager;
 use App\Models\Year;
 use Inertia\Inertia;
 use \PhpOffice\PhpSpreadsheet\Style;
+use File;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\DB;
@@ -34,46 +36,56 @@ class DetailController extends Controller
             'direction' => ['in:asc,desc'],
             'field' => ['in:name,email']
         ]);
+        // dd($query = Detail::first());
+        if($query = Detail::first()){
+            $query = Detail::groupBy('account_id')->get()
+                ->map(function($obj){
+                return
+                    [
+                        'id' => $obj->id,
+                        'date' => Carbon::parse($obj->date)->format('F,j Y'),
+                        'description' => $obj->description,
+                        'cheque' => $obj->cheque,
+                        'voucher_no' => $obj->voucher_no,
+                        'amount' => $obj->amount,
+                        'cash' => $obj->cash,
+                        'bank' => $obj->bank,
+                        'adjustment' => $obj->adjustment,
+                        'a' => $obj->a,
+                        'b' => $obj->b,
+                        'c' => $obj->c,
+                        'd' => $obj->d,
+                        'e' => $obj->e,
+                        'f' => $obj->f,
+                        'remark' => $obj->remark,
+                        'company_id' => $obj->company_id,
+                        'year_id' => $obj->year_id,
+                        'account_id' => $obj->account_id,
+                        // 'delete' => Year::where('company_id', $comp->id)->first() != null ? true : false,
+                    ];
+                });
+                // dd($query);
+            if (request('search')) {
+                $query = $query->where('name', 'LIKE', '%' . request('search') . '%');
+            }
 
-        $query = Detail::getQuery()->paginate(10)
-            ->withQueryString()
-            ->through(
-                fn ($obj) =>
-                [
-                    'id' => $obj->id,
-                    'date' => Carbon::parse($obj->date)->format('F,j Y'),
-                    'description' => $obj->description,
-                    'cheque' => $obj->cheque,
-                    'voucher_no' => $obj->voucher_no,
-                    'amount' => $obj->amount,
-                    'cash' => $obj->cash,
-                    'bank' => $obj->bank,
-                    'adjustment' => $obj->adjustment,
-                    'a' => $obj->a,
-                    'b' => $obj->b,
-                    'c' => $obj->c,
-                    'd' => $obj->d,
-                    'e' => $obj->e,
-                    'f' => $obj->f,
-                    'remark' => $obj->remark,
-                    'company_id' => $obj->company_id,
-                    'year_id' => $obj->year_id,
-                    'account_id' => $obj->account_id,
-                    // 'delete' => Year::where('company_id', $comp->id)->first() != null ? true : false,
-                ],
-            );
+            if (request()->has(['field', 'direction'])) {
+                $query = $query->orderBy(
+                    request('field'),
+                    request('direction')
+                );
+            }
+        }else{
 
-        if (request('search')) {
-            $query->where('name', 'LIKE', '%' . request('search') . '%');
+            $query = null;
         }
 
-        if (request()->has(['field', 'direction'])) {
-            $query->orderBy(
-                request('field'),
-                request('direction')
-            );
-        }
-
+        $file = FileManager::where('company_id',session('company_id'))
+            ->where('year_id',session('year_id'))
+            ->where('is_folder',0)
+            ->where('name', '!=', 'execution')
+            ->get(['id','name']);
+        // dd($file);
 
         return Inertia::render('Detail/Index', [
             // 'can' => [
@@ -82,6 +94,7 @@ class DetailController extends Controller
             //     'delete' => auth()->user()->can('delete'),
             //     'read' => auth()->user()->can('read'),
             // ],
+            'files' => $file,
             'balances' => $query,
             'filters' => request()->all(['search', 'field', 'direction'])
         ]);
@@ -89,11 +102,6 @@ class DetailController extends Controller
 
     public function create()
     {
-        // $accounts = Account::where('company_id', session('company_id'))->get();
-        // $account_first = Account::where('company_id', session('company_id'))->first();
-        // return Inertia::render('Detail/Create', [
-        //     'accounts' => $accounts, 'account_first' => $account_first
-        // ]);
         $account = Account::where('company_id', session('company_id'))->first();
         $accounts = Account::where('company_id', session('company_id'))->get();
         $query = Detail::all()->where('company_id', session('company_id'))
@@ -337,6 +345,59 @@ class DetailController extends Controller
 
     }
 
+    public function import_details(Req $req)
+    {
+
+        $account_id = $req->account_id;
+        $directory_id = $req->file_id['id'];
+        $directoryParent = FileManager::find($directory_id);
+        $account = Account::where('id' , $account_id)
+            ->where('company_id' , session('company_id'))->first();
+        if($account){
+            $details = Detail::where('company_id' , session('company_id'))->where('account_id' , $account_id)->get();
+            $detail_first = Detail::where('company_id' , session('company_id'))->first();
+            if(count($details) > 0)
+            {
+                $this->generate_details($details,$account, $detail_first);
+                // File::copy(public_path().'/temp/'. $name, storage_path('app/public/'.$path.'/'.$name));
+
+                $file_exists = FileManager::
+                    // where('company_id', session('company_id'))
+                    // ->where('year_id', session('year_id'))
+                    // ->where('is_folder', 1)
+                    // ->where('parent_id', $directory_id)
+                    // ->where('name', 'Test of Details.xlsx')
+                    where('path', $directoryParent->path . '/Test of Details.xlsx')
+                    ->first();
+                // dd($file_exists);
+
+                if(!$file_exists)
+                {
+                    $folderObj = FileManager::create([
+                        'name' => 'Test of Details.xlsx',
+                        'is_folder' => 1,
+                        'parent_id' => $directory_id,
+                        'path' => $directoryParent->path . '/' .  'Test of Details.xlsx',
+                        'year_id' => session('year_id'),
+                        'company_id' => session('company_id'),
+                    ]);
+                } else {
+                    $folderObj = $file_exists;
+                }
+                // File::copy(storage_path('app/public/' . session('company_id')  . '/' . session('year_id') .'/'.'Test of Details.xlsx'),
+                // storage_path('app/public/' . session('company_id')  . '/' . session('year_id') . '/' . $directory_id . '/' .  'Test of Details.xlsx'));
+                File::copy(storage_path('app/public/' . session('company_id')  . '/' . session('year_id') .'/'.'Test of Details.xlsx'), storage_path('app/public/' . $folderObj->path));
+                return redirect()->route('details')->with('success', 'File Import Successfully.');
+                    // return response()->download(storage_path('app/public/' . session('company_id')  . '/' . session('year_id') . '/' . $directory_id . '/' .  'Test of Details.xlsx'));
+            }else
+            {
+                return Redirect::route('details')->with('warning', 'Please create Test of Details first.');
+            }
+
+        }else{
+            return Redirect::route('trial')->with('warning', 'Please create Account first.');
+        }
+    }
 
     public function generate_details($details,$account , $detail_first)
     {

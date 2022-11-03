@@ -202,7 +202,7 @@ class FileMangementController extends Controller
                 ->where('year_id', session('year_id'))
                 ->where('parent_id', $parent['id'])
                 ->first();
-
+            // dd($balances);
             return Inertia::render('Filing/Index', [
                 'balances' => $balances,
                 'user_role' => Auth::user()->roles[0]->name,

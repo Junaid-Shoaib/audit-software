@@ -183,6 +183,7 @@
                 <th class="py-1 px-4">Cheque</th>
                 <th class="py-1 px-4">Voucher No</th>
                 <th class="py-1 px-4">Amount</th>
+                <th class="py-1 px-4">Features Action</th>
                 <!-- <th class="py-1 px-4">Cash</th>
                 <th class="py-1 px-4">Bank</th>
                 <th class="py-1 px-4">Adjustment</th>
@@ -203,7 +204,7 @@
             <tbody>
               <tr
                 class="tablerowbody2"
-                v-for="item in balances.data"
+                v-for="item in balances"
                 :key="item.id"
               >
                 <td style="width: 15%" class="w-3/12 px-4 border rounded-l-2xl">
@@ -244,6 +245,23 @@
                 <td style="width: 15%" class="px-4 border">
                   {{ item.account_id }}
                 </td> -->
+                <td style="width: 15%" class="px-4 border">
+                  <button @click="importexcel(item.account_id)" class="editbutton px-4 m-1">Import</button>
+                  <a
+                    class="
+                      border
+                      bg-indigo-300
+                      rounded-md
+                      px-4
+                      text-white
+                      font-bold
+                      m-1
+                      hover:text-white hover:bg-indigo-400
+                    "
+                    :href="'download-details/' + item.account_id"
+                    >Download</a
+                  >
+                </td>
                 <td
                   style="width: 15%"
                   class="px-4 border text-center rounded-r-2xl"
@@ -266,15 +284,66 @@
                   </button>
                 </td>
               </tr>
-              <tr v-if="balances.data.length === 0">
+              <!-- <tr v-if="balances.data.length === 0">
                 <td class="border-t px-6 py-4 bg-gray-100" colspan="6">
                   No Record found.
                 </td>
-              </tr>
+              </tr> -->
             </tbody>
           </table>
+        <div class="fixed z-10 inset-0 overflow-y-auto ease-out duration-400" v-if="isOpen">
+            <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                <div class="fixed inset-0 transition-opacity">
+                    <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+                </div>
+                <!-- This element is to trick the browser into centering the modal contents. -->
+                <span class="hidden sm:inline-block sm:align-middle sm:h-screen"></span>​
+                <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full" role="dialog" aria-modal="true" aria-labelledby="modal-headline">
+                    <form>
+                        <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                        <div class="">
+                            <div class="mb-4">
+                                <label for="exampleFormControlInput1" class="block text-gray-700 text-sm font-bold mb-2">Folder:</label>
+                                <multiselect
+                                        style="z-index: 20;"
+                                        class="rounded-md w-full border  border-black"
+                                        placeholder="Select Folder."
+                                        v-model="form.file_id"
+                                        track-by="id"
+                                        label="name"
+                                        :options="option"
+                                    >
+                                        <!-- @update:model-value="coch" -->
+                                    </multiselect>
+                                    <br>
+                                    <br>
+                                    <br>
+                            </div>
+                        </div>
+                        </div>
+                        <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                        <span class="flex w-full rounded-md shadow-sm sm:ml-3 sm:w-auto">
+                        <button wire:click.prevent="store()" type="button" class="inline-flex justify-center w-full rounded-md border border-transparent px-4 py-2 bg-green-600 text-base leading-6 font-medium text-white shadow-sm hover:bg-green-500 focus:outline-none focus:border-green-700 focus:shadow-outline-green transition ease-in-out duration-150 sm:text-sm sm:leading-5" v-show="editMode" @click="save(form)">
+                        Save
+                        </button>
+                        </span>
+                        <!-- <span class="flex w-full rounded-md shadow-sm sm:ml-3 sm:w-auto">
+                            <button wire:click.prevent="store()" type="button" class="inline-flex justify-center w-full rounded-md border border-transparent px-4 py-2 bg-green-600 text-base leading-6 font-medium text-white shadow-sm hover:bg-green-500 focus:outline-none focus:border-green-700 focus:shadow-outline-green transition ease-in-out duration-150 sm:text-sm sm:leading-5" v-show="editMode" @click="update(form)">
+                                Update
+                            </button>
+                            </span> -->
+                        <span class="mt-3 flex w-full rounded-md shadow-sm sm:mt-0 sm:w-auto">
+                        <button @click="closeModal()" type="button" class="inline-flex justify-center w-full rounded-md border border-gray-300 px-4 py-2 bg-white text-base leading-6 font-medium text-gray-700 shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue transition ease-in-out duration-150 sm:text-sm sm:leading-5">
+                        Cancel
+                        </button>
+                        </span>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            </div>
         </div>
-        <paginator class="mt-6" :balances="balances" />
+        <!-- <paginator class="mt-6" :balances="balances" /> -->
       </div>
     </div>
     <!-- </div> -->
@@ -289,7 +358,7 @@ import Paginator from "@/Layouts/Paginator";
 import FlashMessage from "@/Layouts/FlashMessage";
 import { pickBy } from "lodash";
 import { throttle } from "lodash";
-// import Multiselect from "@suadelabs/vue3-multiselect";
+import Multiselect from "@suadelabs/vue3-multiselect";
 
 export default {
   components: {
@@ -299,7 +368,7 @@ export default {
     throttle,
     pickBy,
     FlashMessage,
-    // Multiselect,
+    Multiselect,
   },
 
   //   props: ["data"],
@@ -307,6 +376,7 @@ export default {
     balances: Object,
     filters: Object,
     can: Object,
+    files: Object,
     companies: Array,
     //FOR MULTI-SELECT
     cochange: Object,
@@ -314,9 +384,16 @@ export default {
 
   data() {
     return {
-      co_id: this.$page.props.co_id,
+    //   co_id: this.$page.props.co_id,
+      option: this.files,
+       editMode: false,
+       isOpen: false,
       // co_id: this.cochange,
       // options: this.companies,
+    form: {
+        file_id: null,
+        account_id: null,
+      },
 
       params: {
         search: this.filters.search,
@@ -327,6 +404,36 @@ export default {
   },
 
   methods: {
+            openModal: function () {
+                this.isOpen = true;
+            },
+            closeModal: function () {
+                this.isOpen = false;
+                this.editMode=false;
+            },
+            importexcel: function (data) {
+                this.editMode = true;
+                this.form.account_id = data ;
+                this.openModal();
+            },
+            reset: function () {
+                this.form = {
+                    file_id: null,
+                    account_id: null,
+                }
+            },
+             save: function (data) {
+                if(data.file_id != null){
+                    this.$inertia.post(route('import.details'), data)
+                    this.editMode = false;
+                    this.reset();
+                    this.closeModal();
+                }
+                else{
+                    alert("please Select Folder First");
+                }
+            },
+
     create() {
       this.$inertia.get(route("details.create"));
     },

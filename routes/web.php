@@ -335,6 +335,10 @@ Route::get('download-details/{account_id}', [DetailController::class, 'download_
     ->name('download.details')
     ->middleware('auth');
 
+Route::post('import-details', [DetailController::class, 'import_details'])
+    ->name('import.details')
+    ->middleware('auth');
+
 //Details ----------------------- END --------------------
 
 

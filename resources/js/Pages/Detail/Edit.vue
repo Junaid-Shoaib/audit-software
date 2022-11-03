@@ -3,23 +3,7 @@
     <template #header>
       <h2 class="header">Modify Details</h2>
     </template>
-    <!-- <div class="w-4/5 overflow-hidden pb-2"> -->
     <div class="mt-5 ml-7 flex-row">
-      <!-- <div class="flex-1 inline-block">
-        <inertia-link
-          class="
-            border
-            bg-blue-400
-            rounded-xl
-            px-4
-            py-1
-            m-1
-            hover:text-white hover:bg-blue-600
-          "
-          :href="route('details')"
-          >Back
-        </inertia-link>
-      </div> -->
       <jet-button @click.prevent="back" class="ml-2 buttondesign"
         >Back</jet-button
       >
@@ -39,7 +23,6 @@
       </multiselect>
     </div>
 
-    <!-- <div class="relative mt-5 flex-row border-t border-b border-gray-200"> -->
     <div class="sm:px-6 lg:px-8 py-2">
       <form @submit.prevent="submit">
         <div class="obsolute mt-2 ml-2 sm:rounded-2xl">
@@ -48,8 +31,8 @@
             <!-- <thead class="bg-gray-700 text-white text-centre font-bold"> -->
             <thead>
               <tr class="tablerowhead">
-                <th class="py-1 px-4 rounded-r-2xl">Action</th>
-                <th class="py-1 px-4 rounded-l-2xl">Date</th>
+                <th class="py-1 px-4 rounded-l-2xl">Action</th>
+                <th class="py-1 px-4">Date</th>
                 <th class="py-1 px-4">Description</th>
                 <th class="py-1 px-4">Cheque</th>
                 <th class="py-1 px-4">Voucher No</th>
@@ -64,9 +47,9 @@
                 <th class="py-1 px-4">Bank Statement</th>
                 <th class="py-1 px-4">e</th>
                 <th class="py-1 px-4">f</th>
-                <th class="py-1 px-4">Remark</th>
-                <th class="py-1 px-4">Conclusion</th>
-                <!-- <th class="py-1 px-4">Company</th>
+                <th class="py-1 px-4 rounded-r-2xl">Remark</th>
+                <!-- <th class="py-1 px-4">Conclusion</th>
+                <th class="py-1 px-4">Company</th>
                   <th class="py-1 px-4">Year</th>
                   <th class="py-1 px-4">Account</th> -->
               </tr>
@@ -95,10 +78,6 @@
                       pr-2
                       pb-2
                       rounded-md
-                      hover:transition hover:ease-in-out
-                      transform
-                      hover:scale-110
-                      ease-out
                       duration-200
                       placeholder-indigo-300
                     "
@@ -115,10 +94,6 @@
                       pr-2
                       pb-2
                       rounded-md
-                      hover:transition hover:ease-in-out
-                      transform
-                      hover:scale-110
-                      ease-out
                       duration-200
                       placeholder-indigo-300
                     "
@@ -135,10 +110,6 @@
                       pr-2
                       pb-2
                       rounded-md
-                      hover:transition hover:ease-in-out
-                      transform
-                      hover:scale-110
-                      ease-out
                       duration-200
                       placeholder-indigo-300
                     "
@@ -155,10 +126,6 @@
                       pr-2
                       pb-2
                       rounded-md
-                      hover:transition hover:ease-in-out
-                      transform
-                      hover:scale-110
-                      ease-out
                       duration-200
                       placeholder-indigo-300
                     "
@@ -175,10 +142,6 @@
                       pr-2
                       pb-2
                       rounded-md
-                      hover:transition hover:ease-in-out
-                      transform
-                      hover:scale-110
-                      ease-out
                       duration-200
                       placeholder-indigo-300
                     "
@@ -195,10 +158,6 @@
                       pr-2
                       pb-2
                       rounded-md
-                      hover:transition hover:ease-in-out
-                      transform
-                      hover:scale-110
-                      ease-out
                       duration-200
                       placeholder-indigo-300
                     "
@@ -250,10 +209,6 @@
                       pr-2
                       pb-2
                       rounded-md
-                      hover:transition hover:ease-in-out
-                      transform
-                      hover:scale-110
-                      ease-out
                       duration-200
                       placeholder-indigo-300
                     "
@@ -261,54 +216,13 @@
                     placeholder="Enter remarks:"
                   />
                 </td>
-                <td>
-                  <input
-                    type="text"
-                    v-model="detail.conclusion"
-                    class="
-                      w-64
-                      pr-2
-                      pb-2
-                      rounded-md
-                      hover:transition hover:ease-in-out
-                      transform
-                      hover:scale-110
-                      ease-out
-                      duration-200
-                      placeholder-indigo-300
-                    "
-                    label="conclusion"
-                    placeholder="Enter conclusion:"
-                  />
-                </td>
+
               </tr>
             </tbody>
           </table>
         </div>
-        <div
-          class="
-            px-4
-            py-2
-            bg-gray-100
-            border-t border-gray-200
-            flex
-            justify-start
-            items-center
-          "
-        >
-          <button
-            class="
-              border
-              bg-green-500
-              rounded-xl
-              px-4
-              py-2
-              ml-4
-              mt-4
-              hover:text-white hover:bg-green-600
-            "
-            type="submit"
-          >
+        <div class="px-4 py-2 flex justify-start items-center">
+          <button class="submitbutton p-1 px-4 mt-1 ml-2 mr-3" type="submit">
             Update Details
           </button>
         </div>
@@ -394,4 +308,3 @@ export default {
   },
 };
 </script>
-
