@@ -103,7 +103,8 @@ class DetailController extends Controller
     public function create()
     {
         $account = Account::where('company_id', session('company_id'))->first();
-        $accounts = Account::where('company_id', session('company_id'))->get();
+        if($account){
+            $accounts = Account::where('company_id', session('company_id'))->get();
         $query = Detail::all()->where('company_id', session('company_id'))
             ->where('year_id', session('year_id'))
             ->where('account_id', $account->id)
@@ -139,12 +140,16 @@ class DetailController extends Controller
             $details[$i] = $detail;
             $i++;
         }
-         return Inertia::render('Detail/Edit', [
-            'balances' => $details,
-            'accounts' => $accounts,
-            'account' => $account,
-            'filters' => request()->all(['search', 'field', 'direction'])
-        ]);
+        return Inertia::render('Detail/Edit', [
+           'balances' => $details,
+           'accounts' => $accounts,
+           'account' => $account,
+           'filters' => request()->all(['search', 'field', 'direction'])
+       ]);
+        }else{
+            return Redirect::route('trial.index')->with('warning', 'Please create Account first.');
+        }
+
     }
 
     public function store()

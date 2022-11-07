@@ -45,8 +45,8 @@
                 <th class="py-1 px-4">Voucher Approved</th>
                 <th class="py-1 px-4">Supporting Document</th>
                 <th class="py-1 px-4">Bank Statement</th>
-                <th class="py-1 px-4">e</th>
-                <th class="py-1 px-4">f</th>
+                <th class="py-1 px-4">E</th>
+                <th class="py-1 px-4">F</th>
                 <th class="py-1 px-4 rounded-r-2xl">Remark</th>
                 <!-- <th class="py-1 px-4">Conclusion</th>
                 <th class="py-1 px-4">Company</th>

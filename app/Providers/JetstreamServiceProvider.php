@@ -6,6 +6,7 @@ use App\Actions\Jetstream\DeleteUser;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Jetstream\Jetstream;
 use App\Models\User;
+use App\Models\Year;
 use Illuminate\Http\Request;
 use Laravel\Fortify\Fortify;
 use Illuminate\Support\Facades\Hash;
@@ -48,6 +49,12 @@ class JetstreamServiceProvider extends ServiceProvider
                 if ($user->settings()->where('key', 'active_year')->first()) {
                     // session(['company_id'=>$user->settings()->where('key', 'active_company')->first()->value]);
                     session(['year_id' => $user->settings()->where('key', 'active_year')->first()->value]);
+                    $active_yr = Year::where('id' , session('year_id'))->first();
+                    if ($active_yr->users()->first()) {
+                        session(['team_id' => $active_yr->users()->first()->id]);
+                    } else {
+                        session(['team_id' => null]);
+                    }
                 }
                 return $user;
             }

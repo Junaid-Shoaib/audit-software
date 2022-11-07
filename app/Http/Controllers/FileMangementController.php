@@ -42,6 +42,7 @@ class FileMangementController extends Controller
                 })
                 ->first();
         } else {
+
             $execution = FileManager::all()->where('company_id', session('company_id'))
                 ->where('year_id', session('year_id'))
                 ->where('name', 'execution')
@@ -56,43 +57,48 @@ class FileMangementController extends Controller
                 })
                 ->first();
 
-            $folders = FileManager::where('company_id', session('company_id'))
+            if($execution){
+                $folders = FileManager::where('company_id', session('company_id'))
                 ->where('year_id', session('year_id'))
                 ->where('parent_id', $execution['id'])
                 ->where('is_folder', '0')
                 ->get();
 
 
-            if($parent_name_id == 'execution')
-            {
-                $parent = FileManager::all()->where('company_id', session('company_id'))
-                    ->where('year_id', session('year_id'))
-                    ->where('parent_id', $execution['id'])
-                    ->map(function ($obj) {
-                        return [
-                            'id' => $obj->id,
-                            'name' => ucfirst($obj->name),
-                            'is_folder' => $obj->is_folder,
-                            'parent_id' => $obj->parent_id,
-                            'type' => $obj->name == 'execution' ? 'Folder' : 'File',
-                        ];
-                    })
-                    ->first();
-            } else {
-                $parent = FileManager::all()->where('company_id', session('company_id'))
-                    ->where('year_id', session('year_id'))
-                    ->where('id', $parent_name_id)
-                    ->map(function ($obj) {
-                        return [
-                            'id' => $obj->id,
-                            'name' => ucfirst($obj->name),
-                            'is_folder' => $obj->is_folder,
-                            'parent_id' => $obj->parent_id,
-                            'type' => $obj->name == 'execution' ? 'Folder' : 'File',
-                        ];
-                    })
-                    ->first();
+                if($parent_name_id == 'execution')
+                {
+                    $parent = FileManager::all()->where('company_id', session('company_id'))
+                        ->where('year_id', session('year_id'))
+                        ->where('parent_id', $execution['id'])
+                        ->map(function ($obj) {
+                            return [
+                                'id' => $obj->id,
+                                'name' => ucfirst($obj->name),
+                                'is_folder' => $obj->is_folder,
+                                'parent_id' => $obj->parent_id,
+                                'type' => $obj->name == 'execution' ? 'Folder' : 'File',
+                            ];
+                        })
+                        ->first();
+                } else {
+                    $parent = FileManager::all()->where('company_id', session('company_id'))
+                        ->where('year_id', session('year_id'))
+                        ->where('id', $parent_name_id)
+                        ->map(function ($obj) {
+                            return [
+                                'id' => $obj->id,
+                                'name' => ucfirst($obj->name),
+                                'is_folder' => $obj->is_folder,
+                                'parent_id' => $obj->parent_id,
+                                'type' => $obj->name == 'execution' ? 'Folder' : 'File',
+                            ];
+                        })
+                        ->first();
+                }
+            }else{
+                return Redirect::route('trial.index')->with('warning', 'Please Upload Trial first.');
             }
+
         }
 
         //if get parent then we can show their childrens otherwise we can't track folders or file

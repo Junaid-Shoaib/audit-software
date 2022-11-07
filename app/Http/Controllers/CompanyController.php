@@ -162,6 +162,7 @@ class CompanyController extends FileMangementController
             // Calling the function from DefaultFoldersCreation controller ---- to generate the default folder
             $this->defaultFolders();
         });
+            session(['team_id' => null]);
         return Redirect::route('companies')->with('success', 'Company created');
     }
 
@@ -233,9 +234,13 @@ class CompanyController extends FileMangementController
             $active_yr->value = Year::where('company_id', $id)->latest()->first()->id;
             $active_yr->save();
 
-            $active_yr = Year::where('company_id', $id)->latest()->first()->id;
-
-            session(['year_id' => $active_yr]);
+            $active_yr = Year::where('company_id', $id)->latest()->first();
+            session(['year_id' => $active_yr->id]);
+            if($active_yr->users()->first()){
+                session(['team_id' => $active_yr->users()->first()->id]);
+            }else{
+                session(['team_id' => null]);
+            }
             // session(['year_id' => $active_yr->value]);
             // $active_co->save();
             // session(['company_id' => $id]);

@@ -82,7 +82,7 @@ class TeamController extends Controller
     public function create()
     {
         $partner = User::role('partner')->first();
-        $staf = User::role('staff')->first();
+        $staf = [User::role('staff')->first()];
         $manager = User::role('manager')->first();
 
         if($partner && $manager && $staf)
@@ -183,6 +183,7 @@ class TeamController extends Controller
                 ]);
             }
         }
+        session(['team_id' => $year->users()->first()->id]);
         return Redirect::route('teams')->with('success', 'Team created.');
     }
 
@@ -224,7 +225,7 @@ class TeamController extends Controller
             $year->users()->detach($pre_user->id);
         }
 
-        $company = Year::find(session('company_id'));
+        $company = Company::find(session('company_id'));
         $pre_users = $company->users()->get();
         foreach($pre_users as $pre_user)
         {
@@ -245,7 +246,7 @@ class TeamController extends Controller
             $year->users()->attach($staf['id']);
             $company->users()->attach($staf['id']);
         }
-
+        session(['team_id' => $year->users()->first()->id]);
         return Redirect::route('teams')->with('success', 'Team updated.');
     }
 }

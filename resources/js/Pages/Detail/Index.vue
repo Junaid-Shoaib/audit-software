@@ -284,12 +284,13 @@
                   </button>
                 </td>
               </tr>
-              <!-- <tr v-if="balances.data.length === 0">
-                <td class="border-t px-6 py-4 bg-gray-100" colspan="6">
+               <tr v-if="!balances">
+                <td class=" px-6 py-4" colspan="6">
                   No Record found.
                 </td>
-              </tr> -->
+              </tr>
             </tbody>
+
           </table>
         <div class="fixed z-10 inset-0 overflow-y-auto ease-out duration-400" v-if="isOpen">
             <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
