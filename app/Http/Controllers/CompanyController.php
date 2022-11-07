@@ -38,8 +38,8 @@ class CompanyController extends FileMangementController
         ]);
 
         $query =
-        // auth()->user()->companies()->getQuery()->paginate(10)
-            Company::getQuery()->paginate(10)
+        auth()->user()->companies()->getQuery()->paginate(10)
+            // Company::getQuery()->paginate(10)
             ->withQueryString()
             ->through(
                 fn ($comp) =>

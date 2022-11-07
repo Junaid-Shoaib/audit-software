@@ -16,7 +16,8 @@ class TeamController extends Controller
 {
     public function index()
     {
-        if(Company::first())
+        // if(Company::first())
+        if(auth()->user()->companies()->first())
         {
             //Validating request
             request()->validate([
@@ -26,30 +27,35 @@ class TeamController extends Controller
 
             $year = Year::find(session('year_id'));
 
-            $query =
-            $year->users()->getQuery()->paginate(10)
-            ->withQueryString()
-                    ->through(
-                            fn ($user) =>
-                            [
-                                'id' => $user->id,
-                                'name' => $user->name,
-                                'email' => $user->email,
-                                $cur_user = User::find($user->user_id),
-                                'role' => $cur_user->getRoleNames()[0],
-                                // 'delete' => Year::where('company_id', $comp->id)->first() != null ? true : false,
-                            ],
-                        );
+            if($year)
+            {
+                $query =
+                $year->users()->getQuery()->paginate(10)
+                ->withQueryString()
+                        ->through(
+                                fn ($user) =>
+                                [
+                                    'id' => $user->id,
+                                    'name' => $user->name,
+                                    'email' => $user->email,
+                                    $cur_user = User::find($user->user_id),
+                                    'role' => $cur_user->getRoleNames()[0],
+                                    // 'delete' => Year::where('company_id', $comp->id)->first() != null ? true : false,
+                                ],
+                            );
 
-            if (request('search')) {
-                $query->where('name', 'LIKE', '%' . request('search') . '%');
-            }
+                if (request('search')) {
+                    $query->where('name', 'LIKE', '%' . request('search') . '%');
+                }
 
-            if (request()->has(['field', 'direction'])) {
-                $query->orderBy(
-                    request('field'),
-                    request('direction')
-                );
+                if (request()->has(['field', 'direction'])) {
+                    $query->orderBy(
+                        request('field'),
+                        request('direction')
+                    );
+                }
+            } else {
+                return Redirect::route('years')->with('warning', 'Year not found');
             }
 
             return Inertia::render('Teams/Index', [
@@ -125,6 +131,7 @@ class TeamController extends Controller
         $partner_id = Request::input('partner')['id'];
         $manager_id = Request::input('manager')['id'];
 
+        // dd($company, $year, $company->users()->where('user_id', $partner_id)->first());
         if(!$company->users()->where('user_id', $partner_id)->first())
         {
             $company->users()->attach($partner_id);
@@ -217,15 +224,26 @@ class TeamController extends Controller
             $year->users()->detach($pre_user->id);
         }
 
+        $company = Year::find(session('company_id'));
+        $pre_users = $company->users()->get();
+        foreach($pre_users as $pre_user)
+        {
+            $company->users()->detach($pre_user->id);
+        }
+
+
         $partner_id = Request::input('partner')['id'];
         $manager_id = Request::input('manager')['id'];
         $staff = Request::input('staff');
 
         $year->users()->attach($partner_id);
         $year->users()->attach($manager_id);
+        $company->users()->attach($partner_id);
+        $company->users()->attach($manager_id);
         foreach($staff as $staf)
         {
             $year->users()->attach($staf['id']);
+            $company->users()->attach($staf['id']);
         }
 
         return Redirect::route('teams')->with('success', 'Team updated.');
