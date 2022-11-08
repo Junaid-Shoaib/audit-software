@@ -277,18 +277,24 @@ class Excel extends Controller
 
     public function lead()
     {
-        $acc_grps =  AccountGroup::with('accounts','accounts.trials')->where('company_id', session('company_id'))
-        ->tree()->get()->toTree()->toArray();
-        // dd($acc_grps);
-            $spreadsheet = new Spreadsheet();
-            foreach($acc_grps as $key =>$acc_grp){
-                $this->excel1($acc_grp, $key,$spreadsheet);
-            }
+        $accounts = Account::where('company_id', session('company_id'))->first();
+        if($accounts)
+        {
+            $acc_grps =  AccountGroup::with('accounts','accounts.trials')->where('company_id', session('company_id'))
+            ->tree()->get()->toTree()->toArray();
+            // dd($acc_grps);
+                $spreadsheet = new Spreadsheet();
+                foreach($acc_grps as $key =>$acc_grp){
+                    $this->excel1($acc_grp, $key,$spreadsheet);
+                }
 
-        $writer = new Xlsx($spreadsheet);
-        $writer->save(storage_path('app/public/' . 'lead.xlsx'));
-        return response()->download(storage_path('app/public/'. 'lead.xlsx'));
-
+            $writer = new Xlsx($spreadsheet);
+            $writer->save(storage_path('app/public/' . 'lead.xlsx'));
+            return response()->download(storage_path('app/public/'. 'lead.xlsx'));
+        } else {
+            $comp = Company::find(session('company_id'));
+            return back()->with('warning', 'Account not found in '. $comp->name . ' company, Upload trial to generate accounts');
+        }
         //-----------------------------------------------------------------
     }
 
