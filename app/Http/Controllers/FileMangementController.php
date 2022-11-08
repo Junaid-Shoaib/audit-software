@@ -25,9 +25,22 @@ class FileMangementController extends Controller
     public function filing($parent_name_id)
     {
         $folders = null;
-        //condition to deal with url parameter- it will be name if hiting the link from dashboard otherwise it will be id
-        if($parent_name_id == 'planing' || $parent_name_id == 'completion')
+        $fold = null;
+        $plan_comp_name = '';
+        $fold = FileManager::find($parent_name_id);
+
+        if($fold)
         {
+            $plan_comp_name = $fold->name;
+        }
+        //condition to deal with url parameter- it will be name if hiting the link from dashboard otherwise it will be id
+        if($parent_name_id == 'planing' || $parent_name_id == 'completion'
+            || $plan_comp_name == 'planing' || $plan_comp_name == 'completion')
+        {
+            if($plan_comp_name != '')
+            {
+                $parent_name_id = $plan_comp_name;
+            }
             $parent = FileManager::all()->where('company_id', session('company_id'))
                 ->where('year_id', session('year_id'))
                 ->where('name', $parent_name_id)

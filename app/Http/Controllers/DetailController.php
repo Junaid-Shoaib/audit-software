@@ -84,6 +84,8 @@ class DetailController extends Controller
             ->where('year_id',session('year_id'))
             ->where('is_folder',0)
             ->where('name', '!=', 'execution')
+            ->where('name', '!=', 'planing')
+            ->where('name', '!=', 'completion')
             ->get(['id','name']);
         // dd($file);
 
@@ -103,12 +105,40 @@ class DetailController extends Controller
     public function create()
     {
         $account = Account::where('company_id', session('company_id'))->first();
-        if($account){
-            $accounts = Account::where('company_id', session('company_id'))->get();
-        $query = Detail::all()->where('company_id', session('company_id'))
-            ->where('year_id', session('year_id'))
-            ->where('account_id', $account->id)
-            ->map(
+        if($account)
+        {
+            //  $debit = Trial::where('account_id', $account->id)->sum('cls_debit');
+            // $credit = Trial::where('account_id', $account->id)->sum('cls_credit');
+            // $res = $debit - $credit;
+            $allAccounts = Account::where('company_id', session('company_id'))->get()
+            ->map(function($acc){
+                  $debit = Trial::where('account_id', $acc->id)->sum('cls_debit');
+                  $credit = Trial::where('account_id', $acc->id)->sum('cls_credit');
+                  $res = $debit - $credit;
+                if($res > 0){
+                return [
+                    'id' => $acc->id,
+                    'name' => $acc->name,
+                    'res' => $res,
+                ];
+                }
+            });
+
+            $accounts = [];
+            $i = 0;
+            foreach($allAccounts as $acc)
+            {
+                if($acc)
+                {
+                    $accounts[$i] = $acc;
+                    $i++;
+                }
+            }
+
+            $query = Detail::all()->where('company_id', session('company_id'))
+                ->where('year_id', session('year_id'))
+                ->where('account_id', $account->id)
+                ->map(
                 fn ($obj) =>
                 [
                     'id' => $obj->id,
@@ -140,12 +170,18 @@ class DetailController extends Controller
             $details[$i] = $detail;
             $i++;
         }
-        return Inertia::render('Detail/Edit', [
-           'balances' => $details,
-           'accounts' => $accounts,
-           'account' => $account,
-           'filters' => request()->all(['search', 'field', 'direction'])
-       ]);
+        if($accounts != [])
+        {
+            return Inertia::render('Detail/Edit', [
+                'balances' => $details,
+                'accounts' => $accounts,
+                'account' => $accounts[0],
+                'filters' => request()->all(['search', 'field', 'direction'])
+            ]);
+
+        }else {
+            return Redirect::route('trial.index')->with('warning', 'You don\'t have amount in account.');
+        }
         }else{
             return Redirect::route('trial.index')->with('warning', 'Please create Account first.');
         }
@@ -248,9 +284,34 @@ class DetailController extends Controller
             $details[$i] = $detail;
             $i++;
         }
+
+        $allAccounts = Account::where('company_id', session('company_id'))->get()
+            ->map(function($acc){
+                  $debit = Trial::where('account_id', $acc->id)->sum('cls_debit');
+                  $credit = Trial::where('account_id', $acc->id)->sum('cls_credit');
+                  $res = $debit - $credit;
+                if($res > 0){
+                return [
+                    'id' => $acc->id,
+                    'name' => $acc->name,
+                    'res' => $res,
+                ];
+                }
+            });
+
+            $accounts = [];
+            $i = 0;
+            foreach($allAccounts as $acc)
+            {
+                if($acc)
+                {
+                    $accounts[$i] = $acc;
+                    $i++;
+                }
+            }
          return Inertia::render('Detail/Edit', [
             'balances' => $details,
-            'accounts' => Account::where('company_id', session('company_id'))->get(),
+            'accounts' => $accounts,
             'account' => Account::find($account_id),
             'filters' => request()->all(['search', 'field', 'direction'])
         ]);
