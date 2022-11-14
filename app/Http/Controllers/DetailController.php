@@ -7,18 +7,13 @@ use App\Models\Detail;
 use App\Models\Account;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-use PhpOffice\PhpSpreadsheet\Style\Fill;
 use Carbon\Carbon;
-use App\Models\Company;
 use App\Models\FileManager;
-use App\Models\Year;
 use Inertia\Inertia;
-use \PhpOffice\PhpSpreadsheet\Style;
 use File;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\DB;
-
 use App\Models\Trial;
 
 
@@ -29,6 +24,7 @@ class DetailController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    // GroupBy Indexing Account ID
     public function index()
     {
         //Validating request
@@ -102,14 +98,13 @@ class DetailController extends Controller
         ]);
     }
 
+    // Create Or Edit Data Display
     public function create()
     {
         $account = Account::where('company_id', session('company_id'))->first();
         if($account)
         {
-            //  $debit = Trial::where('account_id', $account->id)->sum('cls_debit');
-            // $credit = Trial::where('account_id', $account->id)->sum('cls_credit');
-            // $res = $debit - $credit;
+
             $allAccounts = Account::where('company_id', session('company_id'))->get()
             ->map(function($acc){
                   $debit = Trial::where('account_id', $acc->id)->sum('cls_debit');
@@ -124,6 +119,7 @@ class DetailController extends Controller
                 }
             });
 
+            //Remove Null Array;
             $accounts = [];
             $i = 0;
             foreach($allAccounts as $acc)
@@ -188,6 +184,7 @@ class DetailController extends Controller
 
     }
 
+    // Store function
     public function store()
     {
         Request::validate([
@@ -239,6 +236,7 @@ class DetailController extends Controller
         return Redirect::route('details')->with('success', 'Detail created');
     }
 
+     // Edit function
     public function edit($account_id)
     {
         // $details = Detail::where('account_id', $account_id)->get();
@@ -317,6 +315,7 @@ class DetailController extends Controller
         ]);
     }
 
+    // Update function
     public function update(Req $req, $account_id)
     {
         // dd($account_id, $req->balances);
@@ -375,6 +374,7 @@ class DetailController extends Controller
         return Redirect::route('details')->with('success', 'Detail created');
     }
 
+    // Delete function
     public function destroy($account_id)
     {
         $details = Detail::where('company_id', session('company_id'))
@@ -387,6 +387,7 @@ class DetailController extends Controller
         return Redirect::back()->with('success', 'Details deleted.');
     }
 
+    // Download function Test Of Detail
     public function download_details($account_id)
     {
 
@@ -397,6 +398,7 @@ class DetailController extends Controller
                 $detail_first = Detail::where('company_id' , session('company_id'))->first();
                 if(count($details) > 0)
                 {
+                    // # global function generate_details
                 $this->generate_details($details,$account, $detail_first);
                     return response()->download(storage_path('app/public/' . session('company_id')  . '/' . session('year_id') . '/' .  'Test of Details.xlsx'));
 
@@ -411,6 +413,7 @@ class DetailController extends Controller
 
     }
 
+    // Import Detail Function
     public function import_details(Req $req)
     {
 
@@ -425,18 +428,10 @@ class DetailController extends Controller
             if(count($details) > 0)
             {
                 $this->generate_details($details,$account, $detail_first);
-                // File::copy(public_path().'/temp/'. $name, storage_path('app/public/'.$path.'/'.$name));
 
                 $file_exists = FileManager::
-                    // where('company_id', session('company_id'))
-                    // ->where('year_id', session('year_id'))
-                    // ->where('is_folder', 1)
-                    // ->where('parent_id', $directory_id)
-                    // ->where('name', 'Test of Details.xlsx')
                     where('path', $directoryParent->path . '/Test of Details.xlsx')
                     ->first();
-                // dd($file_exists);
-
                 if(!$file_exists)
                 {
                     $folderObj = FileManager::create([
@@ -450,11 +445,8 @@ class DetailController extends Controller
                 } else {
                     $folderObj = $file_exists;
                 }
-                // File::copy(storage_path('app/public/' . session('company_id')  . '/' . session('year_id') .'/'.'Test of Details.xlsx'),
-                // storage_path('app/public/' . session('company_id')  . '/' . session('year_id') . '/' . $directory_id . '/' .  'Test of Details.xlsx'));
                 File::copy(storage_path('app/public/' . session('company_id')  . '/' . session('year_id') .'/'.'Test of Details.xlsx'), storage_path('app/public/' . $folderObj->path));
                 return redirect()->route('details')->with('success', 'File Import Successfully.');
-                    // return response()->download(storage_path('app/public/' . session('company_id')  . '/' . session('year_id') . '/' . $directory_id . '/' .  'Test of Details.xlsx'));
             }else
             {
                 return Redirect::route('details')->with('warning', 'Please create Test of Details first.');
@@ -465,6 +457,7 @@ class DetailController extends Controller
         }
     }
 
+    // Generate test Of Detail Excel Function
     public function generate_details($details,$account , $detail_first)
     {
 

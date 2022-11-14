@@ -13,8 +13,9 @@ use Illuminate\Support\Facades\Storage;
 class TemplateController extends Controller
 {
     public function index()
-    {      //Validating request
+    {
 
+        //Validating request
             request()->validate([
                 'direction' => ['in:asc,desc'],
                 'field' => ['in:name,email']
@@ -62,7 +63,6 @@ class TemplateController extends Controller
         $request->validate([
             'avatar'=> 'required|mimes:xlsx, xls , docx, docs'
         ]);
-        // dd($request);
             $path = strtolower($request->type);
             $name = $request->file('avatar')->getClientOriginalName();
             if(file_exists(public_path('temp/'.$name))){
@@ -82,9 +82,9 @@ class TemplateController extends Controller
     }
 
 
+    // Template DOwnload Function FOr Admin Side
     public function temp_download($id)
     {
-        // dd($id);
         $file_obj = Template::find($id);
         return response()->download(public_path().'/temp/' . $file_obj->name);
     }
@@ -92,8 +92,9 @@ class TemplateController extends Controller
 
     public function destroy($id)
     {
+        // Delete Template
         try {
-                    $temp = Template::find($id);
+                $temp = Template::find($id);
                 if(File::exists(public_path().'/temp/'.$temp->name)){
                     File::delete(public_path().'/temp/'.$temp->name);
                     File::delete(storage_path('app/public/'.$temp->path));

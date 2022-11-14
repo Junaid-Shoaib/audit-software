@@ -1,8 +1,6 @@
 <?php
 
 namespace App\Http\Controllers;
-
-use App\Models\Account;
 use App\Models\AccountGroup;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
@@ -10,25 +8,16 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Company;
 use App\Models\Year;
 use App\Models\Setting;
-use Illuminate\Support\Facades\Artisan;
-use Egulias\EmailValidator\Warning\Warning;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
-
-
 use App;
-use App\Models\AccountType;
-use App\Models\Document;
-use App\Models\Entry;
-use App\Models\DocumentType;
-use App\Models\FileManager;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 
 class CompanyController extends FileMangementController
 {
 
-
+    // Listing
     public function index()
     {
         //Validating request
@@ -39,7 +28,6 @@ class CompanyController extends FileMangementController
 
         $query =
         auth()->user()->companies()->getQuery()->paginate(10)
-            // Company::getQuery()->paginate(10)
             ->withQueryString()
             ->through(
                 fn ($comp) =>
@@ -80,6 +68,7 @@ class CompanyController extends FileMangementController
         ]);
     }
 
+    //Craeat Function
     public function create()
     {
         $fiscals = ['June', 'March', 'September', 'December'];
@@ -90,13 +79,17 @@ class CompanyController extends FileMangementController
         ]);
     }
 
+    // Store function
     public function store()
     {
         Request::validate([
             'name' => ['required', 'unique:companies'],
             'fiscal' => ['required'],
         ]);
+
         DB::transaction(function () {
+
+            // Create Company
             $company = Company::create([
                 'name' => strtoupper(Request::input('name')),
                 'address' => Request::input('address'),
@@ -106,7 +99,11 @@ class CompanyController extends FileMangementController
                 'fiscal' => Request::input('fiscal'),
                 'incorp' => Request::input('incorp'),
             ]);
+
+            //Attach Company_user table.
             $company->users()->attach(auth()->user()->id);
+
+            // Create Year Functionality start
 
             //Start Month & End Month
             $startMonth = Carbon::parse($company->fiscal)->month + 1;
@@ -139,12 +136,17 @@ class CompanyController extends FileMangementController
                 'end' => $endDate,
                 'company_id' => $company->id,
             ]);
+
+            // Create Year Functionality End
+
+            // Create Active Company Setting
             Setting::create([
                 'key' => 'active_company',
                 'value' => $company->id,
                 'user_id' => Auth::user()->id,
             ]);
 
+            // Create Active Year Setting
             Setting::create([
                 'key' => 'active_year',
                 'value' => $year->id,
@@ -166,6 +168,7 @@ class CompanyController extends FileMangementController
         return Redirect::route('companies')->with('success', 'Company created');
     }
 
+    //Edit Function
     public function edit(Company $company)
     {
         return Inertia::render('Company/Edit', [
@@ -182,6 +185,7 @@ class CompanyController extends FileMangementController
         ]);
     }
 
+    // Update function
     public function update(Company $company)
     {
         Request::validate([
@@ -219,13 +223,7 @@ class CompanyController extends FileMangementController
     public function coch($id)
     {
         $active_co = Setting::where('user_id', Auth::user()->id)->where('key', 'active_company')->first();
-        // $coch_hold = Company::where('id', $active_co->value)->first();
-        // $active_co = Setting::all();
-        // where('user_id', Auth::user()->id)->where('key', 'active_company')->first();
-        // dd($active_co);
-
         $active_co->value = $id;
-
         $active_co->save();
         session(['company_id' => $id]);
 
@@ -241,9 +239,6 @@ class CompanyController extends FileMangementController
             }else{
                 session(['team_id' => null]);
             }
-            // session(['year_id' => $active_yr->value]);
-            // $active_co->save();
-            // session(['company_id' => $id]);
             return Redirect::back();
         } else {
             session(['year_id' => null]);
@@ -252,63 +247,10 @@ class CompanyController extends FileMangementController
     }
 
 
-    // FOR PDF FROM MZAUDIT --------
-    // public function pd()
-    // {
-    //     // $a = "hello world";
-    //     // dd(AccountType::where('company_id', session('company_id'))->first());
-    //     $voucher = Entry::all()
-    //         ->where('id', 2)
-    //         // ->where('company_id', session('company_id'))
-    //         //     ->where('year_id', session('year_id'))
-
-    //         ->map(function ($comp) {
-    //             return [
-    //                 'id' => $comp->id,
-    //                 'debit' => $comp->debit,
-    //                 'credit' => $comp->credit,
-    //                 'description' => 'description',
-    //                 'ref' => 'ref',
-    //                 'name' => 'name',
-    //                 // 'ref' => $comp->document->ref,
-    //                 // 'description' => $comp->document->description,
-    //                 // 'name' => $comp->document->documentType->name,
-    //             ];
-    //         })
-    //         ->first();
-
-    //     $data['entry_obj'] = Entry::all()->where('company_id', session('company_id'))->where('year_id', session('year_id'));
-
-    //     $i = 0;
-    //     foreach ($data['entry_obj'] as $entry) {
-    //         if ($entry) {
-    //             $data['entries'][$i] = $entry;
-    //             $i++;
-    //         }
-    //     }
-    //     $data['doc'] = Document::all()->where('id', $data['entries'][0]->document_id)->first();
-    //     $data['doc_type'] = DocumentType::all()->where('id', $data['doc']->type_id)->first();
-    //     $a = Company::where('id', session('company_id'))->first();
-    //     $pdf = App::make('dompdf.wrapper');
-    //     // $pdf->loadView('pdf', compact('a'));
-    //     $pdf->loadView('pdf', $data);
-    //     return $pdf->stream('v.pdf');
-    // }
-    // FOR PDF FROM MZAUDIT --------
-
-
+    // Trial Template Download Function
     public function trial_pattern(){
         return response()->download(public_path('/trial_upload.xlsx'));
     }
 
-
-    public function lead_schedule(){
-
-        $acc_grps =  AccountGroup::where('company_id', session('company_id'))
-        ->tree()->get()->toTree()->toArray();
-        $pdf = App::make('dompdf.wrapper');
-        $pdf->loadView('lead_schedule',compact('acc_grps'));
-        return $pdf->stream('v.pdf');
-    }
 
 }

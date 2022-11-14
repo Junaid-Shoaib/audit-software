@@ -30,13 +30,6 @@ class AccountController extends Controller
             if (request('search')) {
                 $query->where('name', 'LIKE', '%' . request('search') . '%');
             }
-            // // Ordering request
-            // if (request()->has(['field', 'direction'])) {
-            //     $query->orderBy(
-            //         request('field'),
-            //         request('direction')
-            //     );
-            // }
 
             $balances = $query
                 ->where('company_id', session('company_id'))
@@ -47,9 +40,7 @@ class AccountController extends Controller
                             [
                                 'id' => $account->id,
                                 'name' => $account->name,
-                                // 'group_id' => $account->parent_id,
                                 'group_name' => $account->accountGroup->name,
-                                // 'delete' => Entry::where('account_id', $account->id)->first() ? false : true,
                             ];
                     }
                 );
@@ -59,19 +50,6 @@ class AccountController extends Controller
                 'balances' => $balances,
                 'company' => Company::where('id', session('company_id'))->first(),
                 'companies' => auth()->user()->companies,
-
-                // 'data' => Account::all()
-                //     ->where('company_id', session('company_id'))
-                //     ->map(function ($account) {
-                //         return [
-                //             'id' => $account->id,
-                //             'name' => $account->name,
-                //             'group_id' => $account->group_id,
-                //             'group_name' => $account->accountGroup->name,
-                //             'delete' => Entry::where('account_id', $account->id)->first() ? false : true,
-
-                //         ];
-                //     }),
             ]);
         } else {
             return Redirect::route('trial.index')->with('warning', 'Please upload Excel to generate Accounts and Account Groups.');
@@ -80,7 +58,6 @@ class AccountController extends Controller
 
     public function create()
     {
-        // $groups = \App\Models\AccountGroup::where('company_id', session('company_id'))->map->only('id', 'name')->get();
         $groups = AccountGroup::where('company_id', session('company_id'))->tree()->get()->toTree();
         $group_first = AccountGroup::all()->where('company_id', session('company_id'))->map->only('id', 'name')->first();
 
@@ -98,8 +75,7 @@ class AccountController extends Controller
     {
         Request::validate([
             'name' => ['required'],
-            // 'number' => ['nullable'],
-            'group' => ['required'],
+             'group' => ['required'],
         ]);
 
         $account = Account::create([
@@ -136,9 +112,7 @@ class AccountController extends Controller
         Request::validate([
             'name' => ['required'],
         ]);
-        // $account->group_id = Request::input('group_id');
         $account->company_id = session('company_id');
-        // $account->number = Request::input('number');
         $account->name = Request::input('name');
         $account->save();
 

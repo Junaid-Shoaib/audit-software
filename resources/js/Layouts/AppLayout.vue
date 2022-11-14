@@ -591,12 +591,7 @@ export default {
           label: "Users",
           icon: UserGroupIcon,
         },
-        {
-          href: route("teams"),
-          routeName: "teams",
-          label: "Teams",
-          icon: UserGroupIcon,
-        },
+
         {
           href: route("companies"),
           routeName: "companies",
@@ -608,6 +603,12 @@ export default {
           routeName: "years",
           label: "Years",
           icon: CalendarIcon,
+        },
+        {
+          href: route("teams"),
+          routeName: "teams",
+          label: "Teams",
+          icon: UserGroupIcon,
         },
         {
           href: route("accountgroups"),
@@ -681,12 +682,6 @@ export default {
         },
       ],
       mainNavigationTeam: [
-          {
-          href: route("teams"),
-          routeName: "teams",
-          label: "Teams",
-          icon: UserGroupIcon,
-        },
         {
           href: route("companies"),
           routeName: "companies",
@@ -698,6 +693,12 @@ export default {
           routeName: "years",
           label: "Years",
           icon: CalendarIcon,
+        },
+         {
+          href: route("teams"),
+          routeName: "teams",
+          label: "Teams",
+          icon: UserGroupIcon,
         },
       ],
       libraryNavigation: [

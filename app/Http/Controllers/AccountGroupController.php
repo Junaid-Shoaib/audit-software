@@ -31,13 +31,7 @@ class AccountGroupController extends Controller
                 $query->where('name', 'LIKE', '%' . request('search') . '%');
             }
 
-            // // Ordering request
-            // if (request()->has(['field', 'direction'])) {
-            //     $query->orderBy(
-            //         request('field'),
-            //         request('direction')
-            //     );
-            // }
+
 
             $balances = $query
                 ->where('company_id', session('company_id'))
@@ -68,24 +62,6 @@ class AccountGroupController extends Controller
                 return Redirect::route('trial.index')->with('warning', 'Please upload Excel to generate Accounts and Account Groups.');
         }
     }
-
-    // public function generate()
-    // {
-    //     // $exitCode = Artisan::call('db:seed', [
-    //     //     '--class' => 'TypeSeeder'
-    //     // ]);
-    //     // print_r("hi");
-    //     // die();
-    //     // $this->call([
-    //     //     // UserSeeder::class,
-    //     //     // PostSeeder::class,
-    //     //     // CommentSeeder::class,
-    //     //     // AccountSeeder::class,
-    //     //     GroupSeeder::class,
-    //     // ]);
-    //     return GroupSeeder::class;
-    //     return Redirect::back()->with('success', 'Account Group deleted.');
-    // }
 
     public function create(Req $request)
     {
@@ -132,7 +108,6 @@ class AccountGroupController extends Controller
                         [
                             'id' => $accountgroup->id,
                             'type_id' => $accountgroup->accountType->name,
-                            // 'parent_id' => $accountgroup->parent_id,
                             'parent_id' => $accountgroup->parent_id ? $accountgroup->accountGroup->name : null,
                             'name' => $accountgroup->name,
                             'company_id' => session('company_id'),
@@ -151,8 +126,7 @@ class AccountGroupController extends Controller
             // 'type' => ['required'],
             'name' => ['required'],
         ]);
-        // $accountgroup->type_id = Request::input('type');
-        // $accountgroup->company_id = session('company_id');
+
         $accountgroup->name = Request::input('name');
         $accountgroup->save();
 
