@@ -15,6 +15,7 @@ use App\Models\Company;
 use App\Models\FileManager;
 use App\Models\Trial;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use Illuminate\Support\Facades\Storage;
@@ -31,8 +32,7 @@ class Excel extends Controller
     public function index()
     {
 
-        if(Company::first())
-        {
+        if (Company::first()) {
             return Inertia::render('TrialExcel/Index');
         } else {
             return Redirect::route('companies')->with('warning', 'Create Company first');
@@ -43,222 +43,234 @@ class Excel extends Controller
     public function __invoke(Request $request)
     {
         $request->validate([
-            'file'=> 'required|mimes:xlsx, xls'
+            'file' => 'required|mimes:xlsx, xls'
         ]);
-        $colms = [
-            0 => 'Account Type',
-            1 => 'Account Group',
-            // 2 => 'Sub-group',
-            // 3 => 'Sub-sub-group',
-            // 4 => 'Sub-sub-sub-group',
-            // 5 => 'Account',
-            // 6 => 'Account Number',
-            // 7 => 'opening debt',
-            // 8 => 'opening credit',
-            // 9 => 'current movement',
-            // 10 => 'debt',
-            // 11 => 'current',
-            // 12 => 'movement',
-            // 13 => 'credit',
-            // 14 => 'closing',
-            // 15 => 'debt',
-            // 16 => 'closing',
-            // 17 => 'credit',
-        ];
 
-        $accArray = [];
-        $accInc=0;
-        $fgn_grp_id = null;
-        $reader = ReaderEntityFactory::createXLSXReader();
-        $reader->open($request->file('file'));
+        DB::transaction(function () use ($request) {
+            $colms = [
+                0 => 'Account Type',
+                1 => 'Account Group',
+                // 2 => 'Sub-group',
+                // 3 => 'Sub-sub-group',
+                // 4 => 'Sub-sub-sub-group',
+                // 5 => 'Account',
+                // 6 => 'Account Number',
+                // 7 => 'opening debt',
+                // 8 => 'opening credit',
+                // 9 => 'current movement',
+                // 10 => 'debt',
+                // 11 => 'current',
+                // 12 => 'movement',
+                // 13 => 'credit',
+                // 14 => 'closing',
+                // 15 => 'debt',
+                // 16 => 'closing',
+                // 17 => 'credit',
+            ];
 
-        foreach ($reader->getSheetIterator() as $key => $sheet) {
-            // only read data from 1st sheet
-            if ($sheet->getIndex() === 0) { // index is 0-based
-                foreach ($sheet->getRowIterator() as $rowIndex => $row) {
-                    if($rowIndex === 1)
-                    {
-                        if($colms[0] !=  $row->getCellAtIndex(0)->getValue() && $colms[1] !=  $row->getCellAtIndex(1)->getValue())
-                        {
-                            return redirect()->route('trial.index')->with('error', 'Please Do Not Match Sheet Columns');
-                        }
-                    }
-                    if($rowIndex === 1) continue; // skip headers row
-                    $total_col = count($row->getCells());
-                    for($i=0 ; $i <= $total_col-7 ; $i++){
-                         $cols[$i]= $row->getCellAtIndex($i)->getValue();
-                    }
+            $accArray = [];
+            $accInc = 0;
+            $fgn_grp_id = null;
+            $reader = ReaderEntityFactory::createXLSXReader();
+            $reader->open($request->file('file'));
 
-                    $check_cols = false;
-                    foreach($cols as $col){
-                        if($col)
-                        {
-                            $check_cols = true;
-                            break;
-                        }
-                    }
-                    if($check_cols)
-                    {
-                        //Account Type
-                        $acc_type_name = $row->getCellAtIndex(0)->getValue();
-                        if($acc_type_name){
-                            $acc_type = AccountType::where('name', $acc_type_name)->first();
-                        }
-                        $fgn_grp_id;
-                        //Account Group
-                        $acc_grp_name =  null;
-                        $acc_grp_name = $row->getCellAtIndex(1)->getValue();
-                        if($acc_grp_name)
-                        {
-                            $acc_grp_exist = AccountGroup::where('name', $acc_grp_name)->
-                                where('company_id', session('company_id'))->
-                                first();
-                            if(!$acc_grp_exist)
-                            {
-                                $acc_grp = AccountGroup::create([
-                                    'type_id' => $acc_type->id,
-                                    'parent_id' => null,
-                                    'name' => $acc_grp_name,
-                                    'company_id' => session('company_id'),
-                                ]);
-                            } else {
-                                $acc_grp = $acc_grp_exist;
+            foreach ($reader->getSheetIterator() as $key => $sheet) {
+                // only read data from 1st sheet
+                if ($sheet->getIndex() === 0) { // index is 0-based
+                    // DB::transaction(function () use (
+                    //     $sheet,
+                    //     $colms,
+                    //     $accInc,
+                    //     $accArray
+                    // ) {
+                    try {
+
+
+                        foreach ($sheet->getRowIterator() as $rowIndex => $row) {
+
+                            if ($rowIndex === 1) {
+                                if ($colms[0] !=  $row->getCellAtIndex(0)->getValue() && $colms[1] !=  $row->getCellAtIndex(1)->getValue()) {
+                                    return back()->with('error', 'Please Do Not Match Sheet Columns');
+                                }
                             }
-                            $fgn_grp_id = $acc_grp->id;
-                            $parent[1] = $fgn_grp_id;
-                        }
-                        for($j= 2 ; $j <= $total_col-9; $j++){
-
-                            $acc_sub_grp_name = null;
-                            $acc_sub_grp_name = $row->getCellAtIndex($j)->getValue();
-                            if($acc_sub_grp_name)
-                            {
-                                $acc_sub_grp_exist = AccountGroup::where('name', $acc_sub_grp_name)->
-                                    where('parent_id', $parent[$j-1])->
-                                    where('company_id', session('company_id'))->
-                                    first();
-                                if(!$acc_sub_grp_exist)
-                                {
-                                    $acc_sub_grp = AccountGroup::create([
-                                        'type_id' => $acc_type->id,
-                                        'parent_id' => $parent[$j-1],
-                                        'name' => $acc_sub_grp_name,
-                                        'company_id' => session('company_id'),
-                                    ]);
+                            if ($rowIndex === 1)
+                                continue; // skip headers row
+                            $total_col = count($row->getCells());
+                            for ($i = 0; $i <= $total_col - 7; $i++) {
+                                $cols[$i] = $row->getCellAtIndex($i)->getValue();
+                            }
+                            // dd($cols[1] != ""));
+                            $check_cols = false;
+                            // foreach($cols as $col){
+                            if ($cols[0] != "") {
+                                if ($cols[1] != "") {
+                                    if ($cols[2] != "") {
+                                        if ($cols[$total_col - 7] != "") {
+                                            $check_cols = true;
+                                        } else {
+                                            return back()->with('error', 'Account Name is Missing at Row Number ' . $rowIndex);
+                                        }
+                                    } else {
+                                        return back()->with('error', 'Account Group is Missing at Row Number ' . $rowIndex);
+                                    }
                                 } else {
-                                    $acc_sub_grp = $acc_sub_grp_exist;
+                                    return back()->with('error', 'Account Number is Missing at Row Number ' . $rowIndex);
                                 }
-                                $fgn_grp_id = $acc_sub_grp->id;
-                                $parent[$j] = $fgn_grp_id;
+                            } else {
+                                return back()->with('error', 'Account Type is Missing at Row Number ' . $rowIndex);
+                            }
+                            // }
+                            if ($check_cols) {
+
+                                //Account Type
+                                $acc_type_name = $row->getCellAtIndex(0)->getValue();
+                                $acc_type = AccountType::where('name', $acc_type_name)->first();
+                                if (!$acc_type) {
+                                    return Redirect::route('trial.index')->with('error', 'Account Type Not Exist Row Number ' . $rowIndex);
+                                }
+
+                                //Account Group
+                                $acc_grp_name = $row->getCellAtIndex(2)->getValue();
+                                if ($acc_grp_name) {
+                                    $acc_grp_exist = AccountGroup::where('name', $acc_grp_name)->where('company_id', session('company_id'))->first();
+                                    if (!$acc_grp_exist) {
+                                        $acc_grp = AccountGroup::create([
+                                            'type_id' => $acc_type->id,
+                                            'parent_id' => null,
+                                            'name' => $acc_grp_name,
+                                            'company_id' => session('company_id'),
+                                        ]);
+                                    } else {
+                                        $acc_grp = $acc_grp_exist;
+                                    }
+                                }
+
+                                // Recurrsion Sub Group
+                                $parent = $acc_grp->id;
+                                for ($j = 3; $j <= $total_col - 8; $j++) {
+                                    $acc_sub_grp_name = null;
+                                    $acc_sub_grp_name = $row->getCellAtIndex($j)->getValue();
+
+                                    if ($acc_sub_grp_name) {
+                                        $acc_sub_grp_exist = AccountGroup::where('name', $acc_sub_grp_name)->where('parent_id', $parent)->where('company_id', session('company_id'))->first();
+                                        if (!$acc_sub_grp_exist) {
+                                            $acc_sub_grp = AccountGroup::create([
+                                                'type_id' => $acc_type->id,
+                                                'parent_id' => $parent,
+                                                'name' => $acc_sub_grp_name,
+                                                'company_id' => session('company_id'),
+                                            ]);
+                                        } else {
+                                            $acc_sub_grp = $acc_sub_grp_exist;
+                                        }
+                                        $parent = $acc_sub_grp->id;
+                                    }
+                                }
+
+
+                                //Accounts
+                                $acc_name = $row->getCellAtIndex($total_col - 7)->getValue();
+                                $acc_num = $row->getCellAtIndex(1)->getValue();
+
+
+                                if ($acc_name && $acc_num) {
+
+                                    $accArray[$accInc] = $acc_name;
+                                    $accInc++;
+
+                                    $acc_exist = Account::where('group_id', $parent)->where('company_id', session('company_id'))->where(function ($query) use ($acc_name, $acc_num) {
+                                        $query->where('name', $acc_name)->orWhere('number', $acc_num);
+                                    })->first();
+                                    if (!$acc_exist) {
+                                        $acc = Account::create([
+                                            'name' => $acc_name,
+                                            'number' => $acc_num,
+                                            'group_id' => $parent,
+                                            'company_id' => session('company_id'),
+                                        ]);
+                                        $accountGroupforFolder = AccountGroup::find($parent);
+                                        Storage::makeDirectory('/public/' . session('company_id') .
+                                            '/' . session('year_id') . '/execution/' . $accountGroupforFolder->name);
+                                    } else {
+                                        $acc = $acc_exist;
+                                    }
+
+                                    //For Trial table ----------------------------------------- START ---------------------------------
+                                    $opn_debit = $row->getCellAtIndex($total_col - 6)->getValue() ? $row->getCellAtIndex($total_col - 6)->getValue() : 0;
+                                    $opn_credit = $row->getCellAtIndex($total_col - 5)->getValue() ? $row->getCellAtIndex($total_col - 5)->getValue() : 0;
+
+                                    $remain_debit = $row->getCellAtIndex($total_col - 4)->getValue() ? $row->getCellAtIndex($total_col - 4)->getValue() :  0;
+                                    $remain_credit = $row->getCellAtIndex($total_col - 3)->getValue() ? $row->getCellAtIndex($total_col - 3)->getValue() : 0;
+
+                                    $cls_debit = $row->getCellAtIndex($total_col - 2)->getValue() ? $row->getCellAtIndex($total_col - 2)->getValue() : 0;
+                                    $cls_credit = $row->getCellAtIndex($total_col - 1)->getValue() ? $row->getCellAtIndex($total_col - 1)->getValue() : 0;
+
+                                    $trial_exists = Trial::where('company_id', session('company_id'))
+                                        ->where('account_id', $acc->id)->first();
+
+                                    if ($trial_exists) {
+                                        $trial_exists->opn_debit = $opn_debit;
+                                        $trial_exists->opn_credit = $opn_credit;
+
+                                        $trial_exists->remain_debit = $remain_debit;
+                                        $trial_exists->remain_credit = $remain_credit;
+
+                                        $trial_exists->cls_debit = $cls_debit;
+                                        $trial_exists->cls_credit = $cls_credit;
+
+                                        $trial_exists->account_id = $acc->id;
+                                        $trial_exists->company_id = session('company_id');
+                                        $trial_exists->save();
+                                    } else {
+                                        Trial::create([
+                                            'opn_debit' => $opn_debit,
+                                            'opn_credit' => $opn_credit,
+
+                                            'remain_debit' => $remain_debit,
+                                            'remain_credit' => $remain_credit,
+
+                                            'cls_debit' => $cls_debit,
+                                            'cls_credit' => $cls_credit,
+
+                                            'account_id' => $acc->id,
+                                            'company_id' => session('company_id'),
+                                        ]);
+                                    }
+                                    //For Trial table ----------------------------------------- START ---------------------------------
+                                }
                             }
                         }
-
-
-                        //Accounts
-                        $acc_name = $row->getCellAtIndex($total_col-8)->getValue();
-                        $acc_num = $row->getCellAtIndex($total_col-7)->getValue();
-
-
-                        if($acc_name && $acc_num)
-                        {
-
-                            $accArray[$accInc] = $acc_name;
-                            $accInc++;
-
-                            $acc_exist = Account::
-                                where('group_id', $fgn_grp_id)->
-                                where('company_id', session('company_id'))->
-                                where(function ($query) use($acc_name, $acc_num) {
-                                    $query->where('name', $acc_name)->orWhere('number', $acc_num);
-                                })->
-                                first();
-                            if(!$acc_exist)
-                            {
-                                $acc = Account::create([
-                                    'name' => $acc_name,
-                                    'number' => $acc_num,
-                                    'group_id' => $fgn_grp_id,
-                                    'company_id' => session('company_id'),
-                                ]);
-                                $accountGroupforFolder = AccountGroup::find($fgn_grp_id);
-                                Storage::makeDirectory('/public/' . session('company_id') .
-                                     '/' . session('year_id') . '/execution/' . $accountGroupforFolder->name);
-                            } else {
-                                $acc = $acc_exist;
-                            }
-
-                            //For Trial table ----------------------------------------- START ---------------------------------
-                            $opn_debit = $row->getCellAtIndex($total_col-6)->getValue() ? $row->getCellAtIndex($total_col-6)->getValue() : 0;
-                            $opn_credit = $row->getCellAtIndex($total_col-5)->getValue() ? $row->getCellAtIndex($total_col-5)->getValue() : 0;
-
-                            $remain_debit = $row->getCellAtIndex($total_col-4)->getValue() ? $row->getCellAtIndex($total_col-4)->getValue() :  0;
-                            $remain_credit = $row->getCellAtIndex($total_col-3)->getValue() ? $row->getCellAtIndex($total_col-3)->getValue() : 0;
-
-                            $cls_debit = $row->getCellAtIndex($total_col-2)->getValue() ? $row->getCellAtIndex($total_col-2)->getValue() : 0;
-                            $cls_credit = $row->getCellAtIndex($total_col-1)->getValue() ? $row->getCellAtIndex($total_col-1)->getValue() : 0;
-
-                            $trial_exists = Trial::where('company_id', session('company_id'))
-                                ->where('account_id', $acc->id)->first();
-
-                            if($trial_exists)
-                            {
-                                $trial_exists->opn_debit = $opn_debit;
-                                $trial_exists->opn_credit = $opn_credit;
-
-                                $trial_exists->remain_debit = $remain_debit;
-                                $trial_exists->remain_credit = $remain_credit;
-
-                                $trial_exists->cls_debit = $cls_debit;
-                                $trial_exists->cls_credit = $cls_credit;
-
-                                $trial_exists->account_id = $acc->id;
-                                $trial_exists->company_id = session('company_id');
-                                $trial_exists->save();
-
-                            } else {
-                                Trial::create([
-                                    'opn_debit' => $opn_debit,
-                                    'opn_credit' => $opn_credit,
-
-                                    'remain_debit' => $remain_debit,
-                                    'remain_credit' => $remain_credit,
-
-                                    'cls_debit' => $cls_debit,
-                                    'cls_credit' => $cls_credit,
-
-                                    'account_id' => $acc->id,
-                                    'company_id' => session('company_id'),
-                                ]);
-                            }
-                            //For Trial table ----------------------------------------- START ---------------------------------
-                        }
+                    } catch (\Exception $e) {
+                        return $e;
+                        // something went wrong
                     }
 
+                    break;
+                    // no need to read more sheets
                 }
-                break; // no need to read more sheets
+
+                $reader->close();
             }
-            $reader->close();
-        }
-        $accResets = Account::whereNotIn('name', $accArray)->get();
-        if($accResets){
-            foreach($accResets as $accReset){
-                $trial_exists1 = Trial::where('company_id', session('company_id'))
-                                    ->where('account_id', $accReset->id)->first();
-                                if($trial_exists1)
-                                {
+            $accResets = Account::whereNotIn('name', $accArray)->get();
+            if ($accResets) {
+                foreach ($accResets as $accReset) {
+                    $trial_exists1 = Trial::where('company_id', session('company_id'))
+                        ->where('account_id', $accReset->id)->first();
+                    if ($trial_exists1) {
 
-                                    $trial_exists1->opn_debit = 0;
-                                    $trial_exists1->opn_credit = 0;
+                        $trial_exists1->opn_debit = 0;
+                        $trial_exists1->opn_credit = 0;
 
-                                    $trial_exists1->remain_debit = 0;
-                                    $trial_exists1->remain_credit = 0;
+                        $trial_exists1->remain_debit = 0;
+                        $trial_exists1->remain_credit = 0;
 
-                                    $trial_exists1->cls_debit = 0;
-                                    $trial_exists1->cls_credit = 0;
-                                    $trial_exists1->save();
-                                }
+                        $trial_exists1->cls_debit = 0;
+                        $trial_exists1->cls_credit = 0;
+                        $trial_exists1->save();
+                    }
+                }
             }
-        }
+        });
         return Redirect::route('accounts');
     }
 
@@ -266,148 +278,144 @@ class Excel extends Controller
     public function lead()
     {
         $accounts = Account::where('company_id', session('company_id'))->first();
-        if($accounts)
-        {
-            $acc_grps =  AccountGroup::with('accounts','accounts.trials')->where('company_id', session('company_id'))
-            ->tree()->get()->toTree()->toArray();
-                $spreadsheet = new Spreadsheet();
-                foreach($acc_grps as $key =>$acc_grp){
-                    $this->excel1($acc_grp, $key,$spreadsheet);
-                }
+        if ($accounts) {
+            $acc_grps =  AccountGroup::with('accounts', 'accounts.trials')->where('company_id', session('company_id'))
+                ->tree()->get()->toTree()->toArray();
+            $spreadsheet = new Spreadsheet();
+            foreach ($acc_grps as $key => $acc_grp) {
+                $this->excel1($acc_grp, $key, $spreadsheet);
+            }
 
             $writer = new Xlsx($spreadsheet);
             $writer->save(storage_path('app/public/' . 'lead.xlsx'));
-            return response()->download(storage_path('app/public/'. 'lead.xlsx'));
+            return response()->download(storage_path('app/public/' . 'lead.xlsx'));
         } else {
             $comp = Company::find(session('company_id'));
-            return back()->with('warning', 'Account not found in '. $comp->name . ' company, Upload trial to generate accounts');
+            return back()->with('warning', 'Account not found in ' . $comp->name . ' company, Upload trial to generate accounts');
         }
         //-----------------------------------------------------------------
     }
 
     // Lead Genreate Global function --start
 
-    public $opn=0;
-    public $cls=0;
-    public $dif=0;
+    public $opn = 0;
+    public $cls = 0;
+    public $dif = 0;
     public $opn_credt = 0;
     public $cls_credt = 0;
     public $opn_debt = 0;
     public $cls_debt = 0;
 
-    public function excel1($acc_grp, $key, $spreadsheet){
+    public function excel1($acc_grp, $key, $spreadsheet)
+    {
 
-                    $worksheet1 = $spreadsheet->createSheet($key);
-                    $worksheet1->setTitle($acc_grp['name']);
+        $worksheet1 = $spreadsheet->createSheet($key);
+        $worksheet1->setTitle($acc_grp['name']);
 
-                $drawing = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
-                $drawing->setName('Logo');
+        $drawing = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
+        $drawing->setName('Logo');
 
-                $drawing->setPath('images/logo.png'); /* put your path and image here */
-                $drawing->setCoordinates('D1');
-                $drawing->setOffsetX(70);
-                $drawing->setHeight(200);
-                $drawing->setWorksheet($spreadsheet->getSheet($key));
-                foreach (range('A', 'G') as $k => $col) {
-                    $spreadsheet->getSheet($key)->getColumnDimension($col)->setAutoSize(true);
+        $drawing->setPath('images/logo.png'); /* put your path and image here */
+        $drawing->setCoordinates('D1');
+        $drawing->setOffsetX(70);
+        $drawing->setHeight(200);
+        $drawing->setWorksheet($spreadsheet->getSheet($key));
+        foreach (range('A', 'G') as $k => $col) {
+            $spreadsheet->getSheet($key)->getColumnDimension($col)->setAutoSize(true);
+        }
 
-                }
-
-                $spreadsheet->getSheet($key)->getStyle('A11:G30')->getAlignment()->setHorizontal('center');
-                $spreadsheet->getSheet($key)->getStyle('B11:B30')->getAlignment()->setHorizontal('left');
-                $spreadsheet->getSheet($key)->getStyle('A11:G30')->getAlignment()->setVertical('center');
+        $spreadsheet->getSheet($key)->getStyle('A11:G30')->getAlignment()->setHorizontal('center');
+        $spreadsheet->getSheet($key)->getStyle('B11:B30')->getAlignment()->setHorizontal('left');
+        $spreadsheet->getSheet($key)->getStyle('A11:G30')->getAlignment()->setVertical('center');
 
 
-                $spreadsheet->getSheet($key)->fromArray(['CLIENT:'], NULL, 'A3');
-                $spreadsheet->getSheet($key)->fromArray(['MZK CORPORATION'], NULL, 'B3');
-                $spreadsheet->getSheet($key)->fromArray(['SUBJECT:'], NULL, 'A4');
-                $spreadsheet->getSheet($key)->fromArray([$acc_grp['name']], NULL, 'B4');
-                $spreadsheet->getSheet($key)->fromArray(['PERIOD:'], NULL, 'A5');
-                $spreadsheet->getSheet($key)->fromArray(['23-8-2022'], NULL, 'B5');
-                $spreadsheet->getSheet($key)->fromArray(['PREPARED BY:'], NULL, 'A6');
-                $spreadsheet->getSheet($key)->fromArray([auth()->user()->name], NULL, 'B6');
-                $spreadsheet->getSheet($key)->fromArray(['REVIEWED BY:'], NULL, 'A7');
-                $spreadsheet->getSheet($key)->fromArray(['MK'], NULL, 'B7');
-                $spreadsheet->getSheet($key)->fromArray(['REVIEWED BY:'], NULL, 'A8');
-                $spreadsheet->getSheet($key)->fromArray(['ASAD'], NULL, 'B8');
-                $spreadsheet->getSheet($key)->fromArray(['LEAD SCHEDULE'], NULL, 'B9');
-                $spreadsheet->getSheet($key)->fromArray([''], NULL, 'B10');
-                $spreadsheet->getSheet($key)->fromArray(['S.NO'], NULL, 'A11');
-                $spreadsheet->getSheet($key)->fromArray(['PARTICULARS'], NULL, 'B11');
-                $spreadsheet->getSheet($key)->fromArray(['REFS'], NULL, 'C11');
-                $spreadsheet->getSheet($key)->fromArray(['ENDING YEAR'], NULL, 'D11');
-                $spreadsheet->getSheet($key)->fromArray(['BEG YEAR'], NULL, 'E11');
-                $spreadsheet->getSheet($key)->fromArray(['DIFFERENCE'], NULL, 'F11');
-                $spreadsheet->getSheet($key)->fromArray(['%'], NULL, 'G11');
-                $spreadsheet->getSheet($key)->getStyle('A11:G11')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_DOUBLE);
-                $spreadsheet->getSheet($key)->getStyle('A12:G12')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_DOUBLE);
-                $j = 13;
-                $open = $clos = $diff = 0;
-                foreach($acc_grp['children'] as $k => $children)
-                {
-                    $spreadsheet->getSheet($key)->getStyle('A'.$j.':G'.$j)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_DOUBLE);
-                    $spreadsheet->getSheet($key)->fromArray([$k+1], NULL, 'A'.$j);
-                    $spreadsheet->getSheet($key)->fromArray([$children['name']], NULL, 'B'.$j);
-                    $spreadsheet->getSheet($key)->fromArray([$children['path']], NULL, 'C'.$j);
-                    $this->opn=0;
-                    $this->cls=0;
-                    $this->dif=0;
+        $spreadsheet->getSheet($key)->fromArray(['CLIENT:'], NULL, 'A3');
+        $spreadsheet->getSheet($key)->fromArray(['MZK CORPORATION'], NULL, 'B3');
+        $spreadsheet->getSheet($key)->fromArray(['SUBJECT:'], NULL, 'A4');
+        $spreadsheet->getSheet($key)->fromArray([$acc_grp['name']], NULL, 'B4');
+        $spreadsheet->getSheet($key)->fromArray(['PERIOD:'], NULL, 'A5');
+        $spreadsheet->getSheet($key)->fromArray(['23-8-2022'], NULL, 'B5');
+        $spreadsheet->getSheet($key)->fromArray(['PREPARED BY:'], NULL, 'A6');
+        $spreadsheet->getSheet($key)->fromArray([auth()->user()->name], NULL, 'B6');
+        $spreadsheet->getSheet($key)->fromArray(['REVIEWED BY:'], NULL, 'A7');
+        $spreadsheet->getSheet($key)->fromArray(['MK'], NULL, 'B7');
+        $spreadsheet->getSheet($key)->fromArray(['REVIEWED BY:'], NULL, 'A8');
+        $spreadsheet->getSheet($key)->fromArray(['ASAD'], NULL, 'B8');
+        $spreadsheet->getSheet($key)->fromArray(['LEAD SCHEDULE'], NULL, 'B9');
+        $spreadsheet->getSheet($key)->fromArray([''], NULL, 'B10');
+        $spreadsheet->getSheet($key)->fromArray(['S.NO'], NULL, 'A11');
+        $spreadsheet->getSheet($key)->fromArray(['PARTICULARS'], NULL, 'B11');
+        $spreadsheet->getSheet($key)->fromArray(['REFS'], NULL, 'C11');
+        $spreadsheet->getSheet($key)->fromArray(['ENDING YEAR'], NULL, 'D11');
+        $spreadsheet->getSheet($key)->fromArray(['BEG YEAR'], NULL, 'E11');
+        $spreadsheet->getSheet($key)->fromArray(['DIFFERENCE'], NULL, 'F11');
+        $spreadsheet->getSheet($key)->fromArray(['%'], NULL, 'G11');
+        $spreadsheet->getSheet($key)->getStyle('A11:G11')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_DOUBLE);
+        $spreadsheet->getSheet($key)->getStyle('A12:G12')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_DOUBLE);
+        $j = 13;
+        $open = $clos = $diff = 0;
+        foreach ($acc_grp['children'] as $k => $children) {
+            $spreadsheet->getSheet($key)->getStyle('A' . $j . ':G' . $j)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_DOUBLE);
+            $spreadsheet->getSheet($key)->fromArray([$k + 1], NULL, 'A' . $j);
+            $spreadsheet->getSheet($key)->fromArray([$children['name']], NULL, 'B' . $j);
+            $spreadsheet->getSheet($key)->fromArray([$children['path']], NULL, 'C' . $j);
+            $this->opn = 0;
+            $this->cls = 0;
+            $this->dif = 0;
 
-                    $this->opn_credt = 0;
-                    $this->cls_credt = 0;
-                    $this->opn_debt = 0;
-                    $this->cls_debt = 0;
+            $this->opn_credt = 0;
+            $this->cls_credt = 0;
+            $this->opn_debt = 0;
+            $this->cls_debt = 0;
 
-                    $this->acc_sum($children);
-                    $closing = abs($this->cls_credt - $this->cls_debt);
-                    $opening = abs($this->opn_credt - $this->opn_debt);
-                    $spreadsheet->getSheet($key)->fromArray([$closing], NULL, 'D'.$j);
-                    $spreadsheet->getSheet($key)->fromArray([$opening], NULL, 'E'.$j);
-                    $spreadsheet->getSheet($key)->fromArray([$closing - $opening], NULL, 'F'.$j);
-                    $div = $this->opn == 0 ? 1 : $this->opn;
-                    $res = ($this->cls/$div)*100;
-                    $spreadsheet->getSheet($key)->fromArray([round($res, 2) . '%'], NULL, 'G'.$j);
-                    $open += $opening;
-                    $clos += $closing;
-                    $diff += $closing - $opening;
+            $this->acc_sum($children);
+            $closing = abs($this->cls_credt - $this->cls_debt);
+            $opening = abs($this->opn_credt - $this->opn_debt);
+            $spreadsheet->getSheet($key)->fromArray([$closing], NULL, 'D' . $j);
+            $spreadsheet->getSheet($key)->fromArray([$opening], NULL, 'E' . $j);
+            $spreadsheet->getSheet($key)->fromArray([$closing - $opening], NULL, 'F' . $j);
+            $div = $this->opn == 0 ? 1 : $this->opn;
+            $res = ($this->cls / $div) * 100;
+            $spreadsheet->getSheet($key)->fromArray([round($res, 2) . '%'], NULL, 'G' . $j);
+            $open += $opening;
+            $clos += $closing;
+            $diff += $closing - $opening;
 
-                    $j++;
-                }
-                $spreadsheet->getSheet($key)->getStyle('A'.$j.':G'.$j)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_DOUBLE);
+            $j++;
+        }
+        $spreadsheet->getSheet($key)->getStyle('A' . $j . ':G' . $j)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_DOUBLE);
 
-                // $acc_cls = $acc_opn = 0;
-                foreach($acc_grp['accounts'] as $k => $acc)
-                {
-                    $spreadsheet->getSheet($key)->getStyle('A'.$j.':G'.$j)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_DOUBLE);
-                        $spreadsheet->getSheet($key)->fromArray([$k+1], NULL, 'A'.$j);
-                        $spreadsheet->getSheet($key)->fromArray([$acc['name']], NULL, 'B'.$j);
-                        $spreadsheet->getSheet($key)->fromArray([$acc['number']], NULL, 'C'.$j);
-                        $acc_closing = abs($acc['trials']['cls_credit'] - $acc['trials']['cls_debit']);
-                        $acc_opening = abs($acc['trials']['opn_credit'] - $acc['trials']['opn_debit']);
-                        $spreadsheet->getSheet($key)->fromArray([$acc_closing], NULL, 'D'.$j);
-                        $spreadsheet->getSheet($key)->fromArray([$acc_opening], NULL, 'E'.$j);
-                        $spreadsheet->getSheet($key)->fromArray([$acc_closing - $acc_opening], NULL, 'F'.$j);
-                        $j++;
-                    $clos += abs($acc['trials']['cls_credit'] - $acc['trials']['cls_debit']);
-                    $open += abs($acc['trials']['opn_credit'] - $acc['trials']['opn_debit']);
-                }
-                $spreadsheet->getSheet($key)->getStyle('A'.$j.':G'.$j)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_DOUBLE);
+        // $acc_cls = $acc_opn = 0;
+        foreach ($acc_grp['accounts'] as $k => $acc) {
+            $spreadsheet->getSheet($key)->getStyle('A' . $j . ':G' . $j)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_DOUBLE);
+            $spreadsheet->getSheet($key)->fromArray([$k + 1], NULL, 'A' . $j);
+            $spreadsheet->getSheet($key)->fromArray([$acc['name']], NULL, 'B' . $j);
+            $spreadsheet->getSheet($key)->fromArray([$acc['number']], NULL, 'C' . $j);
+            $acc_closing = abs($acc['trials']['cls_credit'] - $acc['trials']['cls_debit']);
+            $acc_opening = abs($acc['trials']['opn_credit'] - $acc['trials']['opn_debit']);
+            $spreadsheet->getSheet($key)->fromArray([$acc_closing], NULL, 'D' . $j);
+            $spreadsheet->getSheet($key)->fromArray([$acc_opening], NULL, 'E' . $j);
+            $spreadsheet->getSheet($key)->fromArray([$acc_closing - $acc_opening], NULL, 'F' . $j);
+            $j++;
+            $clos += abs($acc['trials']['cls_credit'] - $acc['trials']['cls_debit']);
+            $open += abs($acc['trials']['opn_credit'] - $acc['trials']['opn_debit']);
+        }
+        $spreadsheet->getSheet($key)->getStyle('A' . $j . ':G' . $j)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_DOUBLE);
 
-                $j++;
-                $spreadsheet->getSheet($key)->getStyle('A'.$j.':G'.$j)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_DOUBLE);
+        $j++;
+        $spreadsheet->getSheet($key)->getStyle('A' . $j . ':G' . $j)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_DOUBLE);
 
-                $spreadsheet->getSheet($key)->fromArray(['TOTAL'], NULL, 'B'.$j);
-                $spreadsheet->getSheet($key)->fromArray([$clos], NULL, 'D'.$j);
-                $spreadsheet->getSheet($key)->fromArray([$open], NULL, 'E'.$j);
-                $spreadsheet->getSheet($key)->fromArray([$clos - $open], NULL, 'F'.$j);
-                $divi = $open == 0 ? 1 : $open;
-                $resu = ($clos/$divi)*100;
-                $spreadsheet->getSheet($key)->fromArray([round($resu, 2) . '%'], NULL, 'G'.$j);
+        $spreadsheet->getSheet($key)->fromArray(['TOTAL'], NULL, 'B' . $j);
+        $spreadsheet->getSheet($key)->fromArray([$clos], NULL, 'D' . $j);
+        $spreadsheet->getSheet($key)->fromArray([$open], NULL, 'E' . $j);
+        $spreadsheet->getSheet($key)->fromArray([$clos - $open], NULL, 'F' . $j);
+        $divi = $open == 0 ? 1 : $open;
+        $resu = ($clos / $divi) * 100;
+        $spreadsheet->getSheet($key)->fromArray([round($resu, 2) . '%'], NULL, 'G' . $j);
 
-                foreach($acc_grp['children'] as $k => $children){
-                    $this->excel1($children, $k,$spreadsheet);
-            }
-
+        foreach ($acc_grp['children'] as $k => $children) {
+            $this->excel1($children, $k, $spreadsheet);
+        }
     }
 
     // Lead Genreate Global function --End
@@ -416,26 +424,19 @@ class Excel extends Controller
 
     public function acc_sum($acc_grp)
     {
-        if(count($acc_grp['accounts']) >> 0)
-        {
-            foreach($acc_grp['accounts'] as $acc)
-            {
+        if (count($acc_grp['accounts']) >> 0) {
+            foreach ($acc_grp['accounts'] as $acc) {
                 $this->opn_credt += $acc['trials']['opn_credit'];
                 $this->opn_debt += $acc['trials']['opn_debit'];
                 $this->cls_credt += $acc['trials']['cls_credit'];
                 $this->cls_debt += $acc['trials']['cls_debit'];
             }
-
         }
-        if(count($acc_grp) >> 0)
-        {
-            foreach($acc_grp['children'] as $k => $children)
-            {
+        if (count($acc_grp) >> 0) {
+            foreach ($acc_grp['children'] as $k => $children) {
                 $this->acc_sum($children);
             }
         }
         return;
     }
-
-
 }

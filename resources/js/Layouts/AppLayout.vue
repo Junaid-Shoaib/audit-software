@@ -212,50 +212,73 @@
         <!-- <h3 class="mx-6 mb-2 text-xs tracking-widest text-white uppercase">
           Main
         </h3> -->
-        <div v-if="this.$page.props.co_id && this.$page.props.yr_id && this.$page.props.team_id" >
-        <jet-nav-link
-          v-for="(item, index) in mainNavigation"
-          :key="index"
-          :href="item.href"
-          :active="route().current(item.routeName)"
+        <div
+          v-if="
+            this.$page.props.co_id &&
+            this.$page.props.yr_id &&
+            this.$page.props.team_id
+          "
         >
-          <component
-            :is="item.icon"
-            class="mr-2 w-5 h-5 active:text-gray-500 group-hover:text-gray-400"
-          />
-          {{ item.label }}
-        </jet-nav-link>
+          <jet-nav-link
+            v-for="(item, index) in mainNavigation"
+            :key="index"
+            :href="item.href"
+            :active="route().current(item.routeName)"
+          >
+            <component
+              :is="item.icon"
+              class="
+                mr-2
+                w-5
+                h-5
+                active:text-gray-500
+                group-hover:text-gray-400
+              "
+            />
+            {{ item.label }}
+          </jet-nav-link>
         </div>
 
-
         <div v-else-if="this.$page.props.co_id && this.$page.props.yr_id">
-            <jet-nav-link
+          <jet-nav-link
             v-for="(item, index) in mainNavigationTeam"
             :key="index"
             :href="item.href"
             :active="route().current(item.routeName)"
-            >
+          >
             <component
-                :is="item.icon"
-                class="mr-2 w-5 h-5 active:text-gray-500 group-hover:text-gray-400"
+              :is="item.icon"
+              class="
+                mr-2
+                w-5
+                h-5
+                active:text-gray-500
+                group-hover:text-gray-400
+              "
             />
             {{ item.label }}
-            </jet-nav-link>
+          </jet-nav-link>
         </div>
 
         <div v-else>
-            <jet-nav-link
+          <jet-nav-link
             v-for="(item, index) in mainNavigationComp"
             :key="index"
             :href="item.href"
             :active="route().current(item.routeName)"
-            >
+          >
             <component
-                :is="item.icon"
-                class="mr-2 w-5 h-5 active:text-gray-500 group-hover:text-gray-400"
+              :is="item.icon"
+              class="
+                mr-2
+                w-5
+                h-5
+                active:text-gray-500
+                group-hover:text-gray-400
+              "
             />
             {{ item.label }}
-            </jet-nav-link>
+          </jet-nav-link>
         </div>
 
         <!-- <a
@@ -638,7 +661,7 @@ export default {
         {
           href: route("filing", ["planing"]),
           routeName: "filing.planing",
-          label: "Planing",
+          label: "Planning",
           icon: DocumentAddIcon,
         },
         {
@@ -694,7 +717,7 @@ export default {
           label: "Years",
           icon: CalendarIcon,
         },
-         {
+        {
           href: route("teams"),
           routeName: "teams",
           label: "Teams",
