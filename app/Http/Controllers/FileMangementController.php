@@ -22,21 +22,30 @@ use Illuminate\Support\Facades\File;
 
 class FileMangementController extends Controller
 {
+        //----------- url parameter can be name if hiting the link from dashboard otherwise it will be id
     public function filing($parent_name_id)
     {
         $folders = null;
         $fold = null;
         $plan_comp_name = '';
+        // -------- if the value of parameter is ID then we get an objec in $fold variable otherwise it'll be null
         $fold = FileManager::find($parent_name_id);
 
+        //------- if fold variable is not null then we are temprary saving the name of that folder in $plan_comp_name
         if($fold)
         {
             $plan_comp_name = $fold->name;
         }
-        //condition to deal with url parameter- it will be name if hiting the link from dashboard otherwise it will be id
+
+        // --- condition -------- if parameter is String and equal to planing or completion  OR  we get an object of planing or completion folder
         if($parent_name_id == 'planing' || $parent_name_id == 'completion'
             || $plan_comp_name == 'planing' || $plan_comp_name == 'completion')
         {
+            /*  ----- if $plan_comp_name is not null and we pass the upper condition then it's mean
+                  we get an object of Planing or completion folder
+                  in this scenerio we have id in $parent_name_id and we are using it as a name of folder
+                  that's why we set that with the object name we store in $plan_comp_name
+                  */
             if($plan_comp_name != '')
             {
                 $parent_name_id = $plan_comp_name;
@@ -55,7 +64,7 @@ class FileMangementController extends Controller
                 })
                 ->first();
         } else {
-
+            // if we are in this condition then it's mean the id we get is belong's to the execution folder children
             $execution = FileManager::all()->where('company_id', session('company_id'))
                 ->where('year_id', session('year_id'))
                 ->where('name', 'execution')
@@ -129,6 +138,7 @@ class FileMangementController extends Controller
                 $query->where('name', 'LIKE', '%' . request('search') . '%');
             }
 
+            // checking the Auth user to render the data according to user roles and permissions
             if(Auth::user()->roles[0]->name == "staff" || Auth::user()->roles[0]->name == "super-admin")
             {
                 $balances = $query
@@ -221,7 +231,7 @@ class FileMangementController extends Controller
                 ->where('year_id', session('year_id'))
                 ->where('parent_id', $parent['id'])
                 ->first();
-            // dd($balances);
+
             return Inertia::render('Filing/Index', [
                 'balances' => $balances,
                 'user_role' => Auth::user()->roles[0]->name,
@@ -237,6 +247,7 @@ class FileMangementController extends Controller
         }
     }
 
+    // to display all the folder of execution(of current company & current year) for folder modification
     public function folder()
     {
         if(Company::first())
@@ -281,7 +292,11 @@ class FileMangementController extends Controller
                                 'name' => $obj->name,
                                 'is_folder' => $obj->is_folder,
                                 'parent_id' => $obj->parent_id,
-                                // 'delete' => Entry::where('account_id', $account->id)->first() ? false : true,
+                                'delete' => FileManager::where('company_id', session('company_id'))
+                                        ->where('year_id', session('year_id'))
+                                        ->where('parent_id', $obj->id)
+                                        ->where('is_folder', 1)
+                                        ->first() ? false : true,
                             ];
                     }
                 );
@@ -303,6 +318,7 @@ class FileMangementController extends Controller
 
     public function storeFolder()
     {
+        // to create a directory in execution folder of current company & current year directory
         Request::validate([
             'name' => ['required'],
         ]);
@@ -344,6 +360,10 @@ class FileMangementController extends Controller
 
         $parent = FileManager::find($parent_id);
         $grand_parent = FileManager::where('id', $parent->parent_id)->first();
+        /*
+        grand parent exists if the user uploading a file in the folder which exists in execution folder
+            if grand_parent doesn't exist then its mean user uploading a file in planning or completion folder
+        */
         if($grand_parent)
         {
             $path = session('company_id') . '/' . session('year_id') . '/' . $grand_parent->id . '/' . $parent_id;
@@ -375,7 +395,10 @@ class FileMangementController extends Controller
     public function deleteFileFolder(FileManager $file_folder_id)
     {
         try {
-            if($file_folder_id->is_folder == 0)
+            /* if is_folder property is 0 then its mean that object is a folder so
+              we have to delete it files first then can delete the folder
+            */
+              if($file_folder_id->is_folder == 0)
             {
                 $type = 'Folder';
                 $files = FileManager::where('parent_id', $file_folder_id->id)->get();
@@ -458,6 +481,10 @@ class FileMangementController extends Controller
 
 
 
+    /*
+     type paramter because templates are divided into 3 categories
+        planning, completion and execution
+    */
     public function index_temp($type)
     {
         $execution = FileManager::all()->where('company_id', session('company_id'))
@@ -483,6 +510,10 @@ class FileMangementController extends Controller
         //Validating request
         $year = Year::where('company_id', session('company_id'))
             ->where('id', session('year_id'))->first();
+        /*
+        checking the current year have team or not .... for team scenerio we have pivot table of years_users
+            if team is created only then we show the templates otherwise redirect the user to create the temm
+        */
         if(count($year->users))
         {
             request()->validate([
@@ -495,6 +526,8 @@ class FileMangementController extends Controller
             if (request('search')) {
                 $query->where('name', 'LIKE', '%' . request('search') . '%');
             }
+
+            // getting templates of user requested type
             $balances = $query
                 ->where('type',lcfirst($type))
                 ->get()
@@ -509,7 +542,8 @@ class FileMangementController extends Controller
                             ];
                     }
                 );
-                // dd($balances);
+
+                // names of the templates to perform the select all or multi-select functionality
                 $balances_name = Template::where('type',$type)->get()->pluck('name');
 
 
@@ -528,11 +562,13 @@ class FileMangementController extends Controller
           }
     }
 
+    // to download the template or templates
     public function multi_download_temp(Req $request)
     {
         if($request->selected_arr != null)
         {
             $arr = explode(",",$request->selected_arr);
+            // checking the request is to download single file or multiple files
             if(count($arr) == 1)
             {
                 $template = $this->download_temp($arr);
@@ -545,7 +581,7 @@ class FileMangementController extends Controller
                 $templates = Template::whereIn('name',$arr)->get();
                 $this->file_temp($templates);
 
-            // if($request->has('download')) {
+                // making zip folder for multiple files
                 $zip   = new ZipArchive;
                 $fileName = 'templates.zip';
                 if ($zip->open(public_path($fileName), ZipArchive::CREATE) === TRUE) {
@@ -564,55 +600,56 @@ class FileMangementController extends Controller
     }
 
 
+    // override dynamic data when Import templates to Planning, completion or execution folder's
     public function file_temp($templates)
     {
-
-
-        // $template = Template::find($id);
-        if($templates){
+        if($templates)
+        {
             $year = Year::where('company_id', session('company_id'))
             ->where('id', session('year_id'))->first();
             $partner = $year->users()->role('partner')->first();
             $manager = $year->users()->role('manager')->first();
             $staff = $year->users()->role('staff')->first();
-        foreach ($templates as $key => $template) {
-            # code...
-        $extension =   explode(".",($template->name));
-        //   dd($partner->name , $manager->name , $staff->name);
+            foreach ($templates as $key => $template)
+            {
+                # code...
+                $extension =   explode(".",($template->name));
+                //   dd($partner->name , $manager->name , $staff->name);
 
-        if($partner != null && $manager != null && $staff != null){
-        $start = $year->begin ? new Carbon($year->begin) : null;
-        $end = $year->end ? new Carbon($year->end) : null;
-        $names = str_replace(["&"], "&amp;", $year->company->name);
-        $name = $year->company->name;
-        if(strtolower($extension[1]) == 'docx' || strtolower($extension[1]) == 'docs'){
-            $templateProcessor = new  \PhpOffice\PhpWord\TemplateProcessor(public_path('temp/' . $template->name));
-            $templateProcessor->setValue('client', $names);
-            $templateProcessor->setValue('partner', ucwords($partner->name));
-            $templateProcessor->setValue('manager', ucwords($manager->name));
-            $templateProcessor->setValue('user', ucwords($staff->name));
-            $templateProcessor->setValue('start', $start->format("F j Y"));
-            $templateProcessor->setValue('end', $end->format("F j Y"));
-            $templateProcessor->saveAs(storage_path('app/public/' . $template->path));
-            // return response()->download(storage_path('app/public/' . $template->path));
+                if($partner != null && $manager != null && $staff != null)
+                {
+                    $start = $year->begin ? new Carbon($year->begin) : null;
+                    $end = $year->end ? new Carbon($year->end) : null;
+                    $names = str_replace(["&"], "&amp;", $year->company->name);
+                    $name = $year->company->name;
+                    if(strtolower($extension[1]) == 'docx' || strtolower($extension[1]) == 'docs')
+                    {
+                        $templateProcessor = new  \PhpOffice\PhpWord\TemplateProcessor(public_path('temp/' . $template->name));
+                        $templateProcessor->setValue('client', $names);
+                        $templateProcessor->setValue('partner', ucwords($partner->name));
+                        $templateProcessor->setValue('manager', ucwords($manager->name));
+                        $templateProcessor->setValue('user', ucwords($staff->name));
+                        $templateProcessor->setValue('start', $start->format("F j Y"));
+                        $templateProcessor->setValue('end', $end->format("F j Y"));
+                        $templateProcessor->saveAs(storage_path('app/public/' . $template->path));
+                    // return response()->download(storage_path('app/public/' . $template->path));
+                    }
+                    else{
+                        $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load(public_path('temp/' . $template->name));
+                        $worksheet = $spreadsheet->getActiveSheet();
+                        $worksheet->getCell('C2')->setValue($name);
+                        $worksheet->getCell('C3')->setValue($start->format("F j Y"). ' - '.$end->format("F j Y"));
+                        $worksheet->getCell('C5')->setValue(ucwords($staff->name));
+                        $worksheet->getCell('C6')->setValue(ucwords($manager->name));
+                        $worksheet->getCell('C7')->setValue(ucwords($partner->name));
+                        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xls');
+                        $writer->save(storage_path('app/public/' . $template->path));
+                        // return response()->download(storage_path('app/public/' . $template->path));
+                    }
+                }else{
+                        return back()->with('warning', 'Please Create Team First');
+                }
             }
-            else{
-                $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load(public_path('temp/' . $template->name));
-                $worksheet = $spreadsheet->getActiveSheet();
-                $worksheet->getCell('C2')->setValue($name);
-                $worksheet->getCell('C3')->setValue($start->format("F j Y"). ' - '.$end->format("F j Y"));
-                $worksheet->getCell('C5')->setValue(ucwords($staff->name));
-                $worksheet->getCell('C6')->setValue(ucwords($manager->name));
-                $worksheet->getCell('C7')->setValue(ucwords($partner->name));
-                $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xls');
-                $writer->save(storage_path('app/public/' . $template->path));
-                // return response()->download(storage_path('app/public/' . $template->path));
-            }
-        }else{
-                return back()->with('warning', 'Please Create Team First');
-        }
-        }
-
         }else{
             return back()->with('warning', 'tempalate Not Fount');
         };
@@ -633,41 +670,42 @@ class FileMangementController extends Controller
             //   dd($partner->name , $manager->name , $staff->name);
 
 
-            if($partner != null && $manager != null && $staff != null){
-            $start = $year->begin ? new Carbon($year->begin) : null;
-            $end = $year->end ? new Carbon($year->end) : null;
-            $names = str_replace(["&"], "&amp;", $year->company->name);
-            $name = $year->company->name;
-            if(strtolower($extension[1]) == 'docx' || strtolower($extension[1]) == 'docs'){
-                $templateProcessor = new  \PhpOffice\PhpWord\TemplateProcessor(public_path('temp/' . $template->name));
-                $templateProcessor->setValue('client', $names);
-                $templateProcessor->setValue('partner', ucwords($partner->name));
-                $templateProcessor->setValue('manager', ucwords($manager->name));
-                $templateProcessor->setValue('user', ucwords($staff->name));
-                $templateProcessor->setValue('start', $start->format("F j Y"));
-                $templateProcessor->setValue('end', $end->format("F j Y"));
-                $templateProcessor->saveAs(storage_path('app/public/' . $template->path));
-                return $template;
-                    }
-                else{
-                    $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load(public_path('temp/' . $template->name));
-                    $worksheet = $spreadsheet->getActiveSheet();
-                    $worksheet->getCell('C2')->setValue($name);
-                    $worksheet->getCell('C3')->setValue($start->format("F j Y"). ' - '.$end->format("F j Y"));
-                    $worksheet->getCell('C5')->setValue(ucwords($staff->name));
-                    $worksheet->getCell('C6')->setValue(ucwords($manager->name));
-                    $worksheet->getCell('C7')->setValue(ucwords($partner->name));
-                    $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xls');
-                    $writer->save(storage_path('app/public/' . $template->path));
-                    return response()->download(storage_path('app/public/' . $template->path));
+            if($partner != null && $manager != null && $staff != null)
+            {
+                $start = $year->begin ? new Carbon($year->begin) : null;
+                $end = $year->end ? new Carbon($year->end) : null;
+                $names = str_replace(["&"], "&amp;", $year->company->name);
+                $name = $year->company->name;
+                if(strtolower($extension[1]) == 'docx' || strtolower($extension[1]) == 'docs')
+                {
+                    $templateProcessor = new  \PhpOffice\PhpWord\TemplateProcessor(public_path('temp/' . $template->name));
+                    $templateProcessor->setValue('client', $names);
+                    $templateProcessor->setValue('partner', ucwords($partner->name));
+                    $templateProcessor->setValue('manager', ucwords($manager->name));
+                    $templateProcessor->setValue('user', ucwords($staff->name));
+                    $templateProcessor->setValue('start', $start->format("F j Y"));
+                    $templateProcessor->setValue('end', $end->format("F j Y"));
+                    $templateProcessor->saveAs(storage_path('app/public/' . $template->path));
+                    return $template;
+                } else {
+                        $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load(public_path('temp/' . $template->name));
+                        $worksheet = $spreadsheet->getActiveSheet();
+                        $worksheet->getCell('C2')->setValue($name);
+                        $worksheet->getCell('C3')->setValue($start->format("F j Y"). ' - '.$end->format("F j Y"));
+                        $worksheet->getCell('C5')->setValue(ucwords($staff->name));
+                        $worksheet->getCell('C6')->setValue(ucwords($manager->name));
+                        $worksheet->getCell('C7')->setValue(ucwords($partner->name));
+                        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xls');
+                        $writer->save(storage_path('app/public/' . $template->path));
+                        return response()->download(storage_path('app/public/' . $template->path));
                 }
             }else{
                     return back()->with('warning', 'Please Create Team First');
             }
-            }else{
-                return back()->with('warning', 'tempalate Not Fount');
-            };
-        }
+        }else{
+            return back()->with('warning', 'tempalate Not Fount');
+        };
+    }
 
 
     public function include_templates()
@@ -794,6 +832,7 @@ class FileMangementController extends Controller
         }
     }
 
+    // for the file approval according to the user role
     public function approve_files()
     {
         $type = Request::input('type');

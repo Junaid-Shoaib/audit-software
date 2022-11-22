@@ -22,7 +22,8 @@
           >
         </div>
         <h2 v-else class="float-left header">
-          {{ parent.name }} - {{ parent.type }}
+          {{ parent.name == "Planing" ? "Planning" : parent.name }} -
+          {{ parent.type }}
         </h2>
         <div class="justify-end">
           <multiselect

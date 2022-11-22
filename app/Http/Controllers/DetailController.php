@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request as Req;
 use App\Models\Detail;
 use App\Models\Account;
+use App\Models\Year;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Carbon\Carbon;
@@ -34,7 +35,7 @@ class DetailController extends Controller
         ]);
         // dd($query = Detail::first());
         if($query = Detail::first()){
-            $query = Detail::groupBy('account_id')->get()
+            $query = Detail::where('company_id', session('company_id'))->groupBy('account_id')->get()
                 ->map(function($obj){
                 return
                     [
@@ -408,7 +409,7 @@ class DetailController extends Controller
                 }
 
         }else{
-            return Redirect::route('trial')->with('warning', 'Please create Account first.');
+            return Redirect::route('trial.index')->with('warning', 'Please create Account first.');
         }
 
     }
@@ -520,14 +521,21 @@ class DetailController extends Controller
         $spreadsheet->getActiveSheet()->fromArray(['Chartered Accountants'], NULL, 'A2');
         $spreadsheet->getActiveSheet()->fromArray(['An Independent Member Firm of BKR International'], NULL, 'A3');
         $spreadsheet->getActiveSheet()->fromArray(['CLIENT:'], NULL, 'A4');
+
+        $year = Year::find(session('year_id'));
+        $partner = $year->users()->role('partner')->first();
+        $manager = $year->users()->role('manager')->first();
+        $staff = $year->users()->role('staff')->first();
+
         $spreadsheet->getActiveSheet()->fromArray(['Prepared By:'], NULL, 'H4');
         $spreadsheet->getActiveSheet()->mergeCells('H4:I4');
-        $spreadsheet->getActiveSheet()->fromArray([ucfirst(auth()->user()->name)], NULL, 'J4');
+        $spreadsheet->getActiveSheet()->fromArray([$staff->name], NULL, 'J4');
         $spreadsheet->getActiveSheet()->fromArray(['Date:'], NULL, 'M4');
         $spreadsheet->getActiveSheet()->fromArray([$now], NULL, 'N4');
         $spreadsheet->getActiveSheet()->fromArray(['PERIOD:'], NULL, 'A5');
         $spreadsheet->getActiveSheet()->fromArray(['Reviewed By:'], NULL, 'H5');
         $spreadsheet->getActiveSheet()->mergeCells('H5:I5');
+        $spreadsheet->getActiveSheet()->fromArray([$manager->name], NULL, 'J5');
         $spreadsheet->getActiveSheet()->fromArray(['Date:'], NULL, 'M5');
         $spreadsheet->getActiveSheet()->fromArray([$now], NULL, 'N5');
         $spreadsheet->getActiveSheet()->fromArray(['SUBJECT:'], NULL, 'A6');
