@@ -46,231 +46,248 @@ class Excel extends Controller
             'file' => 'required|mimes:xlsx, xls'
         ]);
 
-        DB::transaction(function () use ($request) {
-            $colms = [
-                0 => 'Account Type',
-                1 => 'Account Group',
-                // 2 => 'Sub-group',
-                // 3 => 'Sub-sub-group',
-                // 4 => 'Sub-sub-sub-group',
-                // 5 => 'Account',
-                // 6 => 'Account Number',
-                // 7 => 'opening debt',
-                // 8 => 'opening credit',
-                // 9 => 'current movement',
-                // 10 => 'debt',
-                // 11 => 'current',
-                // 12 => 'movement',
-                // 13 => 'credit',
-                // 14 => 'closing',
-                // 15 => 'debt',
-                // 16 => 'closing',
-                // 17 => 'credit',
-            ];
+        DB::beginTransaction();
+        // try {
+        // DB::transaction(function () use ($request) {
 
-            $accArray = [];
-            $accInc = 0;
-            $fgn_grp_id = null;
-            $reader = ReaderEntityFactory::createXLSXReader();
-            $reader->open($request->file('file'));
+        $colms = [
+            0 => 'Account Type',
+            1 => 'Account Group',
+            // 2 => 'Sub-group',
+            // 3 => 'Sub-sub-group',
+            // 4 => 'Sub-sub-sub-group',
+            // 5 => 'Account',
+            // 6 => 'Account Number',
+            // 7 => 'opening debt',
+            // 8 => 'opening credit',
+            // 9 => 'current movement',
+            // 10 => 'debt',
+            // 11 => 'current',
+            // 12 => 'movement',
+            // 13 => 'credit',
+            // 14 => 'closing',
+            // 15 => 'debt',
+            // 16 => 'closing',
+            // 17 => 'credit',
+        ];
 
-            foreach ($reader->getSheetIterator() as $key => $sheet) {
-                // only read data from 1st sheet
-                if ($sheet->getIndex() === 0) { // index is 0-based
-                    // DB::transaction(function () use (
-                    //     $sheet,
-                    //     $colms,
-                    //     $accInc,
-                    //     $accArray
-                    // ) {
-                    try {
+        $accArray = [];
+        $accInc = 0;
+        $fgn_grp_id = null;
+        $reader = ReaderEntityFactory::createXLSXReader();
+        $reader->open($request->file('file'));
+
+        foreach ($reader->getSheetIterator() as $key => $sheet) {
+            // only read data from 1st sheet
+            if ($sheet->getIndex() === 0) { // index is 0-based
+                // DB::transaction(function () use (
+                //     $sheet,
+                //     $colms,
+                //     $accInc,
+                //     $accArray
+                // ) {
+                // try {
 
 
-                        foreach ($sheet->getRowIterator() as $rowIndex => $row) {
+                foreach ($sheet->getRowIterator() as $rowIndex => $row) {
 
-                            if ($rowIndex === 1) {
-                                if ($colms[0] !=  $row->getCellAtIndex(0)->getValue() && $colms[1] !=  $row->getCellAtIndex(1)->getValue()) {
-                                    return back()->with('error', 'Please Do Not Match Sheet Columns');
-                                }
-                            }
-                            if ($rowIndex === 1)
-                                continue; // skip headers row
-                            $total_col = count($row->getCells());
-                            for ($i = 0; $i <= $total_col - 7; $i++) {
-                                $cols[$i] = $row->getCellAtIndex($i)->getValue();
-                            }
-                            // dd($cols[1] != ""));
-                            $check_cols = false;
-                            // foreach($cols as $col){
-                            if ($cols[0] != "") {
-                                if ($cols[1] != "") {
-                                    if ($cols[2] != "") {
-                                        if ($cols[$total_col - 7] != "") {
-                                            $check_cols = true;
-                                        } else {
-                                            return back()->with('error', 'Account Name is Missing at Row Number ' . $rowIndex);
-                                        }
-                                    } else {
-                                        return back()->with('error', 'Account Group is Missing at Row Number ' . $rowIndex);
-                                    }
+                    if ($rowIndex === 1) {
+                        if ($colms[0] !=  $row->getCellAtIndex(0)->getValue() && $colms[1] !=  $row->getCellAtIndex(1)->getValue()) {
+                            DB::rollBack();
+                            return redirect()->back()->with('error', 'Please Do Not Match Sheet Columns');
+                        }
+                    }
+                    if ($rowIndex === 1)
+                        continue; // skip headers row
+                    $total_col = count($row->getCells());
+                    for ($i = 0; $i <= $total_col - 7; $i++) {
+                        $cols[$i] = $row->getCellAtIndex($i)->getValue();
+                    }
+                    // dd($cols[1] != ""));
+                    $check_cols = false;
+                    // foreach($cols as $col){
+                    if ($cols[0] != "") {
+                        if ($cols[1] != "") {
+                            if ($cols[2] != "") {
+                                if ($cols[$total_col - 7] != "") {
+                                    $check_cols = true;
                                 } else {
-                                    return back()->with('error', 'Account Number is Missing at Row Number ' . $rowIndex);
+                                    DB::rollBack();
+                                    return redirect()->back()->with('error', 'Account Name is Missing at Row Number ' . $rowIndex);
                                 }
                             } else {
-                                return back()->with('error', 'Account Type is Missing at Row Number ' . $rowIndex);
+                                DB::rollBack();
+                                return redirect()->back()->with('error', 'Account Group is Missing at Row Number ' . $rowIndex);
                             }
-                            // }
-                            if ($check_cols) {
+                        } else {
+                            DB::rollBack();
+                            return redirect()->back()->with('error', 'Account Number is Missing at Row Number ' . $rowIndex);
+                        }
+                    } else {
+                        DB::rollBack();
+                        return redirect()->back()->with('error', 'Account Type is Missing at Row Number ' . $rowIndex);
+                    }
+                    // }
+                    if ($check_cols) {
 
-                                //Account Type
-                                $acc_type_name = $row->getCellAtIndex(0)->getValue();
-                                $acc_type = AccountType::where('name', $acc_type_name)->first();
-                                if (!$acc_type) {
-                                    return Redirect::route('trial.index')->with('error', 'Account Type Not Exist Row Number ' . $rowIndex);
-                                }
+                        //Account Type
+                        $acc_type_name = $row->getCellAtIndex(0)->getValue();
+                        $acc_type = AccountType::where('name', $acc_type_name)->first();
+                        if (!$acc_type) {
+                            DB::rollBack();
+                            return redirect()->back()->with('error', 'Account Type Not Exist Row Number ' . $rowIndex);
+                        }
 
-                                //Account Group
-                                $acc_grp_name = $row->getCellAtIndex(2)->getValue();
-                                if ($acc_grp_name) {
-                                    $acc_grp_exist = AccountGroup::where('name', $acc_grp_name)->where('company_id', session('company_id'))->first();
-                                    if (!$acc_grp_exist) {
-                                        $acc_grp = AccountGroup::create([
-                                            'type_id' => $acc_type->id,
-                                            'parent_id' => null,
-                                            'name' => $acc_grp_name,
-                                            'company_id' => session('company_id'),
-                                        ]);
-                                    } else {
-                                        $acc_grp = $acc_grp_exist;
-                                    }
-                                }
-
-                                // Recurrsion Sub Group
-                                $parent = $acc_grp->id;
-                                for ($j = 3; $j <= $total_col - 8; $j++) {
-                                    $acc_sub_grp_name = null;
-                                    $acc_sub_grp_name = $row->getCellAtIndex($j)->getValue();
-
-                                    if ($acc_sub_grp_name) {
-                                        $acc_sub_grp_exist = AccountGroup::where('name', $acc_sub_grp_name)->where('parent_id', $parent)->where('company_id', session('company_id'))->first();
-                                        if (!$acc_sub_grp_exist) {
-                                            $acc_sub_grp = AccountGroup::create([
-                                                'type_id' => $acc_type->id,
-                                                'parent_id' => $parent,
-                                                'name' => $acc_sub_grp_name,
-                                                'company_id' => session('company_id'),
-                                            ]);
-                                        } else {
-                                            $acc_sub_grp = $acc_sub_grp_exist;
-                                        }
-                                        $parent = $acc_sub_grp->id;
-                                    }
-                                }
-
-
-                                //Accounts
-                                $acc_name = $row->getCellAtIndex($total_col - 7)->getValue();
-                                $acc_num = $row->getCellAtIndex(1)->getValue();
-
-
-                                if ($acc_name && $acc_num) {
-
-                                    $accArray[$accInc] = $acc_name;
-                                    $accInc++;
-
-                                    $acc_exist = Account::where('group_id', $parent)->where('company_id', session('company_id'))->where(function ($query) use ($acc_name, $acc_num) {
-                                        $query->where('name', $acc_name)->orWhere('number', $acc_num);
-                                    })->first();
-                                    if (!$acc_exist) {
-                                        $acc = Account::create([
-                                            'name' => $acc_name,
-                                            'number' => $acc_num,
-                                            'group_id' => $parent,
-                                            'company_id' => session('company_id'),
-                                        ]);
-                                        $accountGroupforFolder = AccountGroup::find($parent);
-                                        Storage::makeDirectory('/public/' . session('company_id') .
-                                            '/' . session('year_id') . '/execution/' . $accountGroupforFolder->name);
-                                    } else {
-                                        $acc = $acc_exist;
-                                    }
-
-                                    //For Trial table ----------------------------------------- START ---------------------------------
-                                    $opn_debit = $row->getCellAtIndex($total_col - 6)->getValue() ? $row->getCellAtIndex($total_col - 6)->getValue() : 0;
-                                    $opn_credit = $row->getCellAtIndex($total_col - 5)->getValue() ? $row->getCellAtIndex($total_col - 5)->getValue() : 0;
-
-                                    $remain_debit = $row->getCellAtIndex($total_col - 4)->getValue() ? $row->getCellAtIndex($total_col - 4)->getValue() :  0;
-                                    $remain_credit = $row->getCellAtIndex($total_col - 3)->getValue() ? $row->getCellAtIndex($total_col - 3)->getValue() : 0;
-
-                                    $cls_debit = $row->getCellAtIndex($total_col - 2)->getValue() ? $row->getCellAtIndex($total_col - 2)->getValue() : 0;
-                                    $cls_credit = $row->getCellAtIndex($total_col - 1)->getValue() ? $row->getCellAtIndex($total_col - 1)->getValue() : 0;
-
-                                    $trial_exists = Trial::where('company_id', session('company_id'))
-                                        ->where('account_id', $acc->id)->first();
-
-                                    if ($trial_exists) {
-                                        $trial_exists->opn_debit = $opn_debit;
-                                        $trial_exists->opn_credit = $opn_credit;
-
-                                        $trial_exists->remain_debit = $remain_debit;
-                                        $trial_exists->remain_credit = $remain_credit;
-
-                                        $trial_exists->cls_debit = $cls_debit;
-                                        $trial_exists->cls_credit = $cls_credit;
-
-                                        $trial_exists->account_id = $acc->id;
-                                        $trial_exists->company_id = session('company_id');
-                                        $trial_exists->save();
-                                    } else {
-                                        Trial::create([
-                                            'opn_debit' => $opn_debit,
-                                            'opn_credit' => $opn_credit,
-
-                                            'remain_debit' => $remain_debit,
-                                            'remain_credit' => $remain_credit,
-
-                                            'cls_debit' => $cls_debit,
-                                            'cls_credit' => $cls_credit,
-
-                                            'account_id' => $acc->id,
-                                            'company_id' => session('company_id'),
-                                        ]);
-                                    }
-                                    //For Trial table ----------------------------------------- START ---------------------------------
-                                }
+                        //Account Group
+                        $acc_grp_name = $row->getCellAtIndex(2)->getValue();
+                        if ($acc_grp_name) {
+                            $acc_grp_exist = AccountGroup::where('name', $acc_grp_name)->where('company_id', session('company_id'))->first();
+                            if (!$acc_grp_exist) {
+                                $acc_grp = AccountGroup::create([
+                                    'type_id' => $acc_type->id,
+                                    'parent_id' => null,
+                                    'name' => $acc_grp_name,
+                                    'company_id' => session('company_id'),
+                                ]);
+                            } else {
+                                $acc_grp = $acc_grp_exist;
                             }
                         }
-                    } catch (\Exception $e) {
-                        return $e;
-                        // something went wrong
+
+                        // Recurrsion Sub Group
+                        $parent = $acc_grp->id;
+                        for ($j = 3; $j <= $total_col - 8; $j++) {
+                            $acc_sub_grp_name = null;
+                            $acc_sub_grp_name = $row->getCellAtIndex($j)->getValue();
+
+                            if ($acc_sub_grp_name) {
+                                $acc_sub_grp_exist = AccountGroup::where('name', $acc_sub_grp_name)->where('parent_id', $parent)->where('company_id', session('company_id'))->first();
+                                if (!$acc_sub_grp_exist) {
+                                    $acc_sub_grp = AccountGroup::create([
+                                        'type_id' => $acc_type->id,
+                                        'parent_id' => $parent,
+                                        'name' => $acc_sub_grp_name,
+                                        'company_id' => session('company_id'),
+                                    ]);
+                                } else {
+                                    $acc_sub_grp = $acc_sub_grp_exist;
+                                }
+                                $parent = $acc_sub_grp->id;
+                            }
+                        }
+
+
+                        //Accounts
+                        $acc_name = $row->getCellAtIndex($total_col - 7)->getValue();
+                        $acc_num = $row->getCellAtIndex(1)->getValue();
+
+
+                        if ($acc_name && $acc_num) {
+
+                            $accArray[$accInc] = $acc_name;
+                            $accInc++;
+
+                            $acc_exist = Account::where('group_id', $parent)->where('company_id', session('company_id'))->where(function ($query) use ($acc_name, $acc_num) {
+                                $query->where('name', $acc_name)->orWhere('number', $acc_num);
+                            })->first();
+                            if (!$acc_exist) {
+                                $acc = Account::create([
+                                    'name' => $acc_name,
+                                    'number' => $acc_num,
+                                    'group_id' => $parent,
+                                    'company_id' => session('company_id'),
+                                ]);
+                                $accountGroupforFolder = AccountGroup::find($parent);
+                                Storage::makeDirectory('/public/' . session('company_id') .
+                                    '/' . session('year_id') . '/execution/' . $accountGroupforFolder->name);
+                            } else {
+                                $acc = $acc_exist;
+                            }
+
+                            //For Trial table ----------------------------------------- START ---------------------------------
+                            $opn_debit = $row->getCellAtIndex($total_col - 6)->getValue() ? $row->getCellAtIndex($total_col - 6)->getValue() : 0;
+                            $opn_credit = $row->getCellAtIndex($total_col - 5)->getValue() ? $row->getCellAtIndex($total_col - 5)->getValue() : 0;
+
+                            $remain_debit = $row->getCellAtIndex($total_col - 4)->getValue() ? $row->getCellAtIndex($total_col - 4)->getValue() :  0;
+                            $remain_credit = $row->getCellAtIndex($total_col - 3)->getValue() ? $row->getCellAtIndex($total_col - 3)->getValue() : 0;
+
+                            $cls_debit = $row->getCellAtIndex($total_col - 2)->getValue() ? $row->getCellAtIndex($total_col - 2)->getValue() : 0;
+                            $cls_credit = $row->getCellAtIndex($total_col - 1)->getValue() ? $row->getCellAtIndex($total_col - 1)->getValue() : 0;
+
+                            $trial_exists = Trial::where('company_id', session('company_id'))
+                                ->where('account_id', $acc->id)->first();
+
+                            if ($trial_exists) {
+                                $trial_exists->opn_debit = $opn_debit;
+                                $trial_exists->opn_credit = $opn_credit;
+
+                                $trial_exists->remain_debit = $remain_debit;
+                                $trial_exists->remain_credit = $remain_credit;
+
+                                $trial_exists->cls_debit = $cls_debit;
+                                $trial_exists->cls_credit = $cls_credit;
+
+                                $trial_exists->account_id = $acc->id;
+                                $trial_exists->company_id = session('company_id');
+                                $trial_exists->save();
+                            } else {
+                                Trial::create([
+                                    'opn_debit' => $opn_debit,
+                                    'opn_credit' => $opn_credit,
+
+                                    'remain_debit' => $remain_debit,
+                                    'remain_credit' => $remain_credit,
+
+                                    'cls_debit' => $cls_debit,
+                                    'cls_credit' => $cls_credit,
+
+                                    'account_id' => $acc->id,
+                                    'company_id' => session('company_id'),
+                                ]);
+                            }
+                            //For Trial table ----------------------------------------- START ---------------------------------
+                        }
                     }
-
-                    break;
-                    // no need to read more sheets
                 }
+                // } catch (\Exception $e) {
+                //     return $e;
+                //     // something went wrong
+                // }
 
-                $reader->close();
+                break;
+                // no need to read more sheets
             }
-            $accResets = Account::whereNotIn('name', $accArray)->get();
-            if ($accResets) {
-                foreach ($accResets as $accReset) {
-                    $trial_exists1 = Trial::where('company_id', session('company_id'))
-                        ->where('account_id', $accReset->id)->first();
-                    if ($trial_exists1) {
 
-                        $trial_exists1->opn_debit = 0;
-                        $trial_exists1->opn_credit = 0;
+            $reader->close();
+        }
+        $accResets = Account::whereNotIn('name', $accArray)->get();
+        if ($accResets) {
+            foreach ($accResets as $accReset) {
+                $trial_exists1 = Trial::where('company_id', session('company_id'))
+                    ->where('account_id', $accReset->id)->first();
+                if ($trial_exists1) {
 
-                        $trial_exists1->remain_debit = 0;
-                        $trial_exists1->remain_credit = 0;
+                    $trial_exists1->opn_debit = 0;
+                    $trial_exists1->opn_credit = 0;
 
-                        $trial_exists1->cls_debit = 0;
-                        $trial_exists1->cls_credit = 0;
-                        $trial_exists1->save();
-                    }
+                    $trial_exists1->remain_debit = 0;
+                    $trial_exists1->remain_credit = 0;
+
+                    $trial_exists1->cls_debit = 0;
+                    $trial_exists1->cls_credit = 0;
+                    $trial_exists1->save();
                 }
             }
-        });
+        }
+        // });
+        DB::commit();
+        // } catch (\Exception $e) {
+        //     DB::rollBack();
+        //     return redirect()->back()->withErrors(['error' => $e->getMessage()]);
+        //     return redirect()->back()->with('error', $e);
+        //     // something went wrong
+        // }
+
         return Redirect::route('accounts');
     }
 
@@ -291,7 +308,7 @@ class Excel extends Controller
             return response()->download(storage_path('app/public/' . 'lead.xlsx'));
         } else {
             $comp = Company::find(session('company_id'));
-            return back()->with('warning', 'Account not found in ' . $comp->name . ' company, Upload trial to generate accounts');
+            return redirect()->back()->with('warning', 'Account not found in ' . $comp->name . ' company, Upload trial to generate accounts');
         }
         //-----------------------------------------------------------------
     }
@@ -306,11 +323,31 @@ class Excel extends Controller
     public $opn_debt = 0;
     public $cls_debt = 0;
 
-    public function excel1($acc_grp, $key, $spreadsheet)
+    function RemoveSpecialChar($str)
     {
 
+        // Using str_replace() function
+        // to replace the word
+        $res = str_replace(array(
+            '\/', '/', '\'', '"',
+            ',', ';', '<', '>'
+        ), ' ', $str);
+
+        // Returning the result
+        return $res;
+    }
+
+    public function excel1($acc_grp, $key, $spreadsheet)
+    {
         $worksheet1 = $spreadsheet->createSheet($key);
-        $worksheet1->setTitle($acc_grp['name']);
+        $title = $this->RemoveSpecialChar($acc_grp['name']);
+        // dd(strlen($title));
+        if (strlen($title)  > 31) {
+            return  redirect()->route('trial.index')->with('error', 'Maximum 31 characters allowed in sheet title.');
+            // throw new PHPExcel_Exception('Maximum 31 characters allowed in sheet title.');
+        }
+        // echo $this->RemoveSpecialChar($acc_grp['name']);
+        $worksheet1->setTitle($title);
 
         $drawing = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
         $drawing->setName('Logo');
