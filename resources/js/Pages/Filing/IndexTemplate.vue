@@ -157,7 +157,7 @@
                   {{ item.name }}
                 </td>
                 <td style="width: 27%" class="px-4 border text-center">
-                  {{ item.type }}
+                  {{ item.type == "planing" ? "Planning" : item.type }}
                 </td>
                 <!-- <td class=" px-4 border">{{ item.accountGroup.name }}</td> -->
                 <!-- <td

@@ -16,7 +16,7 @@ class TeamController extends Controller
 {
     public function index()
     {
-        // if(Company::first())
+        // checking the current user have a company or not
         if(auth()->user()->companies()->first())
         {
             //Validating request
@@ -26,7 +26,7 @@ class TeamController extends Controller
             ]);
 
             $year = Year::find(session('year_id'));
-
+            // checking the year for current user
             if($year)
             {
                 $query =
@@ -85,6 +85,8 @@ class TeamController extends Controller
         $staf = [User::role('staff')->first()];
         $manager = User::role('manager')->first();
 
+        // if we have at least one manager, partner and 1 staff only then user can
+        // redirect to create page otherwise he/she have to create these
         if($partner && $manager && $staf)
         {
             $partners = User::role('partner')->get();
@@ -131,7 +133,13 @@ class TeamController extends Controller
         $partner_id = Request::input('partner')['id'];
         $manager_id = Request::input('manager')['id'];
 
-        // dd($company, $year, $company->users()->where('user_id', $partner_id)->first());
+        /* attaching the users with the company & year to create team
+            we have pivot table of companies_users & years_users
+            to create team we attach the user with the year because team can be change for next year
+            and attaching company to the user because we showing/listing companies according to the users
+        */
+
+        // checking ig already we have connection with this user or not
         if(!$company->users()->where('user_id', $partner_id)->first())
         {
             $company->users()->attach($partner_id);
@@ -164,6 +172,7 @@ class TeamController extends Controller
         $year->users()->attach($partner_id);
         $year->users()->attach($manager_id);
 
+        //staff can be multiple that's why using foreach loop
         $staff = Request::input('staff');
         foreach($staff as $staf)
         {
@@ -217,6 +226,7 @@ class TeamController extends Controller
             'manager' => ['required'],
             'staff' => ['required'],
         ]);
+        // same scenerio as storing team
 
         $year = Year::find(session('year_id'));
         $pre_users = $year->users()->get();

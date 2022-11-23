@@ -14,6 +14,7 @@ use App\Models\Account;
 use App\Models\Company;
 use App\Models\FileManager;
 use App\Models\Trial;
+use App\Models\Year;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
@@ -340,14 +341,14 @@ class Excel extends Controller
     public function excel1($acc_grp, $key, $spreadsheet)
     {
         $worksheet1 = $spreadsheet->createSheet($key);
-        $title = $this->RemoveSpecialChar($acc_grp['name']);
+        // $title = $this->RemoveSpecialChar($acc_grp['name']);
         // dd(strlen($title));
-        if (strlen($title)  > 31) {
-            return  redirect()->route('trial.index')->with('error', 'Maximum 31 characters allowed in sheet title.');
-            // throw new PHPExcel_Exception('Maximum 31 characters allowed in sheet title.');
-        }
+        // if (strlen($title)  > 31) {
+        //     return  redirect()->route('trial.index')->with('error', 'Maximum 31 characters allowed in sheet title.');
+        //     // throw new PHPExcel_Exception('Maximum 31 characters allowed in sheet title.');
+        // }
         // echo $this->RemoveSpecialChar($acc_grp['name']);
-        $worksheet1->setTitle($title);
+        // $worksheet1->setTitle($title);
 
         $drawing = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
         $drawing->setName('Logo');
@@ -372,12 +373,18 @@ class Excel extends Controller
         $spreadsheet->getSheet($key)->fromArray([$acc_grp['name']], NULL, 'B4');
         $spreadsheet->getSheet($key)->fromArray(['PERIOD:'], NULL, 'A5');
         $spreadsheet->getSheet($key)->fromArray(['23-8-2022'], NULL, 'B5');
+
+        $year = Year::find(session('year_id'));
+        $partner = $year->users()->role('partner')->first();
+        $manager = $year->users()->role('manager')->first();
+        $staff = $year->users()->role('staff')->first();
+
         $spreadsheet->getSheet($key)->fromArray(['PREPARED BY:'], NULL, 'A6');
-        $spreadsheet->getSheet($key)->fromArray([auth()->user()->name], NULL, 'B6');
+        $spreadsheet->getSheet($key)->fromArray([$staff->name], NULL, 'B6');
         $spreadsheet->getSheet($key)->fromArray(['REVIEWED BY:'], NULL, 'A7');
-        $spreadsheet->getSheet($key)->fromArray(['MK'], NULL, 'B7');
+        $spreadsheet->getSheet($key)->fromArray([$manager->name], NULL, 'B7');
         $spreadsheet->getSheet($key)->fromArray(['REVIEWED BY:'], NULL, 'A8');
-        $spreadsheet->getSheet($key)->fromArray(['ASAD'], NULL, 'B8');
+        $spreadsheet->getSheet($key)->fromArray([$partner->name], NULL, 'B8');
         $spreadsheet->getSheet($key)->fromArray(['LEAD SCHEDULE'], NULL, 'B9');
         $spreadsheet->getSheet($key)->fromArray([''], NULL, 'B10');
         $spreadsheet->getSheet($key)->fromArray(['S.NO'], NULL, 'A11');

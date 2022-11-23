@@ -164,7 +164,8 @@ defineProps({
               drop-shadow-[4px_4px_16px_rgba(0,0,255)]
             "
           >
-            Copyright @ Alpha 0.022092711
+            <!-- Copyright @ Alpha 0.022092711 -->
+            Copyright @ Alpha 0.016112022142710
           </p>
         </div>
       </div>
