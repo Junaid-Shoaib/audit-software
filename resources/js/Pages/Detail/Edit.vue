@@ -11,7 +11,7 @@
         >Add row</jet-button
       >
       <multiselect
-        style="width: 10%"
+        style="width: 25%"
         class="float-left rounded-md border border-black"
         placeholder="Select Account."
         v-model="form.account"
@@ -216,7 +216,6 @@
                     placeholder="Enter remarks:"
                   />
                 </td>
-
               </tr>
             </tbody>
           </table>
