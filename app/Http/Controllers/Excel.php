@@ -483,4 +483,61 @@ class Excel extends Controller
         }
         return;
     }
+
+
+
+
+
+
+
+    public function materiality()
+    {
+        // $template = Template::where('name', $templates[0])->first();
+        // if ($template) {
+        // $extension =   explode(".", ($template->name));
+        //   dd($extension);
+        $year = Year::where('company_id', session('company_id'))
+            ->where('id', session('year_id'))->first();
+        $partner = $year->users()->role('partner')->first();
+        $manager = $year->users()->role('manager')->first();
+        $staff = $year->users()->role('staff')->first();
+        //   dd($partner->name , $manager->name , $staff->name);
+
+
+        if ($partner != null && $manager != null && $staff != null) {
+            $start = $year->begin ? new Carbon($year->begin) : null;
+            $end = $year->end ? new Carbon($year->end) : null;
+            $names = str_replace(["&"], "&amp;", $year->company->name);
+            $name = $year->company->name;
+            // if (strtolower($extension[1]) == 'docx' || strtolower($extension[1]) == 'docs') {
+            //     $templateProcessor = new  \PhpOffice\PhpWord\TemplateProcessor(public_path('materiality/materiality.xlsx'));
+            //     $templateProcessor->setValue('client', $names);
+            //     $templateProcessor->setValue('partner', ucwords($partner->name));
+            //     $templateProcessor->setValue('manager', ucwords($manager->name));
+            //     $templateProcessor->setValue('user', ucwords($staff->name));
+            //     $templateProcessor->setValue('start', $start->format("F j Y"));
+            //     $templateProcessor->setValue('end', $end->format("F j Y"));
+            //     $templateProcessor->saveAs(storage_path('app/public/' . $template->path));
+            //     return $template;
+            // } else {
+
+            // $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load(public_path('materiality/materiality.xlsx'));
+            // $worksheet = $spreadsheet->getActiveSheet();
+            // $worksheet->getCell('C2')->setValue($name);
+            // $worksheet->getCell('C3')->setValue($start->format("F j Y") . ' - ' . $end->format("F j Y"));
+            // $worksheet->getCell('C5')->setValue(ucwords($staff->name));
+            // $worksheet->getCell('C6')->setValue(ucwords($manager->name));
+            // $worksheet->getCell('C7')->setValue(ucwords($partner->name));
+            // $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xls');
+            // $writer->save(storage_path('app/public/' . $template->path));
+            // return response()->download(storage_path('app/public/' . $template->path));
+
+        }
+        // } else {
+        //     return back()->with('warning', 'Please Create Team First');
+        // }
+        // } else {
+        //     return back()->with('warning', 'tempalate Not Fount');
+        // };
+    }
 }

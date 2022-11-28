@@ -17,8 +17,7 @@ class AccountGroupController extends Controller
 {
     public function index()
     {
-        if(AccountGroup::where('company_id', session('company_id'))->first())
-        {
+        if (AccountGroup::where('company_id', session('company_id'))->first()) {
             //Validating request
             request()->validate([
                 'direction' => ['in:asc,desc'],
@@ -49,7 +48,7 @@ class AccountGroupController extends Controller
                                 'delete' => Account::where('group_id', $accountgroup->id)->first() ? false : true,
                             ];
                     }
-                );
+                )->withQueryString();
 
             return Inertia::render('AccountGroups/Index', [
                 'filters' => request()->all(['search', 'field', 'direction']),
@@ -59,7 +58,7 @@ class AccountGroupController extends Controller
                 'companies' => Auth::user()->companies,
             ]);
         } else {
-                return Redirect::route('trial.index')->with('warning', 'Please upload Excel to generate Accounts and Account Groups.');
+            return Redirect::route('trial.index')->with('warning', 'Please upload Excel to generate Accounts and Account Groups.');
         }
     }
 
@@ -103,7 +102,8 @@ class AccountGroupController extends Controller
     public function edit(AccountGroup $accountgroup)
     {
         $accountgroup = AccountGroup::where('id', $accountgroup->id)->get()
-            ->map(function ($accountgroup) {
+            ->map(
+                function ($accountgroup) {
                     return
                         [
                             'id' => $accountgroup->id,

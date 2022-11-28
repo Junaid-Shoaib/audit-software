@@ -57,35 +57,36 @@ Route::middleware([
 Route::get('trial', [Excel::class, 'index'])->name('trial.index')->middleware('auth');
 Route::post('trial/read', Excel::class)->name('trial.read')->middleware('auth');
 Route::get('lead', [Excel::class, 'lead'])->name('lead')->middleware('auth');
+Route::get('materiality', [Excel::class, 'materiality'])->name('materiality')->middleware('auth');
 
 //COMPANIES -------------------- STARTS ---------------------------
 Route::get('companies', [CompanyController::class, 'index'])
-->name('companies')
-->middleware('auth');
+    ->name('companies')
+    ->middleware('auth');
 
 Route::get('companies/create', [CompanyController::class, 'create'])
-->name('companies.create')
-->middleware('auth');
+    ->name('companies.create')
+    ->middleware('auth');
 
 Route::post('companies', [CompanyController::class, 'store'])
-->name('companies.store')
-->middleware('auth');
+    ->name('companies.store')
+    ->middleware('auth');
 
 Route::get('companies/{company}/edit', [CompanyController::class, 'edit'])
-->name('companies.edit')
-->middleware('auth');
+    ->name('companies.edit')
+    ->middleware('auth');
 
 Route::put('companies/{company}', [CompanyController::class, 'update'])
-->name('companies.update')
-->middleware('auth');
+    ->name('companies.update')
+    ->middleware('auth');
 
 Route::delete('companies/{company}', [CompanyController::class, 'destroy'])
-->name('companies.destroy')
-->middleware('auth');
+    ->name('companies.destroy')
+    ->middleware('auth');
 
 //TO CHANGE COMPANY THE FROM DROPDOWN
 Route::get('companies/coch/{id}', [CompanyController::class, 'coch'])
-->name('companies.coch');
+    ->name('companies.coch');
 
 Route::get('trialpattern', [CompanyController::class, 'trial_pattern'])->name('trial.pattern')->middleware('auth');
 
@@ -95,8 +96,8 @@ Route::get('trialpattern', [CompanyController::class, 'trial_pattern'])->name('t
 
 //YEARS ------------------------------------ STARTS ------------------
 Route::get('years', [YearController::class, 'index'])
-->name('years')
-->middleware('auth');
+    ->name('years')
+    ->middleware('auth');
 
 Route::get('years/create', [YearController::class, 'create'])
     ->name('years.create')
@@ -128,14 +129,14 @@ Route::get('years/{year}/close', [YearController::class, 'close'])
 //YEARS ------------------------------------ END ------------------
 //New User ------------------------------------ START ------------------
 Route::get('users', [UserController::class, 'index'])
-->name('users')
-->middleware('auth');
+    ->name('users')
+    ->middleware('auth');
 Route::get('users/create', [UserController::class, 'create'])
-->name('users.create')
-->middleware('auth');
+    ->name('users.create')
+    ->middleware('auth');
 Route::post('users', [UserController::class, 'store'])
-->name('users.store')
-->middleware('auth');
+    ->name('users.store')
+    ->middleware('auth');
 //New User ------------------------------------ END ------------------
 
 
@@ -154,8 +155,8 @@ Route::post('templates', [TemplateController::class, 'store'])
     ->middleware('auth');
 
 Route::get('template/download/{id}', [TemplateController::class, 'temp_download'])
-->name('temp_download')
-->middleware('auth');
+    ->name('temp_download')
+    ->middleware('auth');
 
 
 Route::delete('template/delete/{id}', [TemplateController::class, 'destroy'])
@@ -260,15 +261,15 @@ Route::get('filing/folder', [FileMangementController::class, 'folder'])
 
 Route::middleware('auth')->controller(FileMangementController::class)->group(function () {
     Route::get('/filing/{parent_name_id}', 'filing')->name('filing');
-    Route::get('/template/{type}','index_temp')->name('index_temp');
+    Route::get('/template/{type}', 'index_temp')->name('index_temp');
     // Route::get('/filing/execution/{parent_name_id?}', 'folder')->name('folder');
     Route::get('filing/createFolder', 'createFolder')->name('filing.createFolder');
     Route::post('filing', 'storeFolder')->name('filing.storeFolder');
-    Route::get('/template-download/{id?}','download_temp')->name('download_temp');
-    Route::get('/multiple-template-download','multi_download_temp')->name('multi_download_temp');
-    Route::post('/include-templates','include_templates')->name('include_templates');
-    Route::post('/approve-files','approve_files')->name('approve_files');
-    Route::post('/reject-files/{review}','reject_files')->name('reject_files');
+    Route::get('/template-download/{id?}', 'download_temp')->name('download_temp');
+    Route::get('/multiple-template-download', 'multi_download_temp')->name('multi_download_temp');
+    Route::post('/include-templates', 'include_templates')->name('include_templates');
+    Route::post('/approve-files', 'approve_files')->name('approve_files');
+    Route::post('/reject-files/{review}', 'reject_files')->name('reject_files');
 });
 
 
@@ -340,7 +341,7 @@ Route::post('import-details', [DetailController::class, 'import_details'])
 
 
 
-Route::get('/routes', function() {
+Route::get('/routes', function () {
     //Clear Route cache:
     $exitCode = Artisan::call('route:clear');
     //Route cache:
@@ -348,4 +349,3 @@ Route::get('/routes', function() {
     return back()->with('success', 'Cache clear');
     return '<h1>Route cache cleared</h1>';
 });
-
