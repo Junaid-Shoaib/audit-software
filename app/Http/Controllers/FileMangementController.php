@@ -353,10 +353,19 @@ class FileMangementController extends Controller
 
     public function storeFile(Request $request, $parent_id)
     {
-        Request::validate([
-            // 'avatar'=> ['required'],
-            'avatar'=> 'required | mimes:pdf,docx,xlsx,jpeg,jpg,png',
-        ]);
+        // Request::validate([
+        //     // 'avatar'=> ['required'],
+        //     'avatar'=> 'required | mimes:pdf,docx,xlsx,jpeg,jpg,png',
+        // ]);
+
+        //Custome validation of file type ...because laravel validation giving error on some files
+        $extension = Request::file('avatar')->getClientOriginalExtension();
+        if($extension == 'pdf' || $extension == 'docx' || $extension == 'xlsx' || $extension == 'jpeg' || $extension == 'jpg' || $extension == 'png')
+        {
+
+        } else {
+            return back()->with('error', 'The file must be a file of type: pdf, docx, xlsx, jpeg, jpg, png.');
+        }
 
         $parent = FileManager::find($parent_id);
         $grand_parent = FileManager::where('id', $parent->parent_id)->first();
@@ -370,18 +379,36 @@ class FileMangementController extends Controller
         } else {
             $path = session('company_id') . '/' . session('year_id') . '/' . $parent_id;
         }
-        $name = time() . '_' . Request::file('avatar')->getClientOriginalName();
+        // $name = time() . '_' . Request::file('avatar')->getClientOriginalName();
+        $name = Request::file('avatar')->getClientOriginalName();
 
-        $pathWithFileName = Request::file('avatar')->storeAs($path, $name, 'public');
 
-        $folderObj = FileManager::create([
-            'name' => $name,
-            'is_folder' => 1,
-            'parent_id' => $parent_id,
-            'path' => $pathWithFileName,
-            'year_id' => session('year_id'),
-            'company_id' => session('company_id'),
-        ]);
+        $file_exists = FileManager::
+            where('company_id', session('company_id'))
+            ->where('year_id', session('year_id'))
+            ->where('name', $name)->where('parent_id', $parent_id)
+            ->where('is_folder', 1)
+            ->first();
+        if(!$file_exists)
+        {
+            $pathWithFileName = Request::file('avatar')->storeAs($path, $name, 'public');
+            $folderObj = FileManager::create([
+                'name' => $name,
+                'is_folder' => 1,
+                'parent_id' => $parent_id,
+                'path' => $pathWithFileName,
+                'year_id' => session('year_id'),
+                'company_id' => session('company_id'),
+            ]);
+        } else {
+            $approve_check = Auth::user()->roles[0]->name . '_approval';
+            if($file_exists->$approve_check == 0)
+            {
+                $pathWithFileName = Request::file('avatar')->storeAs($path, $name, 'public');
+            } else {
+                return back()->with('error', 'File exists and approved.');
+            }
+        }
         //sending parameter value "$parent->id" because we have to show the folder where we upload the file
         return Redirect::route("filing", [$parent->id])->with('success', 'File upload.');
     }
