@@ -57,7 +57,7 @@ Route::middleware([
 Route::get('trial', [Excel::class, 'index'])->name('trial.index')->middleware('auth');
 Route::post('trial/read', Excel::class)->name('trial.read')->middleware('auth');
 Route::get('lead', [Excel::class, 'lead'])->name('lead')->middleware('auth');
-Route::get('materiality', [Excel::class, 'materiality'])->name('materiality')->middleware('auth');
+Route::get('materiality-download', [Excel::class, 'materiality'])->name('materiality')->middleware('auth');
 
 //COMPANIES -------------------- STARTS ---------------------------
 Route::get('companies', [CompanyController::class, 'index'])
