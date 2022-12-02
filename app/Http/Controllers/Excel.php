@@ -486,58 +486,100 @@ class Excel extends Controller
 
 
 
-
-
-
-
-    public function materiality()
+    public function materiality(Request $request)
     {
-        // $template = Template::where('name', $templates[0])->first();
-        // if ($template) {
-        // $extension =   explode(".", ($template->name));
-        //   dd($extension);
-        $year = Year::where('company_id', session('company_id'))
-            ->where('id', session('year_id'))->first();
-        $partner = $year->users()->role('partner')->first();
-        $manager = $year->users()->role('manager')->first();
-        $staff = $year->users()->role('staff')->first();
-        //   dd($partner->name , $manager->name , $staff->name);
+        $request->validate([
+            'preTax' => 'required|numeric|between:0.1,99.99',
+            'tAsset' => 'required|numeric|between:0.1,99.99',
+            'equity' => 'required|numeric|between:0.1,99.99',
+            'netRevenue' => 'required|numeric|between:0.1,99.99',
+        ]);
+
+        $accounts = Account::where('company_id', session('company_id'))->first();
+        if ($accounts)
+        {
+            $preTax = $request->preTax;
+            $tAsset = $request->tAsset;
+            $equity = $request->equity;
+            $netRevenue = $request->netRevenue;
+            // dd($request);
+            $accounts = Account::where('company_id', session('company_id'))->with('accountGroup', 'accountGroup.accountType', 'trials')->get();
+            $capital = $assets = $revenue = $expense = 0;
+            foreach($accounts as $account)
+            {
+                if($account->accountGroup->accountType->name == 'Assets')
+                {
+                    $temp = abs($account->trials->cls_debit - $account->trials->cls_credit);
+                    $assets += $temp;
+                } else if($account->accountGroup->accountType->name == 'Capital') {
+                    $temp = abs($account->trials->cls_debit - $account->trials->cls_credit);
+                    $capital += $temp;
+                } else if($account->accountGroup->accountType->name == 'Revenue') {
+                    $temp = abs($account->trials->cls_debit - $account->trials->cls_credit);
+                    $revenue += $temp;
+                } else if($account->accountGroup->accountType->name == 'Expenses') {
+                    $temp = abs($account->trials->cls_debit - $account->trials->cls_credit);
+                    $expense += $temp;
+                }
+            }
+            $preTaxIncome = abs($revenue - $expense);
+
+            // dd('Assets '.$assets, 'Capital '.$capital, 'Revenue '.$revenue, 'Expenses '.$expense);
+            $year = Year::where('company_id', session('company_id'))
+                ->where('id', session('year_id'))->first();
+            if ($year) {
+                $partner = $year->users()->role('partner')->first();
+                $manager = $year->users()->role('manager')->first();
+                $staff = $year->users()->role('staff')->first();
+                //   dd($partner->name , $manager->name , $staff->name);
 
 
-        if ($partner != null && $manager != null && $staff != null) {
-            $start = $year->begin ? new Carbon($year->begin) : null;
-            $end = $year->end ? new Carbon($year->end) : null;
-            $names = str_replace(["&"], "&amp;", $year->company->name);
-            $name = $year->company->name;
-            // if (strtolower($extension[1]) == 'docx' || strtolower($extension[1]) == 'docs') {
-            //     $templateProcessor = new  \PhpOffice\PhpWord\TemplateProcessor(public_path('materiality/materiality.xlsx'));
-            //     $templateProcessor->setValue('client', $names);
-            //     $templateProcessor->setValue('partner', ucwords($partner->name));
-            //     $templateProcessor->setValue('manager', ucwords($manager->name));
-            //     $templateProcessor->setValue('user', ucwords($staff->name));
-            //     $templateProcessor->setValue('start', $start->format("F j Y"));
-            //     $templateProcessor->setValue('end', $end->format("F j Y"));
-            //     $templateProcessor->saveAs(storage_path('app/public/' . $template->path));
-            //     return $template;
-            // } else {
+                if ($partner != null && $manager != null && $staff != null) {
+                    // $start = $year->begin ? new Carbon($year->begin) : null;
+                    $now = Carbon::now();
+                    $end = $year->end ? new Carbon($year->end) : null;
+                    $names = str_replace(["&"], "&amp;", $year->company->name);
 
-            // $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load(public_path('materiality/materiality.xlsx'));
-            // $worksheet = $spreadsheet->getActiveSheet();
-            // $worksheet->getCell('C2')->setValue($name);
-            // $worksheet->getCell('C3')->setValue($start->format("F j Y") . ' - ' . $end->format("F j Y"));
-            // $worksheet->getCell('C5')->setValue(ucwords($staff->name));
-            // $worksheet->getCell('C6')->setValue(ucwords($manager->name));
-            // $worksheet->getCell('C7')->setValue(ucwords($partner->name));
-            // $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xls');
-            // $writer->save(storage_path('app/public/' . $template->path));
-            // return response()->download(storage_path('app/public/' . $template->path));
 
+                    $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load(public_path('materiality/materiality.xlsx'));
+                    $worksheet = $spreadsheet->getActiveSheet();
+                    $worksheet->getCell('C6')->setValue($names);
+                    $worksheet->getCell('C7')->setValue($end->format("M j Y"));
+                    $worksheet->getCell('E6')->setValue('Prepared by: ' . ucwords($staff->name));
+                    $worksheet->getCell('E7')->setValue('Reviewed by: ' . ucwords($manager->name));
+                    $worksheet->getCell('G6')->setValue('Date: ' . $now->format("M j Y"));
+                    $worksheet->getCell('G7')->setValue('Date: ' . $now->format("M j Y"));
+                    // $worksheet->getCell('C7')->setValue(ucwords($partner->name));
+
+                    // Single Rule
+                    $worksheet->getCell('C14')->setValue($preTax . '% of Pre Tax Income');
+                    $worksheet->getCell('C15')->setValue($tAsset . '% of Total Assets');
+                    $worksheet->getCell('C16')->setValue($equity . '% of Equity');
+                    $worksheet->getCell('C17')->setValue($netRevenue. '% of Total Net Revenues');
+
+                    //Computation
+                    $worksheet->getCell('D14')->setValue('=('.$preTax.'%*'.$preTaxIncome.')');
+                    $worksheet->getCell('D15')->setValue('=('.$tAsset.'%*'.$assets.')');
+                    $worksheet->getCell('D16')->setValue('=('.$equity.'%*'.$capital.')');
+                    $worksheet->getCell('D17')->setValue('=('.$netRevenue.'%*'.$revenue.')');
+
+                    //Planning Materiality (PiM as mentioned in Single Rule)
+                    $worksheet->getCell('E14')->setValue('=(5%*D14)');
+                    $worksheet->getCell('E15')->setValue('=(0.5%*D15)');
+                    $worksheet->getCell('E16')->setValue('=(1%*D16)');
+                    $worksheet->getCell('E17')->setValue('=(0.5%*D17)');
+
+                    $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xls');
+                    $writer->save(storage_path('app/public/materiality.xlsx'));
+                    return response()->download(storage_path('app/public/materiality.xlsx'));
+                }
+            } else {
+                return back()->with('warning', 'Please Create Team First');
+            }
+        } else {
+            $comp = Company::find(session('company_id'));
+            return redirect()->back()->with('warning', 'Account not found in ' . $comp->name . ' company, Upload trial to generate accounts');
         }
-        // } else {
-        //     return back()->with('warning', 'Please Create Team First');
-        // }
-        // } else {
-        //     return back()->with('warning', 'tempalate Not Fount');
-        // };
     }
+
 }

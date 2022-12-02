@@ -71,6 +71,106 @@
         <!-- <paginator class="mt-6" :balances="balances" /> -->
       </div>
     </div>
+    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 py-2">
+      <div class="p-2 grid grid-cols-2 bg-gray-200 items-center">
+        <h2 class="header">Download Materiality Report</h2>
+      </div>
+      <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 py-2">
+        <div class="">
+          <!-- target="_blank" -->
+          <form
+            @submit.prevent="submit_materiality"
+            v-bind:action="'materiality-download'"
+            ref="form_materiality"
+          >
+            <div class="p-4 -mr-6 -mb-8 flex flex-wrap">
+              <table class="table2">
+                <tr class="tablerowhead bg-gray-700 text-white">
+                  <th class="py-1 px-4 rounded-l-md">Particular</th>
+                  <th class="py-1 px-4 rounded-r-md">Percentage %</th>
+                </tr>
+                <tr>
+                  <td>
+                    <input
+                      type="text"
+                      value="Pre Tax Income"
+                      class="pr-2 pb-2 w-full rounded-md"
+                      disabled
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      name="preTax"
+                      class="text-center pr-2 pb-2 w-full rounded-md"
+                      value="5"
+                    />
+                  </td>
+                </tr>
+
+                <tr>
+                  <td>
+                    <input
+                      type="text"
+                      value="Total Assets"
+                      class="pr-2 pb-2 w-full rounded-md"
+                      disabled
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      name="tAsset"
+                      class="text-center pr-2 pb-2 w-full rounded-md"
+                      value="0.5"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <input
+                      type="text"
+                      value="Equity"
+                      class="pr-2 pb-2 w-full rounded-md"
+                      disabled
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      name="equity"
+                      class="text-center pr-2 pb-2 w-full rounded-md"
+                      value="1"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <input
+                      type="text"
+                      value="Total Net Revenues"
+                      class="pr-2 pb-2 w-full rounded-md"
+                      disabled
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      name="netRevenue"
+                      class="text-center pr-2 pb-2 w-full rounded-md"
+                      value="0.5"
+                    />
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <button class="float-right trailbutton" type="submit">
+              Donwload
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
   </app-layout>
 </template>
 
@@ -110,10 +210,19 @@ export default {
   data() {
     return {
       value: null,
+      form_mt: {
+        preTax: null,
+        tAsset: null,
+        equity: null,
+        netRevenue: null,
+      },
     };
   },
 
   methods: {
+    submit_materiality: function () {
+      this.$refs.form_materiality.submit();
+    },
     submit() {
       this.form.post(route("trial.read"));
     },
