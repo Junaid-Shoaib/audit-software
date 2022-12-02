@@ -18,8 +18,7 @@ class YearController extends FileMangementController
 {
     public function index()
     {
-        if(Company::first())
-        {
+        if (Company::first()) {
             $query = Year::query();
             return Inertia::render('Years/Index', [
 
@@ -74,6 +73,7 @@ class YearController extends FileMangementController
         // Calling the function from DefaultFoldersCreation controller ---- to generate the default folder
         $this->defaultFolders();
         Artisan::call('db:seed --class=TemplateSeeder');
+        dd('complete');
         return Redirect::back()->with('success', 'Year created.');
     }
 
@@ -128,13 +128,12 @@ class YearController extends FileMangementController
         $active_yr->value = $id;
         $active_yr->save();
         session(['year_id' => $id]);
-        if($active_yr->users()->first()){
-            session(['team_id' => $active_yr->users()->first()->id]);
-        }else{
+        if ($active_yr->user()->first()) {
+            session(['team_id' => $active_yr->user()->first()->id]);
+        } else {
             session(['team_id' => null]);
         }
 
         return Redirect::back();
     }
-
 }
