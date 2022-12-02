@@ -73,7 +73,6 @@ class YearController extends FileMangementController
         // Calling the function from DefaultFoldersCreation controller ---- to generate the default folder
         $this->defaultFolders();
         Artisan::call('db:seed --class=TemplateSeeder');
-        dd('complete');
         return Redirect::back()->with('success', 'Year created.');
     }
 
