@@ -73,10 +73,12 @@ class CreateCoreTables extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id')->nullable();
             $table->unsignedBigInteger('company_id')->nullable();
+            $table->unsignedBigInteger('year_id')->nullable();
             $table->string('key');
             $table->string('value')->nullable();
             $table->foreign('user_id')->references('id')->on('users');
             $table->foreign('company_id')->references('id')->on('companies');
+            $table->foreign('year_id')->references('id')->on('years');
             $table->timestamps();
         });
 
@@ -90,8 +92,10 @@ class CreateCoreTables extends Migration
             $table->decimal('cls_credit',14,2);
             $table->tinyInteger('enabled')->default('1');
             $table->unsignedBigInteger('company_id');
+            $table->unsignedBigInteger('year_id');
             $table->unsignedBigInteger('account_id');
             $table->foreign('company_id')->references('id')->on('companies');
+            $table->foreign('year_id')->references('id')->on('years');
             $table->foreign('account_id')->references('id')->on('accounts');
             $table->timestamps();
         });

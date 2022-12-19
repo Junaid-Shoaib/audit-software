@@ -9,12 +9,14 @@ use App\Models\Salary;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use App\Models\AccountType;
+use Illuminate\Support\Facades\Auth;
 use App\Models\AccountGroup;
 use App\Models\Account;
 use App\Models\Company;
 use App\Models\FileManager;
 use App\Models\Trial;
 use App\Models\Year;
+use App\Models\Setting;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
@@ -230,6 +232,7 @@ class Excel extends Controller
 
                                 $trial_exists->account_id = $acc->id;
                                 $trial_exists->company_id = session('company_id');
+                                $trial_exists->year_id = session('year_id');
                                 $trial_exists->save();
                             } else {
                                 Trial::create([
@@ -244,6 +247,7 @@ class Excel extends Controller
 
                                     'account_id' => $acc->id,
                                     'company_id' => session('company_id'),
+                                    'year_id' => session('year_id'),
                                 ]);
                             }
                             //For Trial table ----------------------------------------- START ---------------------------------
@@ -507,19 +511,22 @@ class Excel extends Controller
             $capital = $assets = $revenue = $expense = 0;
             foreach($accounts as $account)
             {
-                if($account->accountGroup->accountType->name == 'Assets')
+                if($account->trials->year_id == session('year_id'))
                 {
-                    $temp = abs($account->trials->cls_debit - $account->trials->cls_credit);
-                    $assets += $temp;
-                } else if($account->accountGroup->accountType->name == 'Capital') {
-                    $temp = abs($account->trials->cls_debit - $account->trials->cls_credit);
-                    $capital += $temp;
-                } else if($account->accountGroup->accountType->name == 'Revenue') {
-                    $temp = abs($account->trials->cls_debit - $account->trials->cls_credit);
-                    $revenue += $temp;
-                } else if($account->accountGroup->accountType->name == 'Expenses') {
-                    $temp = abs($account->trials->cls_debit - $account->trials->cls_credit);
-                    $expense += $temp;
+                    if($account->accountGroup->accountType->name == 'Assets')
+                    {
+                        $temp = abs($account->trials->cls_debit - $account->trials->cls_credit);
+                        $assets += $temp;
+                    } else if($account->accountGroup->accountType->name == 'Capital') {
+                        $temp = abs($account->trials->cls_debit - $account->trials->cls_credit);
+                        $capital += $temp;
+                    } else if($account->accountGroup->accountType->name == 'Revenue') {
+                        $temp = abs($account->trials->cls_debit - $account->trials->cls_credit);
+                        $revenue += $temp;
+                    } else if($account->accountGroup->accountType->name == 'Expenses') {
+                        $temp = abs($account->trials->cls_debit - $account->trials->cls_credit);
+                        $expense += $temp;
+                    }
                 }
             }
             $preTaxIncome = abs($revenue - $expense);
@@ -557,17 +564,77 @@ class Excel extends Controller
                     $worksheet->getCell('C16')->setValue($equity . '% of Equity');
                     $worksheet->getCell('C17')->setValue($netRevenue. '% of Total Net Revenues');
 
+                    $D14 = $preTaxIncome * $preTax / 100;
+                    $D15 = $assets * $tAsset / 100;
+                    $D16 = $capital * $equity / 100;
+                    $D17 = $revenue * $netRevenue / 100;
                     //Computation
                     $worksheet->getCell('D14')->setValue('=('.$preTax.'%*'.$preTaxIncome.')');
                     $worksheet->getCell('D15')->setValue('=('.$tAsset.'%*'.$assets.')');
                     $worksheet->getCell('D16')->setValue('=('.$equity.'%*'.$capital.')');
                     $worksheet->getCell('D17')->setValue('=('.$netRevenue.'%*'.$revenue.')');
 
+                    $E14 = $D14 * $preTax / 100;
+                    $E15 = $D15 * $tAsset / 100;
+                    $E16 = $D16 * $equity / 100;
+                    $E17 = $D17 * $netRevenue / 100;
+
+                    $materiality_val = ($E14 + $E15 + $E16 + $E17) / 2;
+
                     //Planning Materiality (PiM as mentioned in Single Rule)
-                    $worksheet->getCell('E14')->setValue('=(5%*D14)');
-                    $worksheet->getCell('E15')->setValue('=(0.5%*D15)');
-                    $worksheet->getCell('E16')->setValue('=(1%*D16)');
-                    $worksheet->getCell('E17')->setValue('=(0.5%*D17)');
+                    $worksheet->getCell('E14')->setValue('=('.$preTax.'%*D14)');
+                    $worksheet->getCell('E15')->setValue('=('.$tAsset.'%*D15)');
+                    $worksheet->getCell('E16')->setValue('=('.$equity.'%*D16)');
+                    $worksheet->getCell('E17')->setValue('=('.$netRevenue.'%*D17)');
+
+                     // ----- To calculate performance materiality as in EXCEL SHEET FORMULAS -----------------------------
+                    $F14 = $E14 * 10 / 100;
+                    $F15 = $E15 * 10 / 100;
+                    $F16 = $E16 * 10 / 100;
+                    $F17 = $E17 * 10 / 100;
+                    $perf_materiality_val = ($F14 + $F15 + $F16 + $F17) / 2;
+                    // dd($perf_materiality_val, $materiality_val, $E14, $E15,$E16, $E17, $D14, $D15,$D16, $D17);
+
+                    $materiality_exists = Setting::where('company_id', session('company_id'))
+                        ->where('year_id', session('year_id'))
+                        ->where('user_id', Auth::user()->id)
+                        ->where('key', 'materiality')
+                        ->first();
+
+                    if($materiality_exists)
+                    {
+                        $materiality_exists->value = $materiality_val;
+                        $materiality_exists->save();
+                    } else {
+                        Setting::create([
+                            'key' => 'materiality',
+                            'value' => $materiality_val,
+                            'user_id' => Auth::user()->id,
+                            'company_id' => session('company_id'),
+                            'year_id' => session('year_id'),
+                        ]);
+                    }
+                    $perf_materiality_exists = Setting::where('company_id', session('company_id'))
+                        ->where('year_id', session('year_id'))
+                        ->where('user_id', Auth::user()->id)
+                        ->where('key', 'perf_materiality')
+                        ->first();
+                    if($perf_materiality_exists)
+                    {
+                        $perf_materiality_exists->value = $perf_materiality_val;
+                        $perf_materiality_exists->save();
+
+                    } else {
+                        Setting::create([
+                            'key' => 'perf_materiality',
+                            'value' => $perf_materiality_val,
+                            'user_id' => Auth::user()->id,
+                            'company_id' => session('company_id'),
+                            'year_id' => session('year_id'),
+                        ]);
+                    }
+
+                    // ----------------------------------
 
                     $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xls');
                     $writer->save(storage_path('app/public/materiality.xlsx'));
@@ -578,7 +645,12 @@ class Excel extends Controller
             }
         } else {
             $comp = Company::find(session('company_id'));
-            return redirect()->back()->with('warning', 'Account not found in ' . $comp->name . ' company, Upload trial to generate accounts');
+            if($comp)
+            {
+                return redirect()->back()->with('warning', 'Account not found in ' . $comp->name . ' company, Upload trial to generate accounts');
+            }else {
+                return redirect()->back()->with('warning', 'Account not found in selected company, Upload trial to generate accounts');
+            }
         }
     }
 
