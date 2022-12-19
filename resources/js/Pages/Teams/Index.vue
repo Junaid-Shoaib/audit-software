@@ -34,22 +34,22 @@
 
     <FlashMessage />
 
-    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 py-2">
+    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 py-1">
       <!-- <form @submit.prevent="form.get(route('teams.create'))"> -->
-      <jet-button v-if="team_exists" @click="edit" class="ml-2 buttondesign"
+      <jet-button v-if="team_exists" @click="edit" class="buttondesign"
         >Edit your Team</jet-button
       >
-      <jet-button v-else @click="create" class="ml-2 buttondesign"
+      <jet-button v-else @click="create" class="buttondesign"
         >Add Team</jet-button
       >
       <div class="">
-        <div class="obsolute mt-2 ml-2 sm:rounded-2xl">
+        <div class="obsolute sm:rounded-2xl">
           <table class="table2">
             <thead>
               <tr class="tablerowhead">
-                <th class="py-1 px-4 rounded-l-2xl">Name</th>
-                <th class="py-1 px-4">Email</th>
-                <th class="py-1 px-4">Role</th>
+                <th class="px-4 rounded-l-2xl">Name</th>
+                <th class="px-4">Email</th>
+                <th class="px-4 rounded-r-2xl">Role</th>
                 <!-- <th class="py-1 px-4">End</th>
                   <th class="py-1 px-4 rounded-r-2xl">Action</th> -->
               </tr>
@@ -108,7 +108,7 @@
                   </td> -->
               </tr>
               <tr v-if="balances.data.length === 0">
-                <td class="border-t px-6 py-4" colspan="4">No Record found.</td>
+                <td class="border-t px-6 py-2" colspan="4">No Record found.</td>
               </tr>
             </tbody>
           </table>

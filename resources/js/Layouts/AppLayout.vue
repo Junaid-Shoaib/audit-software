@@ -187,7 +187,7 @@
     <div
       class="
         hidden
-        w-64
+        w-60
         z-50
         bg-gray-800
         border-r
@@ -378,12 +378,12 @@
       </div> -->
     </div>
 
-    <div class="h-screen md:ml-64 bg-white flex-1">
+    <div class="h-screen ml-60 bg-white flex-1">
       <div
         class="
           flex
           justify-between
-          py-3
+          py-1
           px-3
           md:px-6
           space-x-3
@@ -470,7 +470,7 @@
               alt=""
             /> -->
             <img
-              class="inline w-10 h-10 rounded-full"
+              class="inline w-8 h-8 rounded-full"
               :src="$page.props.user.profile_photo_url"
               :alt="$page.props.user.name"
             />

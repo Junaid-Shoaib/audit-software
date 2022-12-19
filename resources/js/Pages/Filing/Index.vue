@@ -43,7 +43,7 @@
 
     <FlashMessage />
 
-    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 py-2">
+    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 py-1">
       <jet-button @click="uploadFile" class="ml-2 buttondesign"
         >Upload File</jet-button
       >
@@ -51,11 +51,35 @@
         >Templates</jet-button
       >
       <input hidden id="selected" @click="checkAll()" v-model="isCheckAll" />
-      <label class="px-2 py-2 ml-2 submitbutton" for="selected">
-        Select All</label
+
+      <label v-if="isCheckAll" class="labelbutton" for="selected">
+        Un-Select All</label
       >
+      <label v-else class="labelbutton" for="selected"> Select All</label>
       <button
-        class="ml-2 px-2 py-2 submitbutton"
+        class="
+          inline-flex
+          items-center
+          px-4
+          py-1
+          bg-gray-800
+          border border-transparent
+          rounded-md
+          font-semibold
+          text-xs text-white
+          uppercase
+          tracking-widest
+          hover:bg-gray-700
+          active:bg-gray-900
+          focus:outline-none
+          focus:border-gray-900
+          focus:ring
+          focus:ring-gray-300
+          disabled:opacity-25
+          transition
+          ml-2
+          buttondesign
+        "
         type="button"
         @click="Approve()"
       >
@@ -64,7 +88,29 @@
 
       <button
         v-if="this.user_role != 'staff'"
-        class="ml-2 px-2 py-2 submitbutton"
+        class="
+          inline-flex
+          items-center
+          px-4
+          py-1
+          bg-gray-800
+          border border-transparent
+          rounded-md
+          font-semibold
+          text-xs text-white
+          uppercase
+          tracking-widest
+          hover:bg-gray-700
+          active:bg-gray-900
+          focus:outline-none
+          focus:border-gray-900
+          focus:ring
+          focus:ring-gray-300
+          disabled:opacity-25
+          transition
+          ml-2
+          buttondesign
+        "
         type="button"
         @click="Reject()"
       >
@@ -72,16 +118,14 @@
       </button>
 
       <div class="">
-        <div class="obsolute mt-2 ml-2 sm:rounded-2xl">
+        <div class="obsolute sm:rounded-2xl">
           <table class="table2">
             <thead>
               <tr class="tablerowhead">
-                <th class="py-1 px-4 rounded-l-2xl">{{ parent.type }} Name</th>
-                <th class="py-1 px-4">Approval</th>
-                <th v-if="this.user_role != 'partner'" class="py-1 px-4">
-                  Review
-                </th>
-                <th class="py-1 px-4 rounded-r-2xl">Action</th>
+                <th class="px-4 rounded-l-2xl">{{ parent.type }} Name</th>
+                <th class="px-4">Approval</th>
+                <th v-if="this.user_role != 'partner'" class="px-4">Review</th>
+                <th class="px-4 rounded-r-2xl">Action</th>
               </tr>
             </thead>
             <tbody>
@@ -130,7 +174,6 @@
                       px-4
                       text-white
                       font-bold
-                      m-1
                       hover:text-white hover:bg-indigo-400
                     "
                     :href="'/filing/downloadFile/' + item.id"
@@ -143,7 +186,6 @@
                       bg-red-500
                       rounded-md
                       px-4
-                      m-1
                       text-white
                       font-bold
                       hover:text-white hover:bg-red-600

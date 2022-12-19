@@ -21,13 +21,13 @@
 
     <FlashMessage />
 
-    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 py-2">
-      <jet-button type="button" @click="createFolder" class="ml-2 buttondesign"
+    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 py-1">
+      <jet-button type="button" @click="createFolder" class="buttondesign"
         >Create Folder</jet-button
       >
 
       <div class="">
-        <div class="obsolute mt-2 ml-2 sm:rounded-2xl">
+        <div class="obsolute sm:rounded-2xl">
           <table class="table2">
             <thead>
               <tr class="tablerowhead">
@@ -51,7 +51,6 @@
                       bg-indigo-300
                       rounded-md
                       px-4
-                      m-1
                       text-white
                       font-bold
                       hover:text-white hover:bg-indigo-400
@@ -62,7 +61,7 @@
                     <span>View</span>
                   </button>
                   <button
-                    class="deletebutton px-4 m-1"
+                    class="deletebutton px-4"
                     @click="deleteFileFolder(item.id)"
                     type="button"
                   >
@@ -134,7 +133,9 @@ export default {
     },
 
     deleteFileFolder: function (id) {
-      this.$inertia.get(route("filing.deleteFileFolder", id));
+      if (confirm("Are you Sure want to Delete this Folder")) {
+        this.$inertia.get(route("filing.deleteFileFolder", id));
+      }
     },
 
     coch() {

@@ -21,12 +21,12 @@
 
     <FlashMessage />
 
-    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 py-2">
+    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 py-1">
       <!-- <jet-button @click="create" class="mt-4 ml-8">Create</jet-button> -->
 
       <form @submit.prevent="form.get(route('years.create'))">
         <!-- <div class="grid grid-cols-2"> -->
-        <jet-button type="submit" @click="create" class="ml-2 buttondesign"
+        <jet-button type="submit" @click="create" class="buttondesign"
           >Add Year</jet-button
         >
         <!-- <div class="justify-end overflow-hidden">
@@ -62,14 +62,14 @@
         </select> -->
         <!-- <div v-if="errors.type">{{ errors.type }}</div> -->
         <div class="">
-          <div class="obsolute mt-2 ml-2 sm:rounded-2xl">
+          <div class="obsolute sm:rounded-2xl">
             <table class="table2">
               <thead>
                 <tr class="tablerowhead">
-                  <th class="py-1 px-4 rounded-l-2xl">Company</th>
-                  <th class="py-1 px-4">Begin</th>
-                  <th class="py-1 px-4">End</th>
-                  <th class="py-1 px-4 rounded-r-2xl">Action</th>
+                  <th class="px-4 rounded-l-2xl">Company</th>
+                  <th class="px-4">Begin</th>
+                  <th class="px-4">End</th>
+                  <th class="px-4 rounded-r-2xl">Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -89,14 +89,14 @@
                   </td>
                   <td class="w-4/12px-4 border w-2/6 rounded-r-2xl text-center">
                     <button
-                      class="editbutton px-4 m-1"
+                      class="editbutton px-4"
                       @click="edit(item.id)"
                       type="button"
                     >
                       <span>Edit</span>
                     </button>
                     <button
-                      class="deletebutton px-4 m-1"
+                      class="deletebutton px-4"
                       @click="destroy(item.id)"
                       type="button"
                       v-if="item.delete"

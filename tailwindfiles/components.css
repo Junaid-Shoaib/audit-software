@@ -10,7 +10,7 @@
 }
 .tablerowbody1{
     @apply font-bold text-gray-600 hover:bg-blue-600 hover:text-white hover:transition hover:ease-in-out transform hover:scale-105 ease-out duration-300;
-    
+
 }
 .tablerowbody2{
     @apply md:hover:bg-gray-700 md:hover:text-white md:hover:transition md:hover:ease-in-out md:hover:scale-105 ease-out duration-300 md:hover:font-bold;

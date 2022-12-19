@@ -127,12 +127,17 @@ class YearController extends FileMangementController
         $active_yr->value = $id;
         $active_yr->save();
         session(['year_id' => $id]);
-        if ($active_yr->user()->first()) {
-            session(['team_id' => $active_yr->user()->first()->id]);
-        } else {
-            session(['team_id' => null]);
-        }
 
+        $years = Year::find($id);
+        if ($years) {
+            if ($years->users()->first()) {
+                session(['team_id' => $active_yr->user()->first()->id]);
+            } else {
+                session(['team_id' => null]);
+            }
+        } else {
+            return Redirect::back();
+        }
         return Redirect::back();
     }
 }

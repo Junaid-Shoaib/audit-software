@@ -27,7 +27,7 @@
         border border-red-400
         text-red-700
         px-4
-        py-2
+        py-1
         rounded
         relative
         text-center
@@ -38,7 +38,7 @@
       {{ errors.folder }}
     </div>
 
-    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 py-2">
+    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 py-1">
       <div class="flex flex-row items-center">
         <div class="flex-none">
           <input
@@ -87,7 +87,14 @@
             @click="checkAll()"
             v-model="isCheckAll"
           />
-          <label class="px-2 py-2 ml-2 submitbutton" for="selected">
+          <label
+            v-if="isCheckAll"
+            class="px-2 py-1 ml-2 submitbutton"
+            for="selected"
+          >
+            Un-Select All</label
+          >
+          <label v-else class="px-2 py-1 ml-2 submitbutton" for="selected">
             Select All</label
           >
         </div>
@@ -117,27 +124,27 @@
             </multiselect>
 
             <button
-              class="ml-2 px-2 py-2 submitbutton"
+              class="ml-2 px-2 py-1 submitbutton"
               type="button"
               @click="includeTemps()"
             >
               Include Templates
             </button>
-            <button class="ml-2 px-2 py-2 submitbutton" type="submit">
+            <button class="ml-2 px-2 py-1 submitbutton" type="submit">
               Download
             </button>
           </form>
         </div>
       </div>
       <div class="">
-        <div class="obsolute mt-2 ml-2 sm:rounded-2xl">
+        <div class="obsolute sm:rounded-2xl">
           <table class="table2">
             <thead>
               <tr class="tablerowhead">
                 <!-- <th class="py-2 px-4 border">ID</th> -->
                 <th class="py-1 px-4 rounded-l-2xl">Check</th>
                 <th class="py-1 px-4">Name of File</th>
-                <th class="py-1 px-4">Name of Folder</th>
+                <th class="py-1 px-4 rounded-r-2xl">Name of Folder</th>
                 <!-- <th class="py-1 px-4 rounded-r-2xl">Action</th> -->
               </tr>
             </thead>
@@ -156,7 +163,10 @@
                 <td style="width: 40%" class="px-4 border">
                   {{ item.name }}
                 </td>
-                <td style="width: 27%" class="px-4 border text-center">
+                <td
+                  style="width: 27%"
+                  class="px-4 border text-center rounded-r-2xl"
+                >
                   {{ item.type == "planing" ? "Planning" : item.type }}
                 </td>
                 <!-- <td class=" px-4 border">{{ item.accountGroup.name }}</td> -->

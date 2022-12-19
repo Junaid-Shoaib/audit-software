@@ -2,7 +2,7 @@
   <app-layout>
     <template #header>
       <div class="grid grid-cols-2 items-center">
-        <h2 class="header">Upload Trial in Excel</h2>
+        <h2 class="header">Upload TB in Excel</h2>
       </div>
     </template>
 
@@ -13,15 +13,15 @@
 
       <div class="">
         <!-- overflow-x-auto -->
-        <div class="obsolute mt-2 ml-2 sm:rounded-2xl">
+        <div class="obsolute sm:rounded-2xl">
           <div
             class="
-              ml-2
+              m-1
               bg-red-100
               border border-red-400
               text-red-700
               px-4
-              py-2
+              py-1
               rounded
               obsolute
             "
@@ -31,14 +31,13 @@
             {{ errors.file }}
           </div>
           <form @submit.prevent="submit">
-            <div class="p-8 -mr-6 -mb-8 flex flex-wrap">
+            <div class="flex flex-wrap">
               <input
                 class="
                   border-solid border-2 border-indigo-300
                   rounded-xl
                   px-2
-                  py-2
-                  m-4
+                  py-1
                 "
                 type="file"
                 v-on:change="onFileChange"
@@ -50,14 +49,12 @@
               >
                 {{ form2.progress.percentage }}%
               </progress> -->
-              <button class="trailbutton" type="submit">
-                Upload Trial Balance
-              </button>
-              <a class="trailbutton py-3" href="/trialpattern"
-                >Download Trail Template</a
+              <button class="trailbutton" type="submit">Upload TB</button>
+              <a class="trailbutton items-center" href="/trialpattern"
+                >Download TB Template</a
               >
 
-              <a class="trailbutton py-3" href="/lead">Lead Schedule</a>
+              <a class="trailbutton" href="/lead">Lead Schedule</a>
 
               <!-- <button
                 class="border bg-indigo-300 rounded-xl px-4 py-2 m-4"
@@ -71,11 +68,11 @@
         <!-- <paginator class="mt-6" :balances="balances" /> -->
       </div>
     </div>
-    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 py-2">
-      <div class="p-2 grid grid-cols-2 bg-gray-200 items-center">
-        <h2 class="header">Download Materiality Report</h2>
+    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 py-1">
+      <div class="p-2 bg-gray-200 text-center rounded-xl">
+        <h2 class="header">Download Materiality Schedule</h2>
       </div>
-      <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 py-2">
+      <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
         <div class="">
           <!-- target="_blank" -->
           <form
@@ -83,7 +80,7 @@
             v-bind:action="'materiality-download'"
             ref="form_materiality"
           >
-            <div class="p-4 -mr-6 -mb-8 flex flex-wrap">
+            <div class="p-2 flex flex-wrap">
               <table class="table2">
                 <tr class="tablerowhead bg-gray-700 text-white">
                   <th class="py-1 px-4 rounded-l-md">Particular</th>
@@ -164,8 +161,8 @@
                 </tr>
               </table>
             </div>
-            <button class="float-right trailbutton" type="submit">
-              Donwload
+            <button class="float-right trailbutton px-4" type="submit">
+              Download
             </button>
           </form>
         </div>
