@@ -10,11 +10,15 @@ class Setting extends Model
     use HasFactory;
 
     protected $fillable = [
-        'company_id','key','value','user_id'
+        'company_id', 'year_id', 'key', 'value', 'user_id'
     ];
 
     public function company(){
         return $this->belongsTo('App\Models\Company', 'company_id');
+    }
+
+    public function year(){
+        return $this->belongsTo('App\Models\Year', 'year_id');
     }
 
     public function user(){

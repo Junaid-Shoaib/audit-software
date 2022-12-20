@@ -12,7 +12,7 @@ class Trial extends Model
     protected $fillable = [
         'opn_debit', 'remain_debit', 'cls_debit',
         'opn_credit', 'remain_credit', 'cls_credit',
-        'account_id', 'enabled', 'company_id'
+        'account_id', 'enabled', 'company_id', 'year_id'
     ];
 
     // public function accountGroup(){

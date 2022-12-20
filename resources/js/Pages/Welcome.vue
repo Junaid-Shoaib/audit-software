@@ -165,6 +165,8 @@ defineProps({
             "
           >
             <!-- Copyright @ Alpha 0.022092711 -->
+            <!-- 16 Nov 2022 14:27:10 -->
+            <!-- Date and time --- 0.0 is because its an alpha phase -->
             Copyright @ Alpha 0.016112022142710
           </p>
         </div>
