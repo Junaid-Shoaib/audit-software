@@ -34,8 +34,8 @@
                   border-solid border-2 border-indigo-300
                   rounded-xl
                   px-6
-                  py-2
-                  m-4
+                  py-1
+                  mr-2
                 "
                 type="file"
                 v-on:change="onFileChange"
