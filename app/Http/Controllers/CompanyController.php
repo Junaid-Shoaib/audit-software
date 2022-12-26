@@ -32,7 +32,8 @@ class CompanyController extends FileMangementController
             ->through(
                 fn ($comp) =>
                 [
-                    'id' => $comp->id,
+                    //if getting data from companies_users table then the "id = $comp->company_id" otherwise "id = $comp->id"
+                    'id' => $comp->company_id,
                     'name' => $comp->name,
                     'address' => $comp->address,
                     'email' => $comp->email,
@@ -54,7 +55,6 @@ class CompanyController extends FileMangementController
                 request('direction')
             );
         }
-
 
         return Inertia::render('Company/Index', [
             // 'can' => [
