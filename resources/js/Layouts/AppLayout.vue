@@ -1,218 +1,48 @@
 <template>
-  <div class="flex min-h-screen">
-    <TransitionRoot :show="sidebarOpened">
-      <Dialog
-        as="div"
-        @close="sidebarOpened = false"
-        class="fixed inset-0 z-40 md:hidden"
-      >
-        <TransitionChild
-          enter="transition ease-in-out duration-200 transform"
-          enter-from="-translate-x-full"
-          enter-to="translate-x-0"
-          leave="transition ease-in-out duration-200 transform"
-          leave-from="translate-x-0"
-          leave-to="-translate-x-full"
-          as="template"
-        >
-          <div
-            class="
-              flex
-              relative
-              z-10
-              flex-col
-              w-72
-              h-full
-              bg-gray-800
-              border-r border-gray-200
-              md:hidden
-            "
-          >
-            <button
-              @click="sidebarOpened = false"
-              class="
-                hover:ring-2 hover:ring-gray-300
-                flex
-                absolute
-                top-2
-                right-2
-                justify-center
-                items-center
-                w-10
-                h-10
-                rounded-full
-                focus:outline-none focus:ring-2 focus:ring-gray-600
-              "
-              type="button"
-              value="Close sidebar"
-            >
-              <XIcon class="w-5 h-5" />
-            </button>
-            <div class="px-6 pt-8 pb-4">
-              <a href="/">
-                <ApplicationLogo class="w-48 h-9" />
-              </a>
-            </div>
-
-            <div class="overflow-y-auto flex-1">
-              <div class="mb-10">
-                <h3
-                  class="mx-6 mb-2 text-xs tracking-widest text-white uppercase"
-                >
-                  Main
-                </h3>
-
-                <a
-                  v-for="(item, index) in mainNavigation"
-                  :href="item.href"
-                  :key="index"
-                  class="
-                    flex
-                    items-center
-                    px-6
-                    py-2.5
-                    text-white
-                    hover:text-indigo-400
-                    group
-                  "
-                >
-                  <component
-                    :is="item.icon"
-                    class="mr-2 w-5 h-5 text-white group-hover:text-indigo-300"
-                  />
-                  {{ item.label }}
-                </a>
-                <button
-                  type="button"
-                  @click="logout"
-                  class="
-                    flex
-                    items-center
-                    px-6
-                    py-2.5
-                    text-white
-                    hover:text-indigo-400
-                    group
-                  "
-                >
-                  <!-- <component
-                    :is="item.icon"
-                    class="
-                      mr-2
-                      w-5
-                      h-5
-                      text-white
-                      group-hover:text-indigo-300
-                    "
-                  /> -->
-                  Logout
-                </button>
-              </div>
-              <div class="mb-10">
-                <h3
-                  class="mx-6 mb-2 text-xs tracking-widest text-white uppercase"
-                >
-                  Library
-                </h3>
-
-                <a
-                  v-for="(item, index) in libraryNavigation"
-                  :href="item.href"
-                  :key="index"
-                  class="
-                    flex
-                    items-center
-                    px-6
-                    py-2.5
-                    text-white
-                    hover:text-indigo-400
-                    group
-                  "
-                >
-                  <component
-                    :is="item.icon"
-                    class="mr-2 w-5 h-5 text-white group-hover:text-indigo-300"
-                  />
-                  {{ item.label }}
-                </a>
-              </div>
-              <div class="mb-10">
-                <h3
-                  class="mx-6 mb-2 text-xs tracking-widest text-white uppercase"
-                >
-                  Following
-                </h3>
-
-                <a
-                  v-for="(item, index) in following"
-                  :href="item.href"
-                  :key="index"
-                  class="
-                    flex
-                    items-center
-                    px-6
-                    py-2.5
-                    text-white
-                    hover:text-indigo-400
-                    group
-                  "
-                >
-                  <img
-                    :src="item.imageUrl"
-                    alt=""
-                    class="mr-2 w-7 h-7 rounded-full"
-                  />
-                  {{ item.label }}
-                </a>
-              </div>
-            </div>
-          </div>
-        </TransitionChild>
-        <TransitionChild
-          enter="transition-opacity ease-linear duration-200"
-          enter-from="opacity-0"
-          enter-to="opacity-100"
-          leave="transition-opacity ease-linear duration-200"
-          leave-from="opacity-100"
-          leave-to="opacity-0"
-          as="template"
-        >
-          <DialogOverlay
-            class="fixed inset-0 bg-gray-600 bg-opacity-50"
-          ></DialogOverlay>
-        </TransitionChild>
-      </Dialog>
-    </TransitionRoot>
-
-    <div
-      class="
-        hidden
-        w-60
-        z-50
-        bg-gray-800
-        border-r
-        md:block
-        fixed
-        top-0
-        bottom-0
-        left-0
-        right-0
-        overflow-y-auto
-        flex-1
-      "
+  <a-layout style="min-height: 100vh">
+    <a-layout-sider
+      breakpoint="lg"
+      collapsed-width="0"
+      @collapse="onCollapse"
+      @breakpoint="onBreakpoint"
     >
-      <div class="py-4 px-6">
-        <a href="/">
-          <h1 class="text-white text-xl text-center font-bold">MZ-Audit</h1>
-          <!-- <ApplicationLogo class="w-48 h-9" /> -->
-        </a>
+      <div class="logo">
+        <h2 class="logotext">MZ-Audit</h2>
       </div>
-
-      <div class="">
-        <!-- <h3 class="mx-6 mb-2 text-xs tracking-widest text-white uppercase">
-          Main
-        </h3> -->
-        <div
+      <a-menu theme="dark" mode="inline" v-model:selectedKeys="selectedKeys">
+        <a-menu-item key="1">
+          <jet-nav-link
+            :href="route('companies')"
+            :active="route().current('companies')"
+          >
+            <BankFilled class="mr-2" />
+            Companies
+          </jet-nav-link>
+        </a-menu-item>
+        <a-menu-item key="2" v-if="this.$page.props.co_id">
+          <desktop-outlined />
+          <jet-nav-link
+            :href="route('years')"
+            :active="route().current('years')"
+          >
+            <CalendarFilled class="mr-2" />
+            Years
+          </jet-nav-link>
+        </a-menu-item>
+        <a-menu-item
+          key="3"
+          v-if="this.$page.props.co_id && this.$page.props.yr_id"
+        >
+          <jet-nav-link
+            :href="route('teams')"
+            :active="route().current('teams')"
+          >
+            <UserAddOutlined class="mr-2" />
+            Teams
+          </jet-nav-link>
+        </a-menu-item>
+        <a-menu-item
+          key="4"
           v-if="
             this.$page.props.co_id &&
             this.$page.props.yr_id &&
@@ -220,526 +50,225 @@
           "
         >
           <jet-nav-link
-            v-for="(item, index) in mainNavigation"
-            :key="index"
-            :href="item.href"
-            :active="route().current(item.routeName)"
+            :href="route('users')"
+            :active="route().current('users')"
           >
-            <component
-              :is="item.icon"
-              class="
-                mr-2
-                w-5
-                h-5
-                active:text-gray-500
-                group-hover:text-gray-400
-              "
-            />
-            {{ item.label }}
+            <UsergroupAddOutlined class="mr-2" />
+            Users
           </jet-nav-link>
-        </div>
+        </a-menu-item>
 
-        <div v-else-if="this.$page.props.co_id && this.$page.props.yr_id">
+        <a-menu-item
+          key="5"
+          v-if="
+            this.$page.props.co_id &&
+            this.$page.props.yr_id &&
+            this.$page.props.team_id
+          "
+        >
           <jet-nav-link
-            v-for="(item, index) in mainNavigationTeam"
-            :key="index"
-            :href="item.href"
-            :active="route().current(item.routeName)"
+            :href="route('accountgroups')"
+            :active="route().current('accountgroups')"
           >
-            <component
-              :is="item.icon"
-              class="
-                mr-2
-                w-5
-                h-5
-                active:text-gray-500
-                group-hover:text-gray-400
-              "
-            />
-            {{ item.label }}
+            <GroupOutlined class="mr-2" />
+            Account Groups
           </jet-nav-link>
-        </div>
+        </a-menu-item>
 
-        <div v-else>
+        <a-menu-item
+          key="6"
+          v-if="
+            this.$page.props.co_id &&
+            this.$page.props.yr_id &&
+            this.$page.props.team_id
+          "
+        >
           <jet-nav-link
-            v-for="(item, index) in mainNavigationComp"
-            :key="index"
-            :href="item.href"
-            :active="route().current(item.routeName)"
+            :href="route('accounts')"
+            :active="route().current('accounts')"
           >
-            <component
-              :is="item.icon"
-              class="
-                mr-2
-                w-5
-                h-5
-                active:text-gray-500
-                group-hover:text-gray-400
-              "
-            />
-            {{ item.label }}
+            <AccountBookOutlined class="mr-2" />
+            Accounts
           </jet-nav-link>
-        </div>
+        </a-menu-item>
 
-        <!-- <a
-          v-for="(item, index) in mainNavigation"
-          :href="item.href"
-          :key="index"
-          :active="route().current(item.routeName)"
-          class="
-            flex
-            items-center
-            px-6
-            py-2.5
-            text-white
-            focus:outline-none focus:bg-gray-50
-            active:bg-red-50
-            hover:text-indigo-400 hover:bg-gray-700
-            group
+        <a-menu-item
+          key="7"
+          v-if="
+            this.$page.props.co_id &&
+            this.$page.props.yr_id &&
+            this.$page.props.team_id
           "
         >
-          <component
-            :is="item.icon"
-            class="mr-2 w-5 h-5 text-white group-hover:text-indigo-300"
-          />
-          {{ item.label }}
-        </a> -->
-        <button
-          type="button"
-          @click="logout"
-          class="
-            flex
-            items-center
-            px-16
-            pl-8
-            w-full
-            rounded-r-full
-            py-2.5
-            text-white
-            hover:text-gray-400 hover:bg-white
-            group
-          "
-        >
-          <component
-            :is="LogoutIcon"
-            class="mr-2 w-5 h-5 active:text-gray-500 group-hover:text-gray-400"
-          />
-          Logout
-        </button>
-      </div>
-      <!-- <div class="mb-10">
-        <h3 class="mx-6 mb-2 text-xs tracking-widest text-white uppercase">
-          Library
-        </h3>
-
-        <a
-          v-for="(item, index) in libraryNavigation"
-          :href="item.href"
-          :key="index"
-          class="
-            flex
-            items-center
-            px-6
-            py-2.5
-            text-white
-            hover:text-indigo-400
-            group
-          "
-        >
-          <component
-            :is="item.icon"
-            class="mr-2 w-5 h-5 text-white group-hover:text-indigo-300"
-          />
-          {{ item.label }}
-        </a>
-      </div>
-      <div class="mb-10">
-        <h3 class="mx-6 mb-2 text-xs tracking-widest text-white uppercase">
-          Following
-        </h3>
-
-        <a
-          v-for="(item, index) in following"
-          :href="item.href"
-          :key="index"
-          class="
-            flex
-            items-center
-            px-6
-            py-2.5
-            text-white
-            hover:text-indigo-400
-            group
-          "
-        >
-          <img :src="item.imageUrl" alt="" class="mr-2 w-7 h-7 rounded-full" />
-          {{ item.label }}
-        </a>
-      </div> -->
-    </div>
-
-    <div class="h-screen ml-60 bg-white flex-1">
-      <div
-        class="
-          flex
-          justify-between
-          py-1
-          px-3
-          md:px-6
-          space-x-3
-          md:space-x-6
-          bg-gray-200
-          border-b
-        "
-      >
-        <div class="flex items-center flex-1">
-          <button
-            @click="sidebarOpened = true"
-            class="
-              mr-3
-              md:hidden
-              flex-shrink-0 flex
-              items-center
-              justify-center
-              w-10
-              h-10
-              rounded-full
-              text-gray-600
-              hover:ring-2 hover:ring-gray-300
-              focus:outline-none focus:ring-2 focus:ring-gray-600
-            "
-            type="button"
-            value="Open sidebar"
+          <jet-nav-link
+            :href="route('trial.index')"
+            :active="route().current('trial.index')"
           >
-            <MenuIcon class="h-6 w-6" />
-          </button>
-          <!-- <form action="" class="w-full max-w-md">
-            <div
-              class="
-                flex
-                relative
-                items-center
-                text-white
-                focus-within:text-gray-600
-              "
+            <UploadOutlined class="mr-2" />
+            Upload TB
+          </jet-nav-link>
+        </a-menu-item>
+
+        <a-menu-item
+          key="8"
+          v-if="
+            this.$page.props.co_id &&
+            this.$page.props.yr_id &&
+            this.$page.props.team_id
+          "
+        >
+          <jet-nav-link
+            :href="route('filing', ['planing'])"
+            :active="route().current('filing.planing')"
+          >
+            <FileOutlined class="mr-2" />
+            Planning
+          </jet-nav-link>
+        </a-menu-item>
+
+        <a-menu-item
+          key="9"
+          v-if="
+            this.$page.props.co_id &&
+            this.$page.props.yr_id &&
+            this.$page.props.team_id
+          "
+        >
+          <jet-nav-link
+            :href="route('filing', ['completion'])"
+            :active="route().current('filing.completion')"
+          >
+            <FileOutlined class="mr-2" />
+            Completion
+          </jet-nav-link>
+        </a-menu-item>
+
+        <a-menu-item
+          key="10"
+          v-if="
+            this.$page.props.co_id &&
+            this.$page.props.yr_id &&
+            this.$page.props.team_id
+          "
+        >
+          <jet-nav-link
+            :href="route('filing', ['execution'])"
+            :active="route().current('filing.execution')"
+            ><FolderOpenOutlined class="mr-2" />
+            Execution
+          </jet-nav-link>
+        </a-menu-item>
+
+        <a-menu-item
+          key="11"
+          v-if="
+            this.$page.props.co_id &&
+            this.$page.props.yr_id &&
+            this.$page.props.team_id
+          "
+        >
+          <jet-nav-link
+            :href="route('details')"
+            :active="route().current('details')"
+          >
+            <FileOutlined class="mr-2" />
+            Details
+          </jet-nav-link>
+        </a-menu-item>
+
+        <a-sub-menu key="sub1">
+          <template #title>
+            <span><SettingOutlined class="mr-2" />Setting</span>
+          </template>
+          <a-menu-item key="12">
+            <jet-nav-link
+              :href="route('profile.show')"
+              :active="route().current('profile.show')"
             >
-              <SearchIcon class="absolute ml-3 w-5 h-5 pointer-events-none" />
-              <input
-                type="text"
-                name="search"
-                placeholder="Search talk"
-                autocomplete="off"
-                aria-label="Search talk"
-                class="
-                  py-2
-                  pr-3
-                  pl-10
-                  w-full
-                  font-semibold
-                  placeholder-gray-500
-                  text-black
-                  rounded-2xl
-                  border-none
-                  ring-2 ring-gray-300
-                  focus:ring-gray-500 focus:ring-2
-                "
-              />
-            </div>
-          </form> -->
+              <UserOutlined class="mr-2" />
+              Profile
+            </jet-nav-link>
+          </a-menu-item>
+          <a-menu-item key="13">
+            <jet-nav-link @click="logout">
+              <LogoutOutlined class="mr-2" />
+              Logout
+            </jet-nav-link>
+          </a-menu-item>
+        </a-sub-menu>
+      </a-menu>
+    </a-layout-sider>
+    <a-layout>
+      <!-- :style="{ background: '#fff', padding: 0 }" -->
+      <a-layout-header v-if="$slots.header">
+        <!-- <header v-if="$slots.header"> -->
+        <slot name="header" />
+        <!-- </header> -->
+      </a-layout-header>
 
-          <div class="w-full">
-            <header v-if="$slots.header">
-              <slot name="header" />
-            </header>
-          </div>
+      <a-layout-content :style="{ margin: '24px 16px 0' }">
+        <div
+          :style="{ padding: '24px', background: '#fff', minHeight: '360px' }"
+        >
+          <slot />
         </div>
-
-        <Menu as="div" class="relative flex-shrink-0">
-          <MenuButton
-            class="
-              rounded-full
-              focus:outline-none
-              focus:ring-2
-              focus:ring-offset-2
-              focus:ring-black
-            "
-          >
-            <!-- <img
-              class="inline w-10 h-10 rounded-full"
-              src="https://pbs.twimg.com/profile_images/1333896976602193922/MtWztkxt_400x400.jpg"
-              alt=""
-            /> -->
-            <img
-              class="inline w-8 h-8 rounded-full"
-              :src="$page.props.user.profile_photo_url"
-              :alt="$page.props.user.name"
-            />
-          </MenuButton>
-
-          <transition
-            enter-active-class="transition duration-100 ease-out transform"
-            enter-from-class="opacity-0 scale-90"
-            enter-to-class="opacity-100 scale-100"
-            leave-active-class="transition duration-100 ease-in transform"
-            leave-from-class="opacity-100 scale-100"
-            leave-to-class="opacity-0 scale-90"
-          >
-            <MenuItems
-              class="
-                overflow-hidden
-                absolute
-                right-0
-                mt-2
-                w-48
-                bg-white
-                rounded-md
-                border
-                shadow-lg
-                origin-top-right
-                focus:outline-none
-              "
-            >
-              <MenuItem v-slot="{ active }">
-                <a
-                  href="#"
-                  :class="{ 'bg-gray-100': active }"
-                  class="block py-2 px-4 text-sm text-gray-700"
-                  >My Profile</a
-                >
-              </MenuItem>
-              <MenuItem v-slot="{ active, disabled }" disabled>
-                <a
-                  href="#"
-                  :class="{ 'bg-gray-100': active, 'opacity-40': disabled }"
-                  class="block py-2 px-4 text-sm text-gray-700"
-                  >Settings</a
-                >
-              </MenuItem>
-              <!-- <MenuItem v-slot="{ active }">
-                <a
-                  href="#"
-                  :class="{ 'bg-gray-100': active }"
-                  class="block py-2 px-4 text-sm text-gray-700"
-                  >Help</a
-                >
-              </MenuItem> -->
-              <MenuItem v-slot="{ active }">
-                <a
-                  href="#"
-                  :class="{ 'bg-gray-100': active }"
-                  class="block py-2 px-4 text-sm text-gray-700"
-                  @click="logout"
-                  >Log out</a
-                >
-              </MenuItem>
-            </MenuItems>
-          </transition>
-        </Menu>
-      </div>
-
-      <!-- <header v-if="$slots.header" class="bg-white shadow">
-        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-          <slot name="header" />
-        </div>
-      </header> -->
-      <main>
-        <slot />
-      </main>
-    </div>
-  </div>
+      </a-layout-content>
+      <a-layout-footer style="text-align: center">
+        MZ-AUDIT ©2023 Created by Digital Solution Department
+      </a-layout-footer>
+    </a-layout>
+  </a-layout>
 </template>
-<style src="@suadelabs/vue3-multiselect/dist/vue3-multiselect.css"></style>
 
+<style src="@suadelabs/vue3-multiselect/dist/vue3-multiselect.css"></style>
 <script>
 import {
-  Dialog,
-  DialogOverlay,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuItems,
-  TransitionChild,
-  TransitionRoot,
-} from "@headlessui/vue";
-import {
-  CalendarIcon,
-  ChatIcon,
-  ClipboardListIcon,
-  ClockIcon,
-  CloudUploadIcon,
-  CollectionIcon,
-  DocumentAddIcon,
-  HeartIcon,
-  HomeIcon,
-  LogoutIcon,
-  MenuIcon,
-  ReceiptRefundIcon,
-  ReceiptTaxIcon,
-  SearchIcon,
-  TableIcon,
-  UserGroupIcon,
-  XIcon,
-} from "@heroicons/vue/outline";
+  UserAddOutlined,
+  UserOutlined,
+  CalendarFilled,
+  BankFilled,
+  UsergroupAddOutlined,
+  UploadOutlined,
+  FileOutlined,
+  AccountBookOutlined,
+  FolderOpenOutlined,
+  GroupOutlined,
+  LogoutOutlined,
+  SettingOutlined,
+} from "@ant-design/icons-vue";
 import ApplicationLogo from "@/Jetstream/ApplicationLogo";
 import JetNavLink from "@/Jetstream/NavLink";
+import { Layout, Menu } from "ant-design-vue";
+import "ant-design-vue/dist/antd.css";
 
 export default {
   components: {
-    MenuIcon,
-    TransitionRoot,
-    TransitionChild,
-    Dialog,
-    DialogOverlay,
-    XIcon,
-    ChatIcon,
-    HeartIcon,
+    "a-layout": Layout,
+    "a-layout-sider": Layout.Sider,
+    "a-layout-header": Layout.Header,
+    "a-layout-content": Layout.Content,
+    "a-layout-footer": Layout.Footer,
+    "a-menu": Menu,
+    "a-menu-item": Menu.Item,
+    "a-sub-menu": Menu.SubMenu,
     JetNavLink,
-    HomeIcon,
-    Menu,
-    MenuButton,
-    MenuItems,
-    MenuItem,
-    SearchIcon,
     ApplicationLogo,
+
+    //All Icon Export
+    UserAddOutlined,
+    CalendarFilled,
+    BankFilled,
+    UsergroupAddOutlined,
+    UploadOutlined,
+    FileOutlined,
+    FolderOpenOutlined,
+    AccountBookOutlined,
+    GroupOutlined,
+    UserOutlined,
+    SettingOutlined,
+    LogoutOutlined,
   },
-  data() {
-    return {
-      sidebarOpened: false,
 
-      mainNavigation: [
-        // { href: route("dashboard"), label: "Dashboard", icon: HomeIcon },
-        {
-          href: route("users"),
-          routeName: "users",
-          label: "Users",
-          icon: UserGroupIcon,
-        },
-
-        {
-          href: route("companies"),
-          routeName: "companies",
-          label: "Companies",
-          icon: HomeIcon,
-        },
-        {
-          href: route("years"),
-          routeName: "years",
-          label: "Years",
-          icon: CalendarIcon,
-        },
-        {
-          href: route("teams"),
-          routeName: "teams",
-          label: "Teams",
-          icon: UserGroupIcon,
-        },
-        {
-          href: route("accountgroups"),
-          routeName: "accountgroups",
-          label: "Account Groups",
-          icon: UserGroupIcon,
-        },
-        {
-          href: route("accounts"),
-          routeName: "accounts",
-          label: "Accounts",
-          icon: ReceiptRefundIcon,
-        },
-        // { href: route("excel"), label: "Read Excel", icon: ChatIcon },
-        {
-          href: route("trial.index"),
-          routeName: "trial.index",
-          label: "Upload Trial",
-          icon: CloudUploadIcon,
-        },
-        // {
-        //   href: route("templates"),
-        //   routeName: "templates",
-        //   label: "Template",
-        //   icon: CloudUploadIcon,
-        // },
-        {
-          href: route("filing", ["planing"]),
-          routeName: "filing.planing",
-          label: "Planning",
-          icon: DocumentAddIcon,
-        },
-        {
-          href: route("filing", ["completion"]),
-          routeName: "filing.completion",
-          label: "Completion",
-          icon: DocumentAddIcon,
-        },
-        {
-          href: route("filing", ["execution"]),
-          routeName: "filing.execution",
-          label: "Execution",
-          icon: CollectionIcon,
-        },
-        {
-          href: route("details"),
-          routeName: "details",
-          label: "Details",
-          icon: CollectionIcon,
-        },
-
-        // {
-        //   href: route("logout"),
-        //   routeName: "logout",
-        //   label: "Logout",
-        //   icon: LogoutIcon,
-        // },
-      ],
-      mainNavigationComp: [
-        {
-          href: route("companies"),
-          routeName: "companies",
-          label: "Companies",
-          icon: HomeIcon,
-        },
-        {
-          href: route("years"),
-          routeName: "years",
-          label: "Years",
-          icon: CalendarIcon,
-        },
-      ],
-      mainNavigationTeam: [
-        {
-          href: route("companies"),
-          routeName: "companies",
-          label: "Companies",
-          icon: HomeIcon,
-        },
-        {
-          href: route("years"),
-          routeName: "years",
-          label: "Years",
-          icon: CalendarIcon,
-        },
-        {
-          href: route("teams"),
-          routeName: "teams",
-          label: "Teams",
-          icon: UserGroupIcon,
-        },
-      ],
-      libraryNavigation: [
-        { href: "/", label: "Favorites", icon: HeartIcon },
-        { href: "/", label: "Watch later", icon: ClockIcon },
-        { href: "/", label: "History", icon: ClipboardListIcon },
-        { href: "/", label: "Scheduled", icon: CalendarIcon },
-      ],
-      following: [
-        {
-          href: "/",
-          label: "Constantin Druc",
-          imageUrl:
-            "https://pbs.twimg.com/profile_images/1333896976602193922/MtWztkxt_400x400.jpg",
-        },
-      ],
-    };
-  },
   methods: {
     logout() {
       this.$inertia.post(route("logout"));
@@ -747,3 +276,39 @@ export default {
   },
 };
 </script>
+
+<style>
+.ant-layout-sider-children .logo {
+  /* height: 32px; */
+  background: rgba(255, 255, 255, 0.2);
+  margin: 16px;
+}
+
+.ant-layout-sider-children .logo .logotext {
+  color: #fff;
+  font-size: 25px;
+  text-align: center;
+  font-weight: bold;
+  font-family: ui-serif;
+}
+
+.site-layout-sub-header-background {
+  background: #141414;
+}
+
+.site-layout-background {
+  background: #fff;
+}
+
+[data-theme="dark"] .site-layout-sub-header-background {
+  background: #141414;
+}
+
+.ant-layout-header h2 {
+  margin-top: 0;
+  margin-bottom: 0.5em;
+  color: white;
+  font-weight: bold;
+  font-size: 18px;
+}
+</style>
