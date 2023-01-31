@@ -19,133 +19,50 @@
       </div>
     </template>
 
-    <FlashMessage />
-
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 py-1">
-      <!-- <jet-button @click="create" class="ml-2">Create Account</jet-button> -->
-
-      <input
-        type="text"
-        class="
-          ml-2
-          h-8
-          px-2
-          w-80
-          border-gray-800
-          ring-gray-800 ring-1
-          outline-none
-        "
-        v-model="params.search"
-        @change="search_data"
-        aria-label="Search"
-        placeholder="Search..."
+      <InputSearch
+        class="ml-2"
+        v-model:value="search"
+        placeholder="input search text"
+        style="width: 200px"
+        @search="onSearch"
+        size="small"
       />
-      <button
-        @click="search_data"
-        class="
-          border-2
-          pb-2.5
-          pt-1
-          bg-gray-800
-          border-gray-800
-          px-1
-          hover:bg-gray-700
-        "
+
+      <Table
+        :columns="columns"
+        :data-source="mapped_data"
+        :loading="loading"
+        class="mt-2"
+        size="small"
       >
-        <svg
-          class="w-8 h-4 text-white"
-          fill="currentColor"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 25 20"
-        >
-          <path
-            d="M16.32 14.9l5.39 5.4a1 1 0 0 1-1.42 1.4l-5.38-5.38a8 8 0 1 1 1.41-1.41zM10 16a6 6 0 1 0 0-12 6 6 0 0 0 0 12z"
-          />
-        </svg>
-      </button>
-      <div class="">
-        <div class="obsolute sm:rounded-2xl">
-          <table class="table2">
-            <thead>
-              <tr class="tablerowhead">
-                <!-- <th class="py-2 px-4 border">ID</th> -->
-                <th class="px-4 rounded-l-2xl">Name of Account</th>
-                <th class="px-4 rounded-r-2xl">Group of Account</th>
-                <!-- <th class="px-4 rounded-r-2xl">Action</th> -->
-              </tr>
-            </thead>
-            <tbody>
-              <tr
-                class="tablerowbody2"
-                v-for="item in balances.data"
-                :key="item.id"
-              >
-                <!-- <td class="py-1 px-4 border text-center">{{ item.id }}</td> -->
-                <td style="width: 50%" class="px-4 border rounded-l-2xl">
-                  {{ item.name }}
-                </td>
-                <td
-                  style="width: 50%"
-                  class="px-4 border text-center rounded-r-2xl"
-                >
-                  {{ item.group_name }}
-                </td>
-                <!-- <td class=" px-4 border">{{ item.accountGroup.name }}</td> -->
-                <!-- <td
-                  style="width: 23%"
-                  class="px-4 border text-center rounded-r-2xl"
-                >
-                  <button class="editbutton px-4" @click="edit(item.id)">
-                    <span>Edit</span>
-                  </button>
-                  <button
-                    class="deletebutton px-4"
-                    @click="destroy(item.id)"
-                    v-if="item.delete"
-                  >
-                    <span>Delete</span>
-                  </button>
-                </td> -->
-              </tr>
-              <tr v-if="balances.data.length === 0">
-                <td class="border-t px-6 py-4" colspan="4">No Record found.</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-      <paginator class="mt-6" :balances="balances" />
+      </Table>
     </div>
   </app-layout>
 </template>
 
 <script>
 import AppLayout from "@/Layouts/AppLayout";
-import JetButton from "@/Jetstream/Button";
-import Paginator from "@/Layouts/Paginator";
-import FlashMessage from "@/Layouts/FlashMessage";
-import { pickBy } from "lodash";
-import { throttle } from "lodash";
+import { Button, Table, Select, InputSearch } from "ant-design-vue";
+
 import Multiselect from "@suadelabs/vue3-multiselect";
 
 export default {
   components: {
     AppLayout,
-    JetButton,
-    Paginator,
-    throttle,
-    pickBy,
+    Table,
+    InputSearch,
     Multiselect,
-    FlashMessage,
   },
 
   props: {
-    data: Object,
-    balances: Object,
+    // data: Object,
+    // balances: Object,
     filters: Object,
     can: Object,
     companies: Array,
     company: Object,
+    mapped_data: Object,
   },
 
   data() {
@@ -153,6 +70,20 @@ export default {
       // co_id: this.$page.props.co_id,
       co_id: this.company,
       options: this.companies,
+
+      search: "",
+      columns: [
+        {
+          title: "Name of Account",
+          dataIndex: "name",
+          width: "40%",
+        },
+        {
+          title: "Group of Account",
+          dataIndex: "group_name",
+          width: "40%",
+        },
+      ],
 
       params: {
         search: this.filters.search,
@@ -163,6 +94,18 @@ export default {
   },
 
   methods: {
+    onSearch() {
+      this.$inertia.get(
+        route("accounts"),
+        {
+          // select: select.value,
+          // search: search.value
+          search: this.search,
+        },
+        { replace: true, preserveState: true }
+      );
+    },
+
     create() {
       this.$inertia.get(route("accounts.create"));
     },
@@ -182,27 +125,13 @@ export default {
       this.params.field = field;
       this.params.direction = this.params.direction === "asc" ? "desc" : "asc";
     },
-    search_data() {
-      let params = pickBy(this.params);
-      this.$inertia.get(this.route("accounts"), params, {
-        replace: true,
-        preserveState: true,
-      });
-    },
-  },
-  watch: {
-    params: {
-      handler: throttle(function () {
-        let params = pickBy(this.params);
-        if (params.search == null) {
-          this.$inertia.get(this.route("accounts"), params, {
-            replace: true,
-            preserveState: true,
-          });
-        }
-      }, 150),
-      deep: true,
-    },
+    // search_data() {
+    //   let params = pickBy(this.params);
+    //   this.$inertia.get(this.route("accounts"), params, {
+    //     replace: true,
+    //     preserveState: true,
+    //   });
+    // },
   },
 };
 </script>

@@ -20,20 +20,53 @@ class CompanyController extends FileMangementController
     // Listing
     public function index()
     {
-        //Validating request
-        request()->validate([
-            'direction' => ['in:asc,desc'],
-            'field' => ['in:name,email']
-        ]);
+        // //Validating request
+        // request()->validate([
+        //     'direction' => ['in:asc,desc'],
+        //     'field' => ['in:name,email']
+        // ]);
 
-        $query =
-        auth()->user()->companies()->getQuery()->paginate(10)
-            ->withQueryString()
-            ->through(
-                fn ($comp) =>
-                [
-                    //if getting data from companies_users table then the "id = $comp->company_id" otherwise "id = $comp->id"
-                    'id' => $comp->company_id,
+        // $query =
+        // auth()->user()->companies()->getQuery()->paginate(10)
+        //     ->withQueryString()
+        //     ->through(
+        //         fn ($comp) =>
+        //         [
+        //             //if getting data from companies_users table then the "id = $comp->company_id" otherwise "id = $comp->id"
+        //             'id' => $comp->company_id,
+        //             'name' => $comp->name,
+        //             'address' => $comp->address,
+        //             'email' => $comp->email,
+        //             'web' => $comp->web,
+        //             'phone' => $comp->phone,
+        //             'fiscal' => $comp->fiscal,
+        //             'incorp' => $comp->incorp,
+        //             'delete' => Year::where('company_id', $comp->id)->first() != null ? true : false,
+        //         ],
+        //     );
+
+        // if (request('search')) {
+        //     $query->where('name', 'LIKE', '%' . request('search') . '%');
+        // }
+
+        // if (request()->has(['field', 'direction'])) {
+        //     $query->orderBy(
+        //         request('field'),
+        //         request('direction')
+        //     );
+        // }
+        if(request()->has(
+            // ['select', 'search']
+            'search'
+            )){
+            $obj_data = auth()->user()->companies()->where(
+                // $req->select
+                'name'
+                ,'LIKE', '%'.$req->search.'%')
+            ->get();
+            $mapped_data = $obj_data->map(function($comp, $key) {
+            return [
+                    'id' => $comp->id,
                     'name' => $comp->name,
                     'address' => $comp->address,
                     'email' => $comp->email,
@@ -41,19 +74,25 @@ class CompanyController extends FileMangementController
                     'phone' => $comp->phone,
                     'fiscal' => $comp->fiscal,
                     'incorp' => $comp->incorp,
-                    'delete' => Year::where('company_id', $comp->id)->first() != null ? true : false,
-                ],
-            );
-
-        if (request('search')) {
-            $query->where('name', 'LIKE', '%' . request('search') . '%');
+                    'delete' => Year::where('company_id', $comp->id)->first() != null ? false : true,
+                ];
+            });
         }
-
-        if (request()->has(['field', 'direction'])) {
-            $query->orderBy(
-                request('field'),
-                request('direction')
-            );
+        else{
+            $obj_data = auth()->user()->companies()->get();
+            $mapped_data = $obj_data->map(function($comp, $key) {
+            return [
+                    'id' => $comp->id,
+                    'name' => $comp->name,
+                    'address' => $comp->address,
+                    'email' => $comp->email,
+                    'web' => $comp->web,
+                    'phone' => $comp->phone,
+                    'fiscal' => $comp->fiscal,
+                    'incorp' => $comp->incorp,
+                    'delete' => Year::where('company_id', $comp->id)->first() != null ? false : true,
+                ];
+            });
         }
 
         return Inertia::render('Company/Index', [
@@ -63,7 +102,9 @@ class CompanyController extends FileMangementController
             //     'delete' => auth()->user()->can('delete'),
             //     'read' => auth()->user()->can('read'),
             // ],
-            'balances' => $query,
+
+            'mapped_data' => $mapped_data,
+            // 'balances' => $query,
             'filters' => request()->all(['search', 'field', 'direction'])
         ]);
     }
@@ -86,6 +127,7 @@ class CompanyController extends FileMangementController
             'name' => ['required', 'unique:companies'],
             'fiscal' => ['required'],
         ]);
+        dd(Request::input('incorp'));
 
         DB::transaction(function () {
 

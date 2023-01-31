@@ -5,131 +5,92 @@
     </template>
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 py-4">
       <div class="">
-        <form @submit.prevent="submit">
-          <div class="p-2 mr-2 mb-2 mt-4 ml-6 flex flex-wrap">
-            <label class="my-2 mr-8 ml-40 text-right w-36 font-bold"
-              >Partner :</label
-            >
-            <multiselect
-              style="width: 50%"
-              class="float-right rounded-md border border-black"
-              placeholder="Select Partner."
-              v-model="form.partner"
-              track-by="id"
-              label="name"
+        <Form :form="form" @submit.prevent="submit">
+          <FormItem label="Partner">
+            <Select
+              v-model:value="form.partner"
               :options="partners"
-            >
-              <!-- @update:model-value="coch" -->
-            </multiselect>
-
+              :field-names="{ label: 'name', value: 'id' }"
+              filterOption="true"
+              optionFilterProp="name"
+              mode="multiple"
+              placeholder="Please select"
+              showArrow
+              class="w-full"
+            />
             <div
-              class="
-                ml-2
-                bg-red-100
-                border border-red-400
-                text-red-700
-                px-4
-                py-2
-                rounded
-                relative
-              "
+              class="text-red-700 px-4 py-2"
               role="alert"
               v-if="errors.partner"
             >
               {{ errors.partner }}
             </div>
-          </div>
+          </FormItem>
 
-          <div class="p-2 mr-2 mb-2 mt-4 ml-6 flex flex-wrap">
-            <label class="my-2 mr-8 ml-40 text-right w-36 font-bold"
-              >Manager :</label
-            >
-            <multiselect
-              style="width: 50%"
-              class="float-right rounded-md border border-black"
-              placeholder="Select Manager."
-              v-model="form.manager"
-              track-by="id"
-              label="name"
+          <FormItem label="Manager">
+            <Select
+              v-model:value="form.manager"
               :options="managers"
-            >
-              <!-- @update:model-value="coch" -->
-            </multiselect>
-
+              :field-names="{ label: 'name', value: 'id' }"
+              filterOption="true"
+              optionFilterProp="name"
+              mode="multiple"
+              placeholder="Please select"
+              showArrow
+              class="w-full"
+            />
             <div
-              class="
-                ml-2
-                bg-red-100
-                border border-red-400
-                text-red-700
-                px-4
-                py-2
-                rounded
-                relative
-              "
+              class="text-red-700 px-4 py-2"
               role="alert"
               v-if="errors.manager"
             >
               {{ errors.manager }}
             </div>
-          </div>
+          </FormItem>
 
-          <div class="p-2 mr-2 mb-2 mt-4 ml-6 flex flex-wrap">
-            <label class="my-2 mr-8 ml-40 text-right w-36 font-bold"
-              >Staff :</label
-            >
-            <multiselect
-              style="width: 50%"
-              class="float-right rounded-md border border-black"
-              placeholder="Select Staff."
-              v-model="form.staff"
-              track-by="id"
-              label="name"
-              :multiple="true"
+          <FormItem label="Staff">
+            <Select
+              v-model:value="form.staff"
               :options="staff"
-            >
-              <!-- @update:model-value="coch" -->
-            </multiselect>
-
+              :field-names="{ label: 'name', value: 'id' }"
+              filterOption="true"
+              optionFilterProp="name"
+              mode="multiple"
+              placeholder="Please select"
+              showArrow
+              class="w-full"
+            />
             <div
-              class="
-                ml-2
-                bg-red-100
-                border border-red-400
-                text-red-700
-                px-4
-                py-2
-                rounded
-                relative
-              "
+              class="text-red-700 px-4 py-2"
               role="alert"
               v-if="errors.staff"
             >
               {{ errors.staff }}
             </div>
-          </div>
+          </FormItem>
 
-          <div class="px-4 py-2 flex justify-center items-center">
-            <button class="submitbutton p-1 px-4 mt-1 ml-2 mr-3" type="submit">
-              Update Team
-            </button>
-          </div>
-        </form>
+          <FormItem>
+            <Button type="primary" @click="submit">Update Team</Button>
+          </FormItem>
+        </Form>
       </div>
     </div>
   </app-layout>
 </template>
 
-<style src="@suadelabs/vue3-multiselect/dist/vue3-multiselect.css"></style>
 <script>
 import AppLayout from "@/Layouts/AppLayout";
-import Label from "../../Jetstream/Label.vue";
 import Multiselect from "@suadelabs/vue3-multiselect";
+import { Form, FormItem, Select, Button } from "ant-design-vue";
 
 export default {
   components: {
     AppLayout,
     Multiselect,
+    Form,
+    FormItem,
+    Select,
+    Button,
   },
 
   props: {
@@ -149,9 +110,10 @@ export default {
         managers: this.managers,
         staff: this.staff,
 
-        partner: this.partner,
-        manager: this.manager,
-        staff: this.staf,
+        partner: this.partner.map((item) => item.id),
+        manager: this.manager.map((item) => item.id),
+        // staff: this.staf,
+        staff: this.staf.map((item) => item.id),
       }),
     };
   },

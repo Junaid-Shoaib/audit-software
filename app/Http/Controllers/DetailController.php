@@ -26,54 +26,81 @@ class DetailController extends Controller
      * @return \Illuminate\Http\Response
      */
     // GroupBy Indexing Account ID
-    public function index()
+    public function index(Req $req)
     {
-        //Validating request
-        request()->validate([
-            'direction' => ['in:asc,desc'],
-            'field' => ['in:name,email']
-        ]);
-        // dd($query = Detail::first());
+        // //Validating request
+        // request()->validate([
+        //     'direction' => ['in:asc,desc'],
+        //     'field' => ['in:name,email']
+        // ]);
+
         if ($query = Detail::first()) {
-            $query = Detail::where('company_id', session('company_id'))->groupBy('account_id')->get()
-                ->map(function ($obj) {
-                    return
-                        [
-                            'id' => $obj->id,
-                            'date' => Carbon::parse($obj->date)->format('F,j Y'),
-                            'description' => $obj->description,
-                            'cheque' => $obj->cheque,
-                            'voucher_no' => $obj->voucher_no,
-                            'amount' => $obj->amount,
-                            'cash' => $obj->cash,
-                            'bank' => $obj->bank,
-                            'adjustment' => $obj->adjustment,
-                            'a' => $obj->a,
-                            'b' => $obj->b,
-                            'c' => $obj->c,
-                            'd' => $obj->d,
-                            'e' => $obj->e,
-                            'f' => $obj->f,
-                            'remark' => $obj->remark,
-                            'company_id' => $obj->company_id,
-                            'year_id' => $obj->year_id,
-                            'account_id' => $obj->account_id,
-                            // 'delete' => Year::where('company_id', $comp->id)->first() != null ? true : false,
-                        ];
+            // $query = Detail::where('company_id', session('company_id'))->groupBy('account_id')->get()
+            //     ->map(function ($obj) {
+            //         return
+            //             [
+            //                 'id' => $obj->id,
+            //                 'date' => Carbon::parse($obj->date)->format('F,j Y'),
+            //                 'description' => $obj->description,
+            //                 'cheque' => $obj->cheque,
+            //                 'voucher_no' => $obj->voucher_no,
+            //                 'amount' => $obj->amount,
+            //                 'cash' => $obj->cash,
+            //                 'bank' => $obj->bank,
+            //                 'adjustment' => $obj->adjustment,
+            //                 'a' => $obj->a,
+            //                 'b' => $obj->b,
+            //                 'c' => $obj->c,
+            //                 'd' => $obj->d,
+            //                 'e' => $obj->e,
+            //                 'f' => $obj->f,
+            //                 'remark' => $obj->remark,
+            //                 'company_id' => $obj->company_id,
+            //                 'year_id' => $obj->year_id,
+            //                 'account_id' => $obj->account_id,
+            //                 // 'delete' => Year::where('company_id', $comp->id)->first() != null ? true : false,
+            //             ];
+            //     });
+            // // dd($query);
+            // if (request('search')) {
+            //     $query = $query->where('name', 'LIKE', '%' . request('search') . '%');
+            // }
+
+            // if (request()->has(['field', 'direction'])) {
+            //     $query = $query->orderBy(
+            //         request('field'),
+            //         request('direction')
+            //     );
+            // }
+
+            $obj_data = Detail::where('company_id', session('company_id'))
+                ->groupBy('account_id')->get();
+            $mapped_data = $obj_data->map(function($obj, $key) {
+                return [
+                    'id' => $obj->id,
+                    'date' => Carbon::parse($obj->date)->format('F,j Y'),
+                    'description' => $obj->description,
+                    'cheque' => $obj->cheque,
+                    'voucher_no' => $obj->voucher_no,
+                    'amount' => $obj->amount,
+                    'cash' => $obj->cash,
+                    'bank' => $obj->bank,
+                    'adjustment' => $obj->adjustment,
+                    'a' => $obj->a,
+                    'b' => $obj->b,
+                    'c' => $obj->c,
+                    'd' => $obj->d,
+                    'e' => $obj->e,
+                    'f' => $obj->f,
+                    'remark' => $obj->remark,
+                    'company_id' => $obj->company_id,
+                    'year_id' => $obj->year_id,
+                    'account_id' => $obj->account_id,
+                    // 'delete' => Year::where('company_id', $comp->id)->first() != null ? true : false,
+                    ];
                 });
-            // dd($query);
-            if (request('search')) {
-                $query = $query->where('name', 'LIKE', '%' . request('search') . '%');
-            }
-
-            if (request()->has(['field', 'direction'])) {
-                $query = $query->orderBy(
-                    request('field'),
-                    request('direction')
-                );
-            }
         } else {
-
+            $mapped_data = null;
             $query = null;
         }
 
@@ -87,6 +114,7 @@ class DetailController extends Controller
         // dd($file);
 
         return Inertia::render('Detail/Index', [
+            'mapped_data' => $mapped_data,
             // 'can' => [
             //     'edit' => auth()->user()->can('edit'),
             //     'create' => auth()->user()->can('create'),
@@ -94,7 +122,7 @@ class DetailController extends Controller
             //     'read' => auth()->user()->can('read'),
             // ],
             'files' => $file,
-            'balances' => $query,
+            // 'balances' => $query,
             'filters' => request()->all(['search', 'field', 'direction'])
         ]);
     }
