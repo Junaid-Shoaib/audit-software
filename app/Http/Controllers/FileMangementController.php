@@ -241,7 +241,7 @@ class FileMangementController extends Controller
     }
 
     // to display all the folder of execution(of current company & current year) for folder modification
-    public function folder()
+    public function folder(Req $req)
     {
         if (Company::first()) {
             $execution = FileManager::all()->where('company_id', session('company_id'))
@@ -258,17 +258,17 @@ class FileMangementController extends Controller
                 })
                 ->first();
 
-            //Validating request
-            request()->validate([
-                'direction' => ['in:asc,desc'],
-                'field' => ['in:name,email']
-            ]);
+            // //Validating request
+            // request()->validate([
+            //     'direction' => ['in:asc,desc'],
+            //     'field' => ['in:name,email']
+            // ]);
 
             //Searching request
             $query = FileManager::query();
-            if (request('search')) {
-                $query->where('name', 'LIKE', '%' . request('search') . '%');
-            }
+            // if (request('search')) {
+            //     $query->where('name', 'LIKE', '%' . request('search') . '%');
+            // }
 
             $balances = $query
                 ->where('company_id', session('company_id'))
@@ -293,7 +293,56 @@ class FileMangementController extends Controller
                     }
                 );
 
+            if(request()->has(
+                // ['select', 'search']
+                'search'
+                )){
+                $obj_data = FileManager::where('company_id', session('company_id'))
+                ->where('year_id', session('year_id'))
+                ->where('is_folder', 0)
+                ->where('parent_id', $execution['id'])
+                    ->where(
+                        // $req->select
+                        'name'
+                        ,'LIKE', '%'.$req->search.'%')
+                    ->get();
+                $mapped_data = $obj_data->map(function($obj, $key) {
+                return [
+                    'id' => $obj->id,
+                    'name' => $obj->name,
+                    'is_folder' => $obj->is_folder,
+                    'parent_id' => $obj->parent_id,
+                    'delete' => FileManager::where('company_id', session('company_id'))
+                        ->where('year_id', session('year_id'))
+                        ->where('parent_id', $obj->id)
+                        ->where('is_folder', 1)
+                        ->first() ? false : true,
+                    ];
+                });
+            }
+            else{
+                $obj_data = FileManager::where('company_id', session('company_id'))
+                ->where('year_id', session('year_id'))
+                ->where('is_folder', 0)
+                ->where('parent_id', $execution['id'])->get();
+                $mapped_data = $obj_data->map(function($obj, $key) {
+                return [
+                    'id' => $obj->id,
+                    'name' => $obj->name,
+                    'is_folder' => $obj->is_folder,
+                    'parent_id' => $obj->parent_id,
+                    'delete' => FileManager::where('company_id', session('company_id'))
+                        ->where('year_id', session('year_id'))
+                        ->where('parent_id', $obj->id)
+                        ->where('is_folder', 1)
+                        ->first() ? false : true,
+                    ];
+                });
+            }
+
             return Inertia::render('Filing/FolderIndex', [
+                'mapped_data' => $mapped_data,
+                'filters' => request()->all(['search', 'field', 'direction']),
                 'balances' => $balances,
                 'company' => Company::where('id', session('company_id'))->first(),
                 'companies' => Auth::user()->companies,

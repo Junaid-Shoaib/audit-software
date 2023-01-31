@@ -15,44 +15,80 @@ use Illuminate\Http\Request as Req;
 
 class AccountGroupController extends Controller
 {
-    public function index()
+    public function index(Req $req)
     {
         if (AccountGroup::where('company_id', session('company_id'))->first()) {
-            //Validating request
-            request()->validate([
-                'direction' => ['in:asc,desc'],
-                'field' => ['in:name,email']
-            ]);
+            // //Validating request
+            // request()->validate([
+            //     'direction' => ['in:asc,desc'],
+            //     'field' => ['in:name,email']
+            // ]);
 
-            //Searching request
-            $query = AccountGroup::query();
-            if (request('search')) {
-                $query->where('name', 'LIKE', '%' . request('search') . '%');
+            // //Searching request
+            // $query = AccountGroup::query();
+            // if (request('search')) {
+            //     $query->where('name', 'LIKE', '%' . request('search') . '%');
+            // }
+
+            // $balances = $query
+            //     ->where('company_id', session('company_id'))
+            //     ->paginate(10)
+            //     ->through(
+            //         function ($accountgroup) {
+            //             return
+            //                 [
+            //                     'id' => $accountgroup->id,
+            //                     'name' => $accountgroup->name,
+            //                     'type_id' => $accountgroup->type_id,
+            //                     'type_name' => $accountgroup->accountType->name,
+            //                     'company_id' => $accountgroup->company_id,
+            //                     'company_name' => $accountgroup->company->name,
+            //                     'delete' => Account::where('group_id', $accountgroup->id)->first() ? false : true,
+            //                 ];
+            //         }
+            //     )->withQueryString();
+
+            if(request()->has(
+                // ['select', 'search']
+                'search'
+                )){
+                $obj_data = AccountGroup::where('company_id', session('company_id'))
+                    ->where(
+                        // $req->select
+                        'name'
+                        ,'LIKE', '%'.$req->search.'%')
+                    ->get();
+                $mapped_data = $obj_data->map(function($accountgroup, $key) {
+                return [
+                    'id' => $accountgroup->id,
+                    'name' => $accountgroup->name,
+                    'type_id' => $accountgroup->type_id,
+                    'type_name' => $accountgroup->accountType->name,
+                    'company_id' => $accountgroup->company_id,
+                    'company_name' => $accountgroup->company->name,
+                    'delete' => Account::where('group_id', $accountgroup->id)->first() ? false : true,
+                    ];
+                });
+            }
+            else{
+                $obj_data = AccountGroup::where('company_id', session('company_id'))->get();
+                $mapped_data = $obj_data->map(function($accountgroup, $key) {
+                return [
+                    'id' => $accountgroup->id,
+                    'name' => $accountgroup->name,
+                    'type_id' => $accountgroup->type_id,
+                    'type_name' => $accountgroup->accountType->name,
+                    'company_id' => $accountgroup->company_id,
+                    'company_name' => $accountgroup->company->name,
+                    'delete' => Account::where('group_id', $accountgroup->id)->first() ? false : true,
+                    ];
+                });
             }
 
-
-
-            $balances = $query
-                ->where('company_id', session('company_id'))
-                ->paginate(10)
-                ->through(
-                    function ($accountgroup) {
-                        return
-                            [
-                                'id' => $accountgroup->id,
-                                'name' => $accountgroup->name,
-                                'type_id' => $accountgroup->type_id,
-                                'type_name' => $accountgroup->accountType->name,
-                                'company_id' => $accountgroup->company_id,
-                                'company_name' => $accountgroup->company->name,
-                                'delete' => Account::where('group_id', $accountgroup->id)->first() ? false : true,
-                            ];
-                    }
-                )->withQueryString();
-
             return Inertia::render('AccountGroups/Index', [
+                'mapped_data' => $mapped_data,
                 'filters' => request()->all(['search', 'field', 'direction']),
-                'balances' => $balances,
+                // 'balances' => $balances,
                 'exists' => AccountGroup::where('company_id', session('company_id'))->first() ? false : true,
                 'company' => Company::where('id', session('company_id'))->first(),
                 'companies' => Auth::user()->companies,

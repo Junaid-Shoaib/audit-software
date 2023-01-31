@@ -32,117 +32,41 @@
       </div>
     </template>
 
-    <FlashMessage />
-
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 py-1">
-      <!-- <form @submit.prevent="form.get(route('teams.create'))"> -->
-      <jet-button v-if="team_exists" @click="edit" class="buttondesign"
-        >Edit your Team</jet-button
+      <Button v-if="team_exists" @click="edit" class="ml-2" size="small"
+        >Edit your Team</Button
       >
-      <jet-button v-else @click="create" class="buttondesign"
-        >Add Team</jet-button
+      <Button v-else @click="create" class="ml-2" size="small">Add Team</Button>
+      <Table
+        :columns="columns"
+        :data-source="mapped_data"
+        :loading="loading"
+        class="mt-2"
+        size="small"
       >
-      <div class="">
-        <div class="obsolute sm:rounded-2xl">
-          <table class="table2">
-            <thead>
-              <tr class="tablerowhead">
-                <th class="px-4 rounded-l-2xl">Name</th>
-                <th class="px-4">Email</th>
-                <th class="px-4 rounded-r-2xl">Role</th>
-                <!-- <th class="py-1 px-4">End</th>
-                  <th class="py-1 px-4 rounded-r-2xl">Action</th> -->
-              </tr>
-            </thead>
-            <tbody>
-              <tr
-                class="tablerowbody2"
-                v-for="item in balances.data"
-                :key="item.id"
-              >
-                <td class="w-4/12 px-4 border rounded-l-2xl w-2/5">
-                  {{ item.name }}
-                </td>
-                <td class="w-2/12 px-4 border w-2/6 text-center">
-                  {{ item.email }}
-                </td>
-                <td class="w-2/12 px-4 border w-2/6 text-center">
-                  {{ item.role }}
-                </td>
-                <!-- <td class="w-2/12 px-4 border w-2/6 text-center">
-                    {{ item.end }}
-                  </td>
-                  <td class="w-4/12px-4 border w-2/6 rounded-r-2xl text-center">
-                    <button
-                      class="editbutton px-4 m-1"
-                      @click="edit(item.id)"
-                      type="button"
-                    >
-                      <span>Edit</span>
-                    </button>
-                    <button
-                      class="deletebutton px-4 m-1"
-                      @click="destroy(item.id)"
-                      type="button"
-                      v-if="item.delete"
-                    >
-                      <span>Delete</span>
-                    </button>
-                    <button
-                      v-if="item.closed == 0"
-                      class="
-                        border
-                        bg-gray-600
-                        text-white
-                        font-bold
-                        rounded-xl
-                        px-4
-                        m-1
-                        hover:bg-gray-700
-                      "
-                      @click="close(item.id)"
-                      type="button"
-                    >
-                      <span>Close Fiscal</span>
-                    </button>
-                  </td> -->
-              </tr>
-              <tr v-if="balances.data.length === 0">
-                <td class="border-t px-6 py-2" colspan="4">No Record found.</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <paginator class="mt-6" :balances="balances" />
-      </div>
-      <!-- </form> -->
+      </Table>
     </div>
   </app-layout>
 </template>
 
-<style src="@suadelabs/vue3-multiselect/dist/vue3-multiselect.css"></style>
 <script>
 import AppLayout from "@/Layouts/AppLayout";
-import JetButton from "@/Jetstream/Button";
+import { Button, Table, Select, InputSearch } from "ant-design-vue";
 import { useForm } from "@inertiajs/inertia-vue3";
 import Multiselect from "@suadelabs/vue3-multiselect";
-import Paginator from "@/Layouts/Paginator";
-import FlashMessage from "@/Layouts/FlashMessage";
-// import { Head, Link } from "@inertiajs/inertia-vue3";
 
 export default {
   components: {
     AppLayout,
-    JetButton,
+    Button,
+    Table,
+    Select,
+    InputSearch,
+
     useForm,
     Multiselect,
-    Paginator,
-    FlashMessage,
-    // Link,
-    // Head,
   },
 
-  // props: ["data", "companies", "company"],
   props: {
     balances: Object,
     companies: Object,
@@ -150,6 +74,7 @@ export default {
     year: Object,
     years: Object,
     team_exists: Object,
+    mapped_data: Object,
   },
 
   data() {
@@ -160,6 +85,21 @@ export default {
       options: this.companies,
       years: this.years,
       team_exists: this.team_exists,
+      columns: [
+        {
+          title: "Name",
+          dataIndex: "name",
+          width: "20%",
+        },
+        {
+          title: "Email",
+          dataIndex: "email",
+        },
+        {
+          title: "Role",
+          dataIndex: "role",
+        },
+      ],
     };
   },
 
@@ -177,16 +117,7 @@ export default {
       this.$inertia.get(route("teams.edit"));
     },
 
-    // destroy(id) {
-    //   this.$inertia.delete(route("years.destroy", id));
-    // },
-
-    // close(id) {
-    //   this.$inertia.get(route("years.close", id));
-    // },
-
     coch() {
-      // this.$inertia.get(route("companies.coch", this.co_id));
       this.$inertia.get(route("companies.coch", this.co_id["id"]));
     },
     yrch() {

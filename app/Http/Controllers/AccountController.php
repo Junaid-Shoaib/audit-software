@@ -12,42 +12,72 @@ use Inertia\Inertia;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use Illuminate\Http\Request as Req;
 
 class AccountController extends Controller
 {
-    public function index()
+    public function index(Req $req)
     {
         if (AccountGroup::where('company_id', session('company_id'))->first()) {
 
-            //Validating request
-            request()->validate([
-                'direction' => ['in:asc,desc'],
-                'field' => ['in:name,email']
-            ]);
+            // //Validating request
+            // request()->validate([
+            //     'direction' => ['in:asc,desc'],
+            //     'field' => ['in:name,email']
+            // ]);
 
-            //Searching request
-            $query = Account::query();
-            if (request('search')) {
-                $query->where('name', 'LIKE', '%' . request('search') . '%');
+            // //Searching request
+            // $query = Account::query();
+            // if (request('search')) {
+            //     $query->where('name', 'LIKE', '%' . request('search') . '%');
+            // }
+
+            // $balances = $query
+            //     ->where('company_id', session('company_id'))
+            //     ->paginate(10)
+            //     ->through(
+            //         function ($account) {
+            //             return
+            //                 [
+            //                     'id' => $account->id,
+            //                     'name' => $account->name,
+            //                     'group_name' => $account->accountGroup->name,
+            //                 ];
+            //         }
+            //     );
+
+            if(request()->has(
+                // ['select', 'search']
+                'search'
+                )){
+                $obj_data = Account::where('company_id', session('company_id'))
+                    ->where(
+                        // $req->select
+                        'name'
+                        ,'LIKE', '%'.$req->search.'%')
+                    ->get();
+                $mapped_data = $obj_data->map(function($account, $key) {
+                return [
+                    'id' => $account->id,
+                    'name' => $account->name,
+                    'group_name' => $account->accountGroup->name,
+                    ];
+                });
             }
-
-            $balances = $query
-                ->where('company_id', session('company_id'))
-                ->paginate(10)
-                ->through(
-                    function ($account) {
-                        return
-                            [
-                                'id' => $account->id,
-                                'name' => $account->name,
-                                'group_name' => $account->accountGroup->name,
-                            ];
-                    }
-                );
+            else{
+                $obj_data = Account::where('company_id', session('company_id'))->get();
+                $mapped_data = $obj_data->map(function($account, $key) {
+                return [
+                    'id' => $account->id,
+                    'name' => $account->name,
+                    'group_name' => $account->accountGroup->name,
+                    ];
+                });
+            }
             return Inertia::render('Accounts/Index', [
-
+                'mapped_data' => $mapped_data,
                 'filters' => request()->all(['search', 'field', 'direction']),
-                'balances' => $balances,
+                // 'balances' => $balances,
                 'company' => Company::where('id', session('company_id'))->first(),
                 'companies' => auth()->user()->companies,
             ]);

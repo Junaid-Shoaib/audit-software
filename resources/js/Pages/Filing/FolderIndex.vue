@@ -19,95 +19,75 @@
       </div>
     </template>
 
-    <FlashMessage />
-
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 py-1">
-      <jet-button type="button" @click="createFolder" class="buttondesign"
-        >Create Folder</jet-button
+      <Button @click="createFolder" class="ml-2" size="small"
+        >Create Folder</Button
       >
 
-      <div class="">
-        <div class="obsolute sm:rounded-2xl">
-          <table class="table2">
-            <thead>
-              <tr class="tablerowhead">
-                <th class="py-1 px-4 rounded-l-2xl">Folder Name</th>
-                <th class="py-1 px-4 rounded-r-2xl">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr
-                class="tablerowbody2"
-                v-for="item in balances.data"
-                :key="item.id"
-              >
-                <td class="w-4/12 px-4 border rounded-l-2xl w-2/5">
-                  {{ item.name }}
-                </td>
-                <td class="w-4/12px-4 border w-2/6 text-center rounded-r-2xl">
-                  <button
-                    class="
-                      border
-                      bg-indigo-300
-                      rounded-md
-                      px-4
-                      text-white
-                      font-bold
-                      hover:text-white hover:bg-indigo-400
-                    "
-                    @click="viewFolder(item.id)"
-                    type="button"
-                  >
-                    <span>View</span>
-                  </button>
-                  <button
-                    class="deletebutton px-4"
-                    @click="deleteFileFolder(item.id)"
-                    type="button"
-                  >
-                    <span>Delete</span>
-                  </button>
-                </td>
-              </tr>
-              <tr v-if="balances.data.length === 0">
-                <td class="border-t px-6 py-4" colspan="4">No Record found.</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <paginator class="mt-6" :balances="balances" />
-      </div>
+      <InputSearch
+        class="ml-2"
+        v-model:value="search"
+        placeholder="input search text"
+        style="width: 200px"
+        @search="onSearch"
+        size="small"
+      />
+      <Table
+        :columns="columns"
+        :data-source="mapped_data"
+        :loading="loading"
+        class="mt-2"
+        size="small"
+      >
+        <template #bodyCell="{ column, record }">
+          <template v-if="column.key === 'actions'">
+            <Button
+              size="small"
+              type="primary"
+              @click="viewFolder(record.id)"
+              class="mr-2"
+              >View</Button
+            >
+            <Button
+              v-if="record.delete"
+              class="mr-2"
+              size="small"
+              danger
+              @click="deleteFileFolder(record.id)"
+              >Delete</Button
+            >
+          </template>
+        </template>
+      </Table>
     </div>
   </app-layout>
 </template>
 
-<style src="@suadelabs/vue3-multiselect/dist/vue3-multiselect.css"></style>
 <script>
 import AppLayout from "@/Layouts/AppLayout";
-import JetButton from "@/Jetstream/Button";
+import { Button, Table, Select, InputSearch } from "ant-design-vue";
+
 import { useForm } from "@inertiajs/inertia-vue3";
 import Multiselect from "@suadelabs/vue3-multiselect";
-import Paginator from "@/Layouts/Paginator";
-import FlashMessage from "@/Layouts/FlashMessage";
-// import { Head, Link } from "@inertiajs/inertia-vue3";
 
 export default {
   components: {
     AppLayout,
-    JetButton,
+    Button,
+    Table,
+    InputSearch,
     useForm,
+
     Multiselect,
-    Paginator,
-    FlashMessage,
-    // Link,
-    // Head,
   },
 
   props: {
+    filters: Object,
     selected_folder: Object,
     balances: Object,
     companies: Object,
     company: Object,
+    mapped_data: Object,
   },
 
   data() {
@@ -115,6 +95,25 @@ export default {
       co_id: this.company,
       options: this.companies,
       selected_folder2: this.selected_folder,
+
+      search: "",
+      columns: [
+        {
+          title: "Folder Name",
+          dataIndex: "name",
+          //   width: "20%",
+        },
+        {
+          title: "Actions",
+          dataIndex: "actions",
+          key: "actions",
+        },
+      ],
+      params: {
+        search: this.filters.search,
+        // field: this.filters.field,
+        // direction: this.filters.direction,
+      },
     };
   },
 
@@ -124,6 +123,17 @@ export default {
   },
 
   methods: {
+    onSearch() {
+      this.$inertia.get(
+        route("filing.folder"),
+        {
+          // select: select.value,
+          // search: search.value
+          search: this.search,
+        },
+        { replace: true, preserveState: true }
+      );
+    },
     createFolder() {
       this.$inertia.get(route("filing.createFolder"));
     },
