@@ -205,8 +205,37 @@
         <slot name="header" />
         <!-- </header> -->
       </a-layout-header>
+      <FlashMessage />
 
       <a-layout-content :style="{ margin: '24px 16px 0' }">
+        <div style="margin-bottom: 10px">
+          <Breadcrumb>
+            <Select
+              :options="years"
+              :field-names="{ label: 'end', value: 'id' }"
+              filterOption="true"
+              v-model:value="selectedyear"
+              optionFilterProp="end"
+              mode="single"
+              placeholder="Please select Year"
+              showArrow
+              @change="yrch"
+              class="w-1/2"
+            />
+            <Select
+              :options="options"
+              :field-names="{ label: 'name', value: 'id' }"
+              filterOption="true"
+              v-model:value="selected"
+              optionFilterProp="name"
+              mode="single"
+              placeholder="Please select Company"
+              showArrow
+              @change="coch"
+              class="w-1/2"
+            />
+          </Breadcrumb>
+        </div>
         <div
           :style="{ padding: '24px', background: '#fff', minHeight: '360px' }"
         >
@@ -238,8 +267,9 @@ import {
 } from "@ant-design/icons-vue";
 import ApplicationLogo from "@/Jetstream/ApplicationLogo";
 import JetNavLink from "@/Jetstream/NavLink";
-import { Layout, Menu } from "ant-design-vue";
+import { Layout, Menu, Select } from "ant-design-vue";
 import "ant-design-vue/dist/antd.css";
+import FlashMessage from "@/Layouts/FlashMessage";
 
 export default {
   components: {
@@ -253,6 +283,7 @@ export default {
     "a-sub-menu": Menu.SubMenu,
     JetNavLink,
     ApplicationLogo,
+    FlashMessage,
 
     //All Icon Export
     UserAddOutlined,
@@ -267,9 +298,37 @@ export default {
     UserOutlined,
     SettingOutlined,
     LogoutOutlined,
+    Select,
+  },
+
+  //   props: {
+  //     companies: Object,
+  //     company: Object,
+  //     year: Object,
+  //     years: Object,
+  //   },
+
+  data() {
+    return {
+      // usePage().props.auth.user
+      // co_id: this.$page.props.co_id,
+      co_id: this.$page.props.company,
+      options: this.$page.props.companies,
+      selected: this.$page.props.company.name,
+      selectedyear: this.$page.props.year.end,
+      yr_id: this.$page.props.year,
+      years: this.$page.props.years,
+    };
   },
 
   methods: {
+    coch(value) {
+      //   alert(value);
+      this.$inertia.get(route("companies.coch", value));
+    },
+    yrch(value) {
+      this.$inertia.get(route("years.yrch", value));
+    },
     logout() {
       this.$inertia.post(route("logout"));
     },
