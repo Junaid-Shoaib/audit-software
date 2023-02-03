@@ -123,6 +123,8 @@ class CompanyController extends FileMangementController
     // Store function
     public function store()
     {
+
+
         Request::validate([
             'name' => ['required', 'unique:companies'],
             'fiscal' => ['required'],
@@ -230,14 +232,14 @@ class CompanyController extends FileMangementController
     // Update function
     public function update(Company $company)
     {
-        Request::validate([
+              Request::validate([
             'name' => ['required'],
             'address' => ['nullable'],
             'email' => ['nullable'],
             'web' => ['nullable'],
             'phone' => ['nullable'],
             'fiscal' => ['required'],
-            'incorp' => ['nullable'],
+            'incorp' => ['sometimes'],
         ]);
 
         $company->name = Request::input('name');
@@ -247,8 +249,13 @@ class CompanyController extends FileMangementController
         $company->phone = Request::input('phone');
         $company->fiscal = Request::input('fiscal');
 
-        $incorp = new carbon(Request::input('incorp'));
-        $company->incorp = $incorp->format('Y-m-d');
+        if(Request::input('incorp') != null){
+            $incorp =  new carbon(Request::input('incorp'));
+            $company->incorp = $incorp->format('Y-m-d');
+        }else{
+            $company->incorp = null;
+        }
+
 
         $company->save();
 

@@ -6,7 +6,7 @@
       </div>
     </template>
 
-    <FlashMessage />
+    <!-- <FlashMessage /> -->
 
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 py-2">
       <!-- <jet-button @click="create" class="ml-2">Create Account</jet-button> -->
@@ -16,7 +16,6 @@
         <div class="obsolute sm:rounded-2xl">
           <div
             class="
-              m-1
               bg-red-100
               border border-red-400
               text-red-700
@@ -30,7 +29,29 @@
           >
             {{ errors.file }}
           </div>
-          <form @submit.prevent="submit">
+
+          <a-form
+            :form="form"
+            @submit.prevent="submit"
+            :label-col="{ span: 2 }"
+            :wrapper-col="{ span: 24 }"
+          >
+            <!-- :label-col="{ span: 2 }"
+            :wrapper-col="{ span: 14 }" -->
+            <a-form-item>
+              <a-input type="file" v-on:change="onFileChange" />
+            </a-form-item>
+            <a-form-item class="text-center">
+              <a-button type="primary" :html-type="submit">Submit</a-button>
+              <a class="ant-btn ant-btn-primary mx-1" href="/trialpattern"
+                >Download TB Template</a
+              >
+              <a class="ant-btn ant-btn-primary" href="/lead">Lead Schedule</a>
+            </a-form-item>
+          </a-form>
+
+          <!-- Old upload form -->
+          <!-- <form @submit.prevent="submit">
             <div class="flex flex-wrap">
               <input
                 class="
@@ -42,13 +63,7 @@
                 type="file"
                 v-on:change="onFileChange"
               />
-              <!-- <progress
-                v-if="form2.progress"
-                :value="form2.progress.percentage"
-                max="100"
-              >
-                {{ form2.progress.percentage }}%
-              </progress> -->
+
               <button class="trailbutton" type="submit">Upload TB</button>
               <a class="trailbutton items-center" href="/trialpattern"
                 >Download TB Template</a
@@ -56,14 +71,9 @@
 
               <a class="trailbutton" href="/lead">Lead Schedule</a>
 
-              <!-- <button
-                class="border bg-indigo-300 rounded-xl px-4 py-2 m-4"
-                type="button"
-              >
-                Download Trail Template
-              </button> -->
+              <
             </div>
-          </form>
+          </form> -->
         </div>
         <!-- <paginator class="mt-6" :balances="balances" /> -->
       </div>
@@ -72,10 +82,134 @@
       <div class="p-2 bg-gray-200 text-center rounded-xl">
         <h2 class="header">Download Materiality Schedule</h2>
       </div>
-      <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+      <div class="max-w-7xl m-4 sm:px-6 lg:px-8">
         <div class="">
           <!-- target="_blank" -->
-          <form
+          <a-form
+            :form="form"
+            @submit.prevent="submit_materiality"
+            v-bind:action="'/materiality-download'"
+            ref="form_materiality"
+            :label-col="{ span: 4 }"
+            :wrapper-col="{ span: 14 }"
+          >
+            <a-form-item label="Pre Tax Income :">
+              <a-input
+                type="text"
+                name="preTax"
+                class="text-center pr-2 pb-2 w-full rounded-md"
+                value="5"
+              >
+              </a-input>
+            </a-form-item>
+            <a-form-item label="Total Assets :">
+              <a-input
+                type="text"
+                name="tAsset"
+                class="text-center pr-2 pb-2 w-full rounded-md"
+                value="0.5"
+              ></a-input>
+            </a-form-item>
+            <a-form-item label="Equity :">
+              <a-input
+                type="text"
+                name="equity"
+                class="text-center pr-2 pb-2 w-full rounded-md"
+                value="1"
+              ></a-input>
+            </a-form-item>
+            <a-form-item label="Total Net Revenues :">
+              <a-input
+                type="text"
+                name="tAsset"
+                class="text-center pr-2 pb-2 w-full rounded-md"
+                value="0.5"
+              ></a-input>
+            </a-form-item>
+            <!-- <div class="p-2 flex flex-wrap">
+              <table class="table2">
+                <tr class="tablerowhead bg-gray-700 text-white">
+                  <th class="py-1 px-4 rounded-l-md">Particular</th>
+                  <th class="py-1 px-4 rounded-r-md">Percentage %</th>
+                </tr>
+                <tr>
+                  <td>
+                    <a-form-item>
+                      <a-input value="Pre Tax Income" disabled></a-input>
+                    </a-form-item>
+                  </td>
+                  <td>
+                    <a-form-item>
+                      <a-input
+                        type="text"
+                        name="preTax"
+                        class="text-center pr-2 pb-2 w-full rounded-md"
+                        value="5"
+                      >
+                      </a-input>
+                    </a-form-item>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td>
+                    <a-form-item>
+                      <a-input value="Total Assets" disabled></a-input>
+                    </a-form-item>
+                  </td>
+                  <td>
+                    <a-form-item>
+                      <a-input
+                        type="text"
+                        name="tAsset"
+                        class="text-center pr-2 pb-2 w-full rounded-md"
+                        value="0.5"
+                      ></a-input>
+                    </a-form-item>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <a-form-item>
+                      <a-input value="Equity" disabled></a-input>
+                    </a-form-item>
+                  </td>
+                  <td>
+                    <a-form-item>
+                      <a-input
+                        type="text"
+                        name="equity"
+                        class="text-center pr-2 pb-2 w-full rounded-md"
+                        value="1"
+                      ></a-input>
+                    </a-form-item>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <a-form-item>
+                      <a-input value="Total Net Revenues" disabled></a-input>
+                    </a-form-item>
+                  </td>
+                  <td>
+                    <a-form-item>
+                      <a-input
+                        type="text"
+                        name="netRevenue"
+                        class="text-center pr-2 pb-2 w-full rounded-md"
+                        value="0.5"
+                      ></a-input>
+                    </a-form-item>
+                  </td>
+                </tr>
+              </table>
+            </div> -->
+            <a-form-item class="text-right">
+              <a-button type="primary" :html-type="submit">Download</a-button>
+            </a-form-item>
+          </a-form>
+
+          <!-- <form
             @submit.prevent="submit_materiality"
             v-bind:action="'materiality-download'"
             ref="form_materiality"
@@ -164,7 +298,7 @@
             <button class="float-right trailbutton px-4" type="submit">
               Download
             </button>
-          </form>
+          </form> -->
         </div>
       </div>
     </div>
@@ -173,12 +307,8 @@
 
 <script>
 import AppLayout from "@/Layouts/AppLayout";
-import JetButton from "@/Jetstream/Button";
-import Paginator from "@/Layouts/Paginator";
+import { Form, Input, Button, DatePicker } from "ant-design-vue";
 import FlashMessage from "@/Layouts/FlashMessage";
-import { pickBy } from "lodash";
-import { throttle } from "lodash";
-import Multiselect from "@suadelabs/vue3-multiselect";
 import { useForm } from "@inertiajs/inertia-vue3";
 
 export default {
@@ -192,6 +322,11 @@ export default {
   components: {
     AppLayout,
     FlashMessage,
+    "a-form": Form,
+    "a-form-item": Form.Item,
+    "a-input": Input,
+    "a-button": Button,
+    "a-date-picker": DatePicker,
     // Treeselect,
   },
 
