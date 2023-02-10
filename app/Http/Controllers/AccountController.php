@@ -20,32 +20,6 @@ class AccountController extends Controller
     {
         if (AccountGroup::where('company_id', session('company_id'))->first()) {
 
-            // //Validating request
-            // request()->validate([
-            //     'direction' => ['in:asc,desc'],
-            //     'field' => ['in:name,email']
-            // ]);
-
-            // //Searching request
-            // $query = Account::query();
-            // if (request('search')) {
-            //     $query->where('name', 'LIKE', '%' . request('search') . '%');
-            // }
-
-            // $balances = $query
-            //     ->where('company_id', session('company_id'))
-            //     ->paginate(10)
-            //     ->through(
-            //         function ($account) {
-            //             return
-            //                 [
-            //                     'id' => $account->id,
-            //                     'name' => $account->name,
-            //                     'group_name' => $account->accountGroup->name,
-            //                 ];
-            //         }
-            //     );
-
             if(request()->has(
                 // ['select', 'search']
                 'search'
@@ -56,24 +30,18 @@ class AccountController extends Controller
                         'name'
                         ,'LIKE', '%'.$req->search.'%')
                     ->get();
-                $mapped_data = $obj_data->map(function($account, $key) {
-                return [
-                    'id' => $account->id,
-                    'name' => $account->name,
-                    'group_name' => $account->accountGroup->name,
-                    ];
-                });
             }
             else{
                 $obj_data = Account::where('company_id', session('company_id'))->get();
-                $mapped_data = $obj_data->map(function($account, $key) {
+            }
+            $mapped_data = $obj_data->map(function($account, $key) {
                 return [
                     'id' => $account->id,
                     'name' => $account->name,
                     'group_name' => $account->accountGroup->name,
-                    ];
-                });
-            }
+                ];
+            });
+
             return Inertia::render('Accounts/Index', [
                 'mapped_data' => $mapped_data,
                 'filters' => request()->all(['search', 'field', 'direction']),

@@ -1,39 +1,11 @@
 <template>
   <app-layout>
     <template #header>
-      <div class="grid grid-cols-3 items-center">
-        <h2 class="header">Team</h2>
-        <div class="justify-end">
-          <multiselect
-            style="width: 90%; z-index: 10"
-            class="float-right rounded-md border border-black"
-            placeholder="Select Year."
-            v-model="yr_id"
-            track-by="id"
-            label="end"
-            :options="years"
-            @update:model-value="yrch"
-          >
-          </multiselect>
-        </div>
-        <div class="justify-end">
-          <multiselect
-            style="width: 90%; z-index: 10"
-            class="float-right rounded-md border border-black"
-            placeholder="Select Company."
-            v-model="co_id"
-            track-by="id"
-            label="name"
-            :options="options"
-            @update:model-value="coch"
-          >
-          </multiselect>
-        </div>
-      </div>
+      <h2 class="header">Team</h2>
     </template>
 
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 py-1">
-      <Button v-if="team_exists" @click="edit" class="ml-2" size="small"
+      <Button v-if="team_exists" @click="edit" size="small"
         >Edit your Team</Button
       >
       <Button v-else @click="create" class="ml-2" size="small">Add Team</Button>
@@ -53,7 +25,6 @@
 import AppLayout from "@/Layouts/AppLayout";
 import { Button, Table, Select, InputSearch } from "ant-design-vue";
 import { useForm } from "@inertiajs/inertia-vue3";
-import Multiselect from "@suadelabs/vue3-multiselect";
 
 export default {
   components: {
@@ -64,7 +35,6 @@ export default {
     InputSearch,
 
     useForm,
-    Multiselect,
   },
 
   props: {

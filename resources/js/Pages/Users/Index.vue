@@ -3,136 +3,55 @@
     <template #header>
       <div class="grid grid-cols-2 items-center">
         <h2 class="header">Users</h2>
-        <div class="justify-end">
-          <multiselect
-            style="width: 50%; z-index: 10"
-            class="float-right rounded-md border border-black"
-            placeholder="Select Company."
-            v-model="co_id"
-            track-by="id"
-            label="name"
-            :options="options"
-            @update:model-value="coch"
-          >
-          </multiselect>
-        </div>
       </div>
     </template>
 
-    <FlashMessage />
-
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 py-2">
-      <form @submit.prevent="form.get(route('users.create'))">
-        <jet-button type="submit" @click="create" class="ml-2 buttondesign"
-          >Add User</jet-button
-        >
-        <div class="">
-          <div class="obsolute mt-2 ml-2 sm:rounded-2xl">
-            <table class="table2">
-              <thead>
-                <tr class="tablerowhead">
-                  <th class="py-1 px-4 rounded-l-2xl">Name</th>
-                  <th class="py-1 px-4">Email</th>
-                  <th class="py-1 px-4">Role</th>
-                  <!-- <th class="py-1 px-4">End</th>
-                  <th class="py-1 px-4 rounded-r-2xl">Action</th> -->
-                </tr>
-              </thead>
-              <tbody>
-                <tr
-                  class="tablerowbody2"
-                  v-for="item in balances.data"
-                  :key="item.id"
-                >
-                  <td class="w-4/12 px-4 border rounded-l-2xl w-2/5">
-                    {{ item.name }}
-                  </td>
-                  <td class="w-2/12 px-4 border w-2/6 text-center">
-                    {{ item.email }}
-                  </td>
-                  <td class="w-2/12 px-4 border w-2/6 text-center">
-                    {{ item.role }}
-                  </td>
-                  <!-- <td class="w-2/12 px-4 border w-2/6 text-center">
-                    {{ item.end }}
-                  </td>
-                  <td class="w-4/12px-4 border w-2/6 rounded-r-2xl text-center">
-                    <button
-                      class="editbutton px-4 m-1"
-                      @click="edit(item.id)"
-                      type="button"
-                    >
-                      <span>Edit</span>
-                    </button>
-                    <button
-                      class="deletebutton px-4 m-1"
-                      @click="destroy(item.id)"
-                      type="button"
-                      v-if="item.delete"
-                    >
-                      <span>Delete</span>
-                    </button>
-                    <button
-                      v-if="item.closed == 0"
-                      class="
-                        border
-                        bg-gray-600
-                        text-white
-                        font-bold
-                        rounded-xl
-                        px-4
-                        m-1
-                        hover:bg-gray-700
-                      "
-                      @click="close(item.id)"
-                      type="button"
-                    >
-                      <span>Close Fiscal</span>
-                    </button>
-                  </td> -->
-                </tr>
-                <tr v-if="balances.data.length === 0">
-                  <td class="border-t px-6 py-4" colspan="4">
-                    No Record found.
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <paginator class="mt-6" :balances="balances" />
-        </div>
-      </form>
+      <Button @click="create" size="small">Add User</Button>
+
+      <InputSearch
+        class="ml-2"
+        v-model:value="search"
+        placeholder="input search text"
+        style="width: 200px"
+        @search="onSearch"
+        size="small"
+      />
+
+      <Table
+        :columns="columns"
+        :data-source="mapped_data"
+        :loading="loading"
+        class="mt-2"
+        size="small"
+      >
+      </Table>
     </div>
   </app-layout>
 </template>
 
-<style src="@suadelabs/vue3-multiselect/dist/vue3-multiselect.css"></style>
 <script>
 import AppLayout from "@/Layouts/AppLayout";
-import JetButton from "@/Jetstream/Button";
+import { Button, Table, Select, InputSearch, Checkbox } from "ant-design-vue";
 import { useForm } from "@inertiajs/inertia-vue3";
-import Multiselect from "@suadelabs/vue3-multiselect";
-import Paginator from "@/Layouts/Paginator";
-import FlashMessage from "@/Layouts/FlashMessage";
-// import { Head, Link } from "@inertiajs/inertia-vue3";
 
 export default {
   components: {
     AppLayout,
-    JetButton,
+    Button,
+    Table,
+    Select,
+    InputSearch,
+
     useForm,
-    Multiselect,
-    Paginator,
-    FlashMessage,
-    // Link,
-    // Head,
   },
 
   // props: ["data", "companies", "company"],
   props: {
-    balances: Object,
+    // balances: Object,
     companies: Object,
     company: Object,
+    mapped_data: Object,
   },
 
   data() {
@@ -140,15 +59,40 @@ export default {
       // co_id: this.$page.props.co_id,
       co_id: this.company,
       options: this.companies,
+      search: "",
+      columns: [
+        {
+          title: "Name",
+          dataIndex: "name",
+          //   width: "20%",
+        },
+        {
+          title: "Email",
+          dataIndex: "email",
+          key: "approval",
+        },
+        {
+          title: "Role",
+          dataIndex: "role",
+          key: "actions",
+        },
+      ],
     };
   },
 
-  setup(props) {
-    const form = useForm({});
-    return { form };
-  },
-
   methods: {
+    onSearch() {
+      this.$inertia.get(
+        route("users"),
+        {
+          // select: select.value,
+          // search: search.value
+          search: this.search,
+        },
+        { replace: true, preserveState: true }
+      );
+    },
+
     create() {
       this.$inertia.get(route("users.create"));
     },

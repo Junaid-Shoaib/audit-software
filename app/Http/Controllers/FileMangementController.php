@@ -135,83 +135,78 @@ class FileMangementController extends Controller
             }
 
             // checking the Auth user to render the data according to user roles and permissions
-            if (Auth::user()->roles[0]->name == "staff" || Auth::user()->roles[0]->name == "super-admin") {
-                $balances = $query
-                    ->where('company_id', session('company_id'))
+            if (Auth::user()->roles[0]->name == "staff" || Auth::user()->roles[0]->name == "super-admin")
+            {
+                // For ant-design data table ----------------
+                $obj_data = FileManager::where('company_id', session('company_id'))
                     ->where('year_id', session('year_id'))
                     ->where('is_folder', 1)
                     ->where('parent_id', $parent['id'])
-                    ->paginate(10)
-                    ->through(
-                        function ($obj) {
-                            return
-                                [
-                                    'id' => $obj->id,
-                                    'name' => $obj->name,
-                                    'is_folder' => $obj->is_folder,
-                                    'parent_id' => $obj->parent_id,
-                                    // 'review' => $obj->staff_review == 1 ? $obj->manager_approval == 1 ? 'Approved' : 'Pending' : $obj->manager_review,
-                                    'review' => $obj->manager_review == null ? '' : $obj->manager_review,
-                                    // 'delete' => Entry::where('account_id', $account->id)->first() ? false : true,
-                                    'approve' => $obj->staff_approval == 1 ? true : false,
-                                ];
-                        }
-                    );
+                    ->get();
+                $mapped_data = $obj_data->map(function($obj, $key) {
+                return [
+                        'id' => $obj->id,
+                        'name' => $obj->name,
+                        'is_folder' => $obj->is_folder,
+                        'parent_id' => $obj->parent_id,
+                        // 'review' => $obj->staff_review == 1 ? $obj->manager_approval == 1 ? 'Approved' : 'Pending' : $obj->manager_review,
+                        'review' => $obj->manager_review == null ? '' : $obj->manager_review,
+                        // 'delete' => Entry::where('account_id', $account->id)->first() ? false : true,
+                        'approve' => $obj->staff_approval == 1 ? true : false,
+                    ];
+                });
                 $balances_name = FileManager::where('company_id', session('company_id'))
                     ->where('year_id', session('year_id'))
                     ->where('is_folder', 1)
                     ->where('parent_id', $parent['id'])->get()->pluck('name');
+
             } else if (Auth::user()->roles[0]->name == "manager") {
-                $balances = $query
-                    ->where('company_id', session('company_id'))
+                // For ant-design data table ----------------
+                $obj_data = FileManager::where('company_id', session('company_id'))
                     ->where('year_id', session('year_id'))
                     ->where('is_folder', 1)
                     ->where('staff_approval', 1)
                     ->where('parent_id', $parent['id'])
-                    ->paginate(10)
-                    ->through(
-                        function ($obj) {
-                            return
-                                [
-                                    'id' => $obj->id,
-                                    'name' => $obj->name,
-                                    'is_folder' => $obj->is_folder,
-                                    'parent_id' => $obj->parent_id,
-                                    'review' => $obj->partner_review == null ? '' : $obj->partner_review,
-                                    // 'review' => $obj->staff_approval == 1 ? $obj->manager_approval == 1 ? 'Approved' : 'Pending' : $obj->manager_review,
-                                    // 'delete' => Entry::where('account_id', $account->id)->first() ? false : true,
-                                    'approve' => $obj->manager_approval == 1 ? true : false,
-                                ];
-                        }
-                    );
+                    ->get();
+                $mapped_data = $obj_data->map(function($obj, $key) {
+                return [
+                        'id' => $obj->id,
+                        'name' => $obj->name,
+                        'is_folder' => $obj->is_folder,
+                        'parent_id' => $obj->parent_id,
+                        'review' => $obj->partner_review == null ? '' : $obj->partner_review,
+                        // 'review' => $obj->staff_approval == 1 ? $obj->manager_approval == 1 ? 'Approved' : 'Pending' : $obj->manager_review,
+                        // 'delete' => Entry::where('account_id', $account->id)->first() ? false : true,
+                        'approve' => $obj->manager_approval == 1 ? true : false,
+                    ];
+                });
+
                 $balances_name = FileManager::where('company_id', session('company_id'))
                     ->where('year_id', session('year_id'))
                     ->where('is_folder', 1)
                     ->where('staff_approval', 1)
                     ->where('parent_id', $parent['id'])->get()->pluck('name');
             } else if (Auth::user()->roles[0]->name == "partner") {
-                $balances = $query
-                    ->where('company_id', session('company_id'))
+                // For ant-design data table ----------------
+                $obj_data = FileManager::where('company_id', session('company_id'))
                     ->where('year_id', session('year_id'))
                     ->where('is_folder', 1)
                     ->where('staff_approval', 1)
                     ->where('manager_approval', 1)
                     ->where('parent_id', $parent['id'])
-                    ->paginate(10)
-                    ->through(
-                        function ($obj) {
-                            return
-                                [
-                                    'id' => $obj->id,
-                                    'name' => $obj->name,
-                                    'is_folder' => $obj->is_folder,
-                                    'parent_id' => $obj->parent_id,
-                                    // 'review' => $obj->staff_approval == 1 ? $obj->manager_approval == 1 ? 'Approved' : 'Pending' : $obj->manager_review,
-                                    // 'delete' => Entry::where('account_id', $account->id)->first() ? false : true,
-                                    'approve' => $obj->partner_approval == 1 ? true : false,
-                                ];
-                        }
-                    );
+                    ->get();
+                $mapped_data = $obj_data->map(function($obj, $key) {
+                return [
+                        'id' => $obj->id,
+                        'name' => $obj->name,
+                        'is_folder' => $obj->is_folder,
+                        'parent_id' => $obj->parent_id,
+                        // 'review' => $obj->staff_approval == 1 ? $obj->manager_approval == 1 ? 'Approved' : 'Pending' : $obj->manager_review,
+                        // 'delete' => Entry::where('account_id', $account->id)->first() ? false : true,
+                        'approve' => $obj->partner_approval == 1 ? true : false,
+                    ];
+                });
+
                 $balances_name = FileManager::where('company_id', session('company_id'))
                     ->where('year_id', session('year_id'))
                     ->where('is_folder', 1)
@@ -226,7 +221,7 @@ class FileMangementController extends Controller
                 ->first();
 
             return Inertia::render('Filing/Index', [
-                'balances' => $balances,
+                'mapped_data' => $mapped_data,
                 'user_role' => Auth::user()->roles[0]->name,
                 'balances_name' => $balances_name,
                 'first' => $first,
@@ -541,7 +536,7 @@ class FileMangementController extends Controller
      type paramter because templates are divided into 3 categories
         planning, completion and execution
     */
-    public function index_temp($type)
+    public function index_temp(Req $req, $type)
     {
         $execution = FileManager::all()->where('company_id', session('company_id'))
             ->where('year_id', session('year_id'))
@@ -601,8 +596,34 @@ class FileMangementController extends Controller
             // names of the templates to perform the select all or multi-select functionality
             $balances_name = Template::where('type', $type)->get()->pluck('name');
 
+            if(request()->has(
+                // ['select', 'search']
+                'search'
+                )){
+                $obj_data = Template::where('company_id', session('company_id'))
+                    ->where('type', lcfirst($type))
+                    ->where(
+                        // $req->select
+                        'name'
+                        ,'LIKE', '%'.$req->search.'%')
+                    ->get();
+            }
+            else{
+                $obj_data = Template::where('company_id', session('company_id'))
+                    ->where('type', lcfirst($type))
+                    ->get();
+            }
+            $mapped_data = $obj_data->map(function($temp, $key) {
+                return [
+                    'id' => $temp->id,
+                    'name' => $temp->name,
+                    'path' => $temp->path,
+                    'type' => $temp->type,
+                ];
+            });
 
             return Inertia::render('Filing/IndexTemplate', [
+                'mapped_data' => $mapped_data,
                 'filters' => request()->all(['search', 'field', 'direction']),
                 'balances' => $balances,
                 'balances_name' => $balances_name,

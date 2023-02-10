@@ -1,27 +1,11 @@
 <template>
   <app-layout>
     <template #header>
-      <div class="grid grid-cols-2 items-center">
-        <h2 class="header">Accounts</h2>
-        <div class="justify-end">
-          <multiselect
-            style="width: 50%"
-            class="float-right rounded-md border border-black float-right"
-            placeholder="Select Company."
-            v-model="co_id"
-            track-by="id"
-            label="name"
-            :options="options"
-            @update:model-value="coch"
-          >
-          </multiselect>
-        </div>
-      </div>
+      <h2 class="header">Accounts</h2>
     </template>
 
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 py-1">
       <InputSearch
-        class="ml-2"
         v-model:value="search"
         placeholder="input search text"
         style="width: 200px"
@@ -45,14 +29,11 @@
 import AppLayout from "@/Layouts/AppLayout";
 import { Button, Table, Select, InputSearch } from "ant-design-vue";
 
-import Multiselect from "@suadelabs/vue3-multiselect";
-
 export default {
   components: {
     AppLayout,
     Table,
     InputSearch,
-    Multiselect,
   },
 
   props: {

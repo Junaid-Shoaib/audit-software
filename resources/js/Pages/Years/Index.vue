@@ -1,56 +1,39 @@
 <template>
   <app-layout>
     <template #header>
-      <div class="grid grid-cols-2 items-center">
-        <h2 class="header">Years</h2>
-        <div class="justify-end">
-          <multiselect
-            style="width: 50%; z-index: 10"
-            class="float-right rounded-md border border-black"
-            placeholder="Select Company."
-            v-model="co_id"
-            track-by="id"
-            label="name"
-            :options="options"
-            @update:model-value="coch"
-          >
-          </multiselect>
-        </div>
-      </div>
+      <h2 class="header">Years</h2>
     </template>
 
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 py-1">
       <form @submit.prevent="form.get(route('years.create'))">
-        <Button @click="create" class="ml-2" size="small">Add Year</Button>
-        <div class="">
-          <Table
-            :columns="columns"
-            :data-source="mapped_data"
-            :loading="loading"
-            class="mt-2"
-            size="small"
-          >
-            <template #bodyCell="{ column, record }">
-              <template v-if="column.key === 'actions'">
-                <Button
-                  size="small"
-                  type="primary"
-                  @click="edit(record.id)"
-                  class="mr-2"
-                  >Edit</Button
-                >
-                <Button
-                  v-if="record.delete"
-                  class="mr-2"
-                  size="small"
-                  danger
-                  @click="destroy(record.id)"
-                  >Delete</Button
-                >
-              </template>
+        <Button @click="create" size="small">Add Year</Button>
+        <Table
+          :columns="columns"
+          :data-source="mapped_data"
+          :loading="loading"
+          class="mt-2"
+          size="small"
+        >
+          <template #bodyCell="{ column, record }">
+            <template v-if="column.key === 'actions'">
+              <Button
+                size="small"
+                type="primary"
+                @click="edit(record.id)"
+                class="mr-2"
+                >Edit</Button
+              >
+              <Button
+                v-if="record.delete"
+                class="mr-2"
+                size="small"
+                danger
+                @click="destroy(record.id)"
+                >Delete</Button
+              >
             </template>
-          </Table>
-        </div>
+          </template>
+        </Table>
       </form>
     </div>
   </app-layout>
@@ -60,7 +43,6 @@
 import AppLayout from "@/Layouts/AppLayout";
 import { Button, Table, Select, InputSearch } from "ant-design-vue";
 import { useForm } from "@inertiajs/inertia-vue3";
-import Multiselect from "@suadelabs/vue3-multiselect";
 
 export default {
   components: {
@@ -74,7 +56,6 @@ export default {
     Select,
     InputSearch,
     useForm,
-    Multiselect,
   },
 
   props: {
@@ -135,7 +116,6 @@ export default {
     },
 
     coch() {
-      // this.$inertia.get(route("companies.coch", this.co_id));
       this.$inertia.get(route("companies.coch", this.co_id["id"]));
     },
   },
