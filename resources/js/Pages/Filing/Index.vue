@@ -3,7 +3,7 @@
   <app-layout>
     <template #header>
       <div class="grid grid-cols-2 items-center">
-        <div v-if="folders">
+        <div v-if="folders" class="items-center">
           <multiselect
             style="width: 50%"
             class="float-left rounded-md border border-black"
@@ -15,197 +15,100 @@
             @update:model-value="foch"
           >
           </multiselect>
-          <jet-button
-            @click="folderModification"
-            class="ml-2 mt-1 buttondesign hover:scale-105"
-            >Folder Modification</jet-button
+          <Button @click="folderModification" class="ml-2" size="small"
+            >Folder Modification</Button
           >
         </div>
         <h2 v-else class="float-left header">
           {{ parent.name == "Planing" ? "Planning" : parent.name }} -
           {{ parent.type }}
         </h2>
-        <div class="justify-end">
-          <multiselect
-            style="width: 50%; z-index: 10"
-            class="float-right rounded-md border border-black"
-            placeholder="Select Company."
-            v-model="co_id"
-            track-by="id"
-            label="name"
-            :options="options"
-            @update:model-value="coch"
-          >
-          </multiselect>
-        </div>
       </div>
     </template>
 
-    <FlashMessage />
-
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 py-1">
-      <jet-button @click="uploadFile" class="ml-2 buttondesign"
-        >Upload File</jet-button
-      >
-      <jet-button type="button" @click="templates" class="ml-2 buttondesign"
-        >Templates</jet-button
-      >
-      <input hidden id="selected" @click="checkAll()" v-model="isCheckAll" />
+      <Button @click="uploadFile" size="small">Upload File</Button>
+      <Button @click="templates" class="ml-2" size="small">Templates</Button>
 
-      <label v-if="isCheckAll" class="labelbutton" for="selected">
+      <input hidden id="selected" @click="checkAll()" v-model="isCheckAll" />
+      <label v-if="isCheckAll" class="ant-btn ant-btn-sm ml-2" for="selected">
         Un-Select All</label
       >
-      <label v-else class="labelbutton" for="selected"> Select All</label>
-      <button
-        class="
-          inline-flex
-          items-center
-          px-4
-          py-1
-          bg-gray-800
-          border border-transparent
-          rounded-md
-          font-semibold
-          text-xs text-white
-          uppercase
-          tracking-widest
-          hover:bg-gray-700
-          active:bg-gray-900
-          focus:outline-none
-          focus:border-gray-900
-          focus:ring
-          focus:ring-gray-300
-          disabled:opacity-25
-          transition
-          ml-2
-          buttondesign
-        "
-        type="button"
-        @click="Approve()"
+      <label v-else class="ant-btn ant-btn-sm ml-2" for="selected">
+        Select All</label
       >
-        Approve
-      </button>
+      <Button @click="Approve()" class="ml-2" size="small">Approve</Button>
 
-      <button
+      <Button
         v-if="this.user_role != 'staff'"
-        class="
-          inline-flex
-          items-center
-          px-4
-          py-1
-          bg-gray-800
-          border border-transparent
-          rounded-md
-          font-semibold
-          text-xs text-white
-          uppercase
-          tracking-widest
-          hover:bg-gray-700
-          active:bg-gray-900
-          focus:outline-none
-          focus:border-gray-900
-          focus:ring
-          focus:ring-gray-300
-          disabled:opacity-25
-          transition
-          ml-2
-          buttondesign
-        "
-        type="button"
         @click="Reject()"
+        class="ml-2"
+        size="small"
+        >Reject</Button
       >
-        Reject
-      </button>
 
       <div class="">
-        <div class="obsolute sm:rounded-2xl">
-          <table class="table2">
-            <thead>
-              <tr class="tablerowhead">
-                <th class="px-4 rounded-l-2xl">{{ parent.type }} Name</th>
-                <th class="px-4">Approval</th>
-                <th v-if="this.user_role != 'partner'" class="px-4">Review</th>
-                <th class="px-4 rounded-r-2xl">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr
-                class="tablerowbody2"
-                v-for="item in balances.data"
-                :key="item.id"
+        <Table
+          :columns="columns"
+          :data-source="mapped_data"
+          :loading="loading"
+          class="mt-2"
+          size="small"
+        >
+          <template #bodyCell="{ column, record }">
+            <template v-if="column.key === 'approval'">
+              <!-- <Checkbox
+                v-if="record.approve"
+                v-model:value="record.name"
+                checked
+              />
+              <Checkbox
+                v-else
+                v-model:value="record.name"
+                v-model:checked="unchecked"
+                @change="updateCheckall()"
+              /> -->
+              <input
+                class="text-green-600"
+                v-if="record.approve"
+                type="checkbox"
+                v-bind:value="record.name"
+                name="selected_arr"
+                :disabled="record.approve"
+                checked
+              />
+              <input
+                class="focus:ring-green-500"
+                v-else
+                type="checkbox"
+                v-bind:value="record.name"
+                v-model="form.selected_arr"
+                @change="updateCheckall()"
+                name="selected_arr"
+              />
+            </template>
+            <template v-if="column.key === 'review'">
+              <Popper v-if="record.review" :content="record.review">
+                <Button size="small" class="mr-2">Open Review</Button>
+              </Popper>
+            </template>
+            <template v-if="column.key === 'actions'">
+              <a
+                class="ant-btn ant-btn-sm ant-btn-primary mr-2"
+                size="small"
+                :href="'/filing/downloadFile/' + record.id"
+                >Download</a
               >
-                <td class="w-4/12 px-4 border rounded-l-2xl w-2/5">
-                  {{ item.name }}
-                </td>
-                <td class="w-1/12 px-4 border text-center">
-                  <input
-                    class="text-green-600"
-                    v-if="item.approve"
-                    type="checkbox"
-                    v-bind:value="item.name"
-                    name="selected_arr"
-                    :disabled="item.approve"
-                    checked
-                  />
-                  <input
-                    class="focus:ring-green-500"
-                    v-else
-                    type="checkbox"
-                    v-bind:value="item.name"
-                    v-model="form.selected_arr"
-                    @change="updateCheckall()"
-                    name="selected_arr"
-                  />
-                </td>
-                <td
-                  v-if="this.user_role != 'partner'"
-                  class="px-4 border w-3/12 text-center"
-                >
-                  <Popper v-if="item.review" :content="item.review">
-                    <button>Open Review</button>
-                  </Popper>
-                </td>
-                <td class="w-4/12px-4 border w-2/6 text-center rounded-r-2xl">
-                  <a
-                    class="
-                      border
-                      bg-indigo-300
-                      rounded-md
-                      px-4
-                      text-white
-                      font-bold
-                      hover:text-white hover:bg-indigo-400
-                    "
-                    :href="'/filing/downloadFile/' + item.id"
-                    >Download</a
-                  >
-                  <button
-                    v-if="this.user_role == 'partner'"
-                    class="
-                      border
-                      bg-red-500
-                      rounded-md
-                      px-4
-                      text-white
-                      font-bold
-                      hover:text-white hover:bg-red-600
-                    "
-                    @click="deleteFileFolder(item.id)"
-                    type="button"
-                  >
-                    <span>Delete</span>
-                  </button>
-                </td>
-              </tr>
-              <tr v-if="balances.data.length === 0">
-                <td class="border-t px-6 py-4 bg-gray-100" colspan="4">
-                  No Record found.
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <paginator class="mt-6" :balances="balances" />
+              <Button
+                size="small"
+                v-if="this.user_role == 'partner'"
+                danger
+                @click="deleteFileFolder(record.id)"
+                >Delete</Button
+              >
+            </template>
+          </template>
+        </Table>
       </div>
     </div>
   </app-layout>
@@ -214,26 +117,25 @@
 <style src="@suadelabs/vue3-multiselect/dist/vue3-multiselect.css"></style>
 <script>
 import AppLayout from "@/Layouts/AppLayout";
-import JetButton from "@/Jetstream/Button";
+import { Button, Table, Select, InputSearch, Checkbox } from "ant-design-vue";
+
 import { useForm } from "@inertiajs/inertia-vue3";
 import Multiselect from "@suadelabs/vue3-multiselect";
-import Paginator from "@/Layouts/Paginator";
-import FlashMessage from "@/Layouts/FlashMessage";
 import Popper from "vue3-popper";
 import "/css/theme.css";
-// import { Head, Link } from "@inertiajs/inertia-vue3";
 
 export default {
   components: {
     AppLayout,
-    JetButton,
+    Button,
+    Table,
+    Select,
+    InputSearch,
+    Checkbox,
     useForm,
-    Multiselect,
-    Paginator,
-    FlashMessage,
     Popper,
-    // Link,
-    // Head,
+
+    Multiselect,
   },
 
   props: {
@@ -245,6 +147,7 @@ export default {
     folders: Object,
     parent: Object,
     user_role: Object,
+    mapped_data: Object,
   },
 
   data() {
@@ -255,6 +158,48 @@ export default {
       selected: [],
       isCheckAll: false,
       folders: this.folders,
+      columns:
+        this.user_role == "partner"
+          ? [
+              {
+                title: this.parent.type + " Name",
+                dataIndex: "name",
+                //   width: "20%",
+              },
+              {
+                title: "Approval",
+                dataIndex: "approve",
+                key: "approval",
+              },
+              {
+                title: "Action",
+                dataIndex: "role",
+                key: "actions",
+              },
+            ]
+          : [
+              {
+                title: this.parent.type + " Name",
+                dataIndex: "name",
+                //   width: "20%",
+              },
+              {
+                title: "Approval",
+                dataIndex: "approve",
+                key: "approval",
+              },
+              {
+                title: "Review",
+                dataIndex: "review",
+                key: "review",
+              },
+              {
+                title: "Action",
+                dataIndex: "role",
+                key: "actions",
+              },
+            ],
+
       form: {
         selected_arr: [],
         folder: this.parent,
@@ -270,7 +215,8 @@ export default {
       if (this.isCheckAll) {
         // Check all
         for (var key in this.balances_name) {
-          if (!this.balances.data[key].approve) {
+          //   if (!this.balances.data[key].approve) {
+          if (!this.mapped_data[key].approve) {
             this.form.selected_arr.push(this.balances_name[key]);
           }
         }

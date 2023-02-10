@@ -57,7 +57,7 @@ class TeamController extends Controller
                     );
                 }
 
-                // For ant-design fata table ---------
+                // For ant-design data table ---------
 
                 $obj_data = $year->users()->get();
                 $mapped_data = $obj_data->map(function($user, $key) {

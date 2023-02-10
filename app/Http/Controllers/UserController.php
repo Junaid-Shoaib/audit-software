@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-// use Illuminate\Http\Request;
+use Illuminate\Http\Request as Req;
 use App\Models\User;
 use App\Models\Company;
 use Illuminate\Support\Facades\Hash;
@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Redirect;
 
 class UserController extends Controller
 {
-    public function index()
+    public function index(Req $req)
     {
         if(auth()->user()->can('manage') || auth()->user()->can('edit'))
         {
@@ -46,15 +46,48 @@ class UserController extends Controller
                     ],
                 );
 
-            if (request('search')) {
-                $query->where('name', 'LIKE', '%' . request('search') . '%');
-            }
+            // if (request('search')) {
+            //     $query->where('name', 'LIKE', '%' . request('search') . '%');
+            // }
 
-            if (request()->has(['field', 'direction'])) {
-                $query->orderBy(
-                    request('field'),
-                    request('direction')
-                );
+            // if (request()->has(['field', 'direction'])) {
+            //     $query->orderBy(
+            //         request('field'),
+            //         request('direction')
+            //     );
+            // }
+            if(request()->has(
+                // ['select', 'search']
+                'search'
+                )){
+                $obj_data = User::where(
+                        // $req->select
+                        'name'
+                        ,'LIKE', '%'.$req->search.'%')
+                    ->get();
+                $mapped_data = $obj_data->map(function($user, $key) {
+                return [
+                        'id' => $user->id,
+                        'name' => $user->name,
+                        'email' => $user->email,
+                        $cur_user = User::find($user->id),
+                        'role' => $cur_user->getRoleNames()[0],
+                        // 'delete' => Year::where('company_id', $comp->id)->first() != null ? true : false,
+                    ];
+                });
+            }
+            else{
+                $obj_data = User::get();
+                $mapped_data = $obj_data->map(function($user, $key) {
+                return [
+                        'id' => $user->id,
+                        'name' => $user->name,
+                        'email' => $user->email,
+                        $cur_user = User::find($user->id),
+                        'role' => $cur_user->getRoleNames()[0],
+                        // 'delete' => Year::where('company_id', $comp->id)->first() != null ? true : false,
+                    ];
+                });
             }
 
 
@@ -66,6 +99,7 @@ class UserController extends Controller
                     'delete' => auth()->user()->can('delete'),
                     'read' => auth()->user()->can('read'),
                 ],
+                'mapped_data' => $mapped_data,
                 'balances' => $query,
                 'filters' => request()->all(['search', 'field', 'direction']),
                 'company' => Company::where('id', session('company_id'))->first(),

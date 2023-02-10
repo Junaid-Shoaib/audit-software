@@ -5,7 +5,12 @@
     </template>
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 py-4">
       <div class="">
-        <Form :form="form" @submit.prevent="submit">
+        <Form
+          :form="form"
+          @submit.prevent="submit"
+          :labelCol="{ span: 4 }"
+          :wrapperCol="{ span: 14 }"
+        >
           <FormItem label="Partner">
             <Select
               v-model:value="form.partner"
@@ -69,7 +74,7 @@
             </div>
           </FormItem>
 
-          <FormItem>
+          <FormItem class="text-right">
             <Button type="primary" @click="submit">Update Team</Button>
           </FormItem>
         </Form>
