@@ -5,65 +5,25 @@
     </template>
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 py-4">
       <div class="">
-        <a-form :form="form" @submit.prevent="submit">
+        <a-form
+          :form="form"
+          @submit.prevent="submit"
+          :label-col="{ span: 4 }"
+          :wrapper-col="{ span: 14 }"
+        >
           <a-form-item label="Name">
-            <a-input
-              v-model:value="form.name"
-              placeholder="Enter your name"
-              style="width: 50%"
-            />
+            <a-input v-model:value="form.name" placeholder="Enter your name" />
+            <!--  -->
 
             <div class="text-red-700 px-4 py-2" role="alert" v-if="errors.name">
               {{ errors.name }}
             </div>
           </a-form-item>
-          <!-- <div class="p-2 mr-2 mb-2 mt-4 ml-6 flex flex-wrap">
-
-            <label class="my-2 mr-8 ml-40 text-right w-36 font-bold"
-              >Name :</label
-            >
-            <input
-              type="text"
-              v-model="form.name"
-              class="
-                pr-2
-                pb-2
-                w-full
-                lg:w-1/4
-                rounded-md
-                hover:transition hover:ease-in-out
-                transform
-                hover:scale-110
-                ease-out
-                duration-200
-                placeholder-indigo-300
-              "
-              label="name"
-              placeholder="Enter Company name:"
-            />
-            <div
-              class="
-                ml-2
-                bg-red-100
-                border border-red-400
-                text-red-700
-                px-4
-                py-2
-                rounded
-                relative
-              "
-              role="alert"
-              v-if="errors.name"
-            >
-              {{ errors.name }}
-            </div>
-          </div> -->
 
           <a-form-item label="Address ">
-            <a-input
+            <a-textarea
               v-model:value="form.address"
               placeholder="Enter your address"
-              style="width: 50%"
             />
 
             <div
@@ -104,7 +64,6 @@
             <a-input
               v-model:value="form.email"
               placeholder="Enter your email"
-              style="width: 50%"
             />
 
             <div
@@ -142,11 +101,7 @@
           </div> -->
 
           <a-form-item label="Web Address">
-            <a-input
-              v-model:value="form.web"
-              placeholder="Enter your web"
-              style="width: 50%"
-            />
+            <a-input v-model:value="form.web" placeholder="Enter your web" />
 
             <div class="text-red-700 px-4 py-2" role="alert" v-if="errors.web">
               {{ errors.web }}
@@ -182,7 +137,6 @@
             <a-input
               v-model:value="form.phone"
               placeholder="Enter your phone"
-              style="width: 50%"
             />
 
             <div
@@ -223,7 +177,7 @@
             <!-- <a-input
               v-model:value="form.fiscal"
               placeholder="Enter your fiscal"
-              style="width: 50%"
+
             /> -->
             <a-select
               v-model:value="form.fiscal"
@@ -278,7 +232,7 @@
             <!-- <a-input
               v-model:value="form.incorp"
               placeholder="Enter your incorp"
-              style="width: 50%"
+
             /> -->
 
             <a-datePicker v-model:value="form.incorp" />
@@ -316,7 +270,7 @@
             />
             <div v-if="errors.incorp">{{ errors.incorp }}</div>
           </div> -->
-          <a-form-item>
+          <a-form-item class="text-right">
             <a-button type="primary" @click="submitForm">Submit</a-button>
           </a-form-item>
           <!-- <div class="px-4 py-2 flex justify-center items-center">
@@ -354,6 +308,7 @@ export default {
     "a-form": Form,
     "a-form-item": Form.Item,
     "a-input": Input,
+    "a-textarea": Input.TextArea,
     "a-button": Button,
     "a-select": Select,
     "a-datePicker": DatePicker,

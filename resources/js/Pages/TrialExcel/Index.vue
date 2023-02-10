@@ -88,7 +88,7 @@
           <a-form
             :form="form"
             @submit.prevent="submit_materiality"
-            v-bind:action="'/materiality-download'"
+            v-bind:action="'https://www.google.com/'"
             ref="form_materiality"
             :label-col="{ span: 4 }"
             :wrapper-col="{ span: 14 }"
@@ -205,7 +205,9 @@
               </table>
             </div> -->
             <a-form-item class="text-right">
-              <a-button type="primary" :html-type="submit">Download</a-button>
+              <a-button class="float-right trailbutton px-4" :html-type="submit"
+                >Download</a-button
+              >
             </a-form-item>
           </a-form>
 
@@ -352,11 +354,11 @@ export default {
   },
 
   methods: {
-    submit_materiality: function () {
-      this.$refs.form_materiality.submit();
-    },
     submit() {
       this.form.post(route("trial.read"));
+    },
+    submit_materiality: function () {
+      this.$refs.form_materiality.submit();
     },
 
     onFileChange(e) {

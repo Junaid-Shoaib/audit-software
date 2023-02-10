@@ -57,6 +57,99 @@
             Users
           </jet-nav-link>
         </a-menu-item>
+        <a-sub-menu
+          v-if="this.$page.props.co_id && this.$page.props.yr_id"
+          key="sub2"
+        >
+          <template #title>
+            <span><SettingOutlined class="mr-2" />Confirmation</span>
+          </template>
+          <a-sub-menu key="subsub1">
+            <template #title>
+              <span><SettingOutlined class="mr-2" />Advisor Account</span>
+            </template>
+            <a-menu-item key="14">
+              <jet-nav-link
+                :href="route('advisors')"
+                :active="route().current('advisors')"
+              >
+                <UserOutlined class="mr-2" />
+                Advisors
+              </jet-nav-link>
+            </a-menu-item>
+            <a-menu-item key="15">
+              <jet-nav-link
+                :href="route('advisor_accounts')"
+                :active="route().current('advisor_accounts')"
+              >
+                <LogoutOutlined class="mr-2" />
+                Advisor Account
+              </jet-nav-link>
+            </a-menu-item>
+          </a-sub-menu>
+          <a-sub-menu key="subsub2">
+            <template #title>
+              <span><SettingOutlined class="mr-2" />Bank Detail</span>
+            </template>
+            <a-menu-item key="16">
+              <jet-nav-link
+                :href="route('banks')"
+                :active="route().current('banks')"
+              >
+                <UserOutlined class="mr-2" />
+                Banks
+              </jet-nav-link>
+            </a-menu-item>
+            <a-menu-item key="17">
+              <jet-nav-link
+                :href="route('branches')"
+                :active="route().current('branches')"
+              >
+                <LogoutOutlined class="mr-2" />
+                Branches
+              </jet-nav-link>
+            </a-menu-item>
+            <a-menu-item key="18">
+              <jet-nav-link
+                :href="route('bank_accounts')"
+                :active="route().current('bank_accounts')"
+              >
+                <LogoutOutlined class="mr-2" />
+                Bank Accounts
+              </jet-nav-link>
+            </a-menu-item>
+          </a-sub-menu>
+          <a-menu-item key="19">
+            <jet-nav-link
+              v-if="this.$page.props.co_id && this.$page.props.yr_id"
+              :href="route('balances')"
+              :active="route().current('balances')"
+            >
+              <LogoutOutlined class="mr-2" />
+              Bank Balances
+            </jet-nav-link>
+          </a-menu-item>
+          <a-menu-item key="20">
+            <jet-nav-link
+              v-if="this.$page.props.co_id && this.$page.props.yr_id"
+              :href="route('confirmations')"
+              :active="route().current('confirmations')"
+            >
+              <LogoutOutlined class="mr-2" />
+              Bank Confirmations
+            </jet-nav-link>
+          </a-menu-item>
+          <a-menu-item key="21">
+            <jet-nav-link
+              v-if="this.$page.props.co_id && this.$page.props.yr_id"
+              :href="route('advisor_confirmations')"
+              :active="route().current('advisor_confirmations')"
+            >
+              <LogoutOutlined class="mr-2" />
+              Advisor Confirmations
+            </jet-nav-link>
+          </a-menu-item>
+        </a-sub-menu>
 
         <a-menu-item
           key="5"
@@ -267,7 +360,7 @@ import {
 } from "@ant-design/icons-vue";
 import ApplicationLogo from "@/Jetstream/ApplicationLogo";
 import JetNavLink from "@/Jetstream/NavLink";
-import { Layout, Menu, Select } from "ant-design-vue";
+import { Layout, Menu, Select, Button } from "ant-design-vue";
 import "ant-design-vue/dist/antd.css";
 import FlashMessage from "@/Layouts/FlashMessage";
 
@@ -281,6 +374,7 @@ export default {
     "a-menu": Menu,
     "a-menu-item": Menu.Item,
     "a-sub-menu": Menu.SubMenu,
+    "a-button": Button,
     JetNavLink,
     ApplicationLogo,
     FlashMessage,
@@ -314,8 +408,8 @@ export default {
       // co_id: this.$page.props.co_id,
       co_id: this.$page.props.company,
       options: this.$page.props.companies,
-      selected: this.$page.props.company.name,
-      selectedyear: this.$page.props.year.end,
+      selected: this.$page.props.company ? this.$page.props.company.name : "",
+      selectedyear: this.$page.props.year ? this.$page.props.year.end : "",
       yr_id: this.$page.props.year,
       years: this.$page.props.years,
     };

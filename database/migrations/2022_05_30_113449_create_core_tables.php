@@ -20,18 +20,18 @@ class CreateCoreTables extends Migration
             $table->timestamps();
         });
 
-        Schema::create('companies', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('address')->nullable();
-            $table->string('email')->nullable();
-            $table->string('web')->nullable();
-            $table->string('phone')->nullable();
-            $table->enum('fiscal',  ['March', 'June', 'September', 'December'])->default('June');
-            $table->date('incorp')->nullable();
-            $table->tinyInteger('enabled')->default('1');
-            $table->timestamps();
-        });
+        // Schema::create('companies', function (Blueprint $table) {
+        //     $table->id();
+        //     $table->string('name');
+        //     $table->string('address')->nullable();
+        //     $table->string('email')->nullable();
+        //     $table->string('web')->nullable();
+        //     $table->string('phone')->nullable();
+        //     $table->enum('fiscal',  ['March', 'June', 'September', 'December'])->default('June');
+        //     $table->date('incorp')->nullable();
+        //     $table->tinyInteger('enabled')->default('1');
+        //     $table->timestamps();
+        // });
 
         Schema::create('account_groups', function (Blueprint $table) {
             $table->id();
@@ -58,16 +58,16 @@ class CreateCoreTables extends Migration
             $table->timestamps();
         });
 
-        Schema::create('years', function (Blueprint $table) {
-            $table->id();
-            $table->date('begin');
-            $table->date('end');
-            $table->tinyInteger('closed')->default('0');
-            $table->tinyInteger('enabled')->default('1');
-            $table->unsignedBigInteger('company_id');
-            $table->foreign('company_id')->references('id')->on('companies');
-            $table->timestamps();
-        });
+        // Schema::create('years', function (Blueprint $table) {
+        //     $table->id();
+        //     $table->date('begin');
+        //     $table->date('end');
+        //     $table->tinyInteger('closed')->default('0');
+        //     $table->tinyInteger('enabled')->default('1');
+        //     $table->unsignedBigInteger('company_id');
+        //     $table->foreign('company_id')->references('id')->on('companies');
+        //     $table->timestamps();
+        // });
 
         Schema::create('settings', function (Blueprint $table) {
             $table->id();
@@ -214,10 +214,10 @@ class CreateCoreTables extends Migration
         Schema::dropIfExists('templates');
         Schema::dropIfExists('file_managers');
         Schema::dropIfExists('settings');
-        Schema::dropIfExists('years');
+        // Schema::dropIfExists('years');
         Schema::dropIfExists('accounts');
         Schema::dropIfExists('account_groups');
-        Schema::dropIfExists('companies');
+        // Schema::dropIfExists('companies');
         Schema::dropIfExists('account_types');
     }
 }

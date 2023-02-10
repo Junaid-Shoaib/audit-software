@@ -129,7 +129,6 @@ class CompanyController extends FileMangementController
             'name' => ['required', 'unique:companies'],
             'fiscal' => ['required'],
         ]);
-        dd(Request::input('incorp'));
 
         DB::transaction(function () {
 
@@ -215,6 +214,7 @@ class CompanyController extends FileMangementController
     //Edit Function
     public function edit(Company $company)
     {
+        // dd($company);
         return Inertia::render('Company/Edit', [
             'company' => [
                 'id' => $company->id,
@@ -301,5 +301,39 @@ class CompanyController extends FileMangementController
         return response()->download(public_path('/trial_upload.xlsx'));
     }
 
+    //CompanyPDF DOwnload
+    public function companypdf($fiscal)
+    {
+
+        if($fiscal == 'all'){
+            $company = Company::get();
+        }
+        // dd('march');
+        if($fiscal == 'march'){
+            $company = Company::where('fiscal',$fiscal)->orderBy('id','Asc')->get();
+        }
+
+        if($fiscal == 'june'){
+            $company = Company::where('fiscal',$fiscal)->orderBy('id','Asc')->get();
+        }
+
+        if($fiscal == 'september'){
+            $company = Company::where('fiscal',$fiscal)->orderBy('id','Asc')->get();
+        }
+
+        if($fiscal == 'december'){
+            $company = Company::where('fiscal',$fiscal)->orderBy('id','Asc')->get();
+        }
+
+        if ($company->isNotEmpty()) {
+        $pdf = app('dompdf.wrapper');
+        $pdf->getDomPDF()->set_option("enable_php", true);
+        $pdf->loadView('companypdf', compact( 'company' ));
+        return $pdf->stream('Clients.pdf');
+        }
+        else{
+            return back()->with('error','No Fiscal Found');
+        }
+    }
 
 }

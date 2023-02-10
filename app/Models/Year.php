@@ -31,4 +31,16 @@ class Year extends Model
     {
         return $this->hasMany('App\Models\Document','year_id');
     }
+
+    //confirmation Relation
+
+    public function bankBalances()
+    {
+        return $this->hasMany('App\Models\BankBalance', 'year_id');
+    }
+
+    public function bankConfirmations()
+    {
+        return $this->hasMany('App\Models\BankConfirmation', 'year_id');
+    }
 }

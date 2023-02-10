@@ -6,6 +6,89 @@
 
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 py-1">
       <a-button @click="create" class="ml-2" size="small">Create</a-button>
+      <a-button @click="isOpen2 = true" size="small" class="float-right"
+        >Generate PDF</a-button
+      >
+
+      <div
+        v-if="isOpen2"
+        class="fixed inset-0 w-full h-screen z-20 bg-black opacity-25"
+        @click="isOpen2 = false"
+      ></div>
+      <div class="absolute z-30 right-0 mt-2" :class="{ hidden: !isOpen2 }">
+        <div class="bg-white rounded-lg shadow-lg py-2 w-48">
+          <a
+            :href="route('companypdf', 'all')"
+            target="_blank"
+            class="
+              block
+              text-blue-600
+              font-semibold
+              px-4
+              py-2
+              |
+              hover:text-white hover:bg-blue-700
+            "
+            >All Fiscal</a
+          >
+          <a
+            :href="route('companypdf', 'march')"
+            target="_blank"
+            class="
+              block
+              text-blue-600
+              font-semibold
+              px-4
+              py-2
+              |
+              hover:text-white hover:bg-blue-700
+            "
+            >March</a
+          >
+          <a
+            :href="route('companypdf', 'june')"
+            target="_blank"
+            class="
+              block
+              text-blue-600
+              font-semibold
+              px-4
+              py-2
+              |
+              hover:text-white hover:bg-blue-700
+            "
+            >June</a
+          >
+          <a
+            :href="route('companypdf', 'september')"
+            target="_blank"
+            class="
+              block
+              text-blue-600
+              font-semibold
+              px-4
+              py-2
+              |
+              hover:text-white hover:bg-blue-700
+            "
+            >September</a
+          >
+          <a
+            :href="route('companypdf', 'december')"
+            target="_blank"
+            class="
+              block
+              text-blue-600
+              font-semibold
+              px-4
+              py-2
+              |
+              hover:text-white hover:bg-blue-700
+            "
+            >December</a
+          >
+        </div>
+      </div>
       <!-- <div class="relative overflow-x-auto mt-2 ml-2 sm:rounded-2xl"> -->
       <div class="">
         <a-table
@@ -71,6 +154,8 @@ export default {
   data() {
     return {
       co_id: this.$page.props.co_id,
+      isOpen1: true,
+      isOpen2: false,
       // co_id: this.cochange,
       // options: this.companies,
       columns: [

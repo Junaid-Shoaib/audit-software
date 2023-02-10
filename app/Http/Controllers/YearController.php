@@ -21,36 +21,19 @@ class YearController extends FileMangementController
         if (Company::first()) {
             $query = Year::query();
             if(request()->has(
-            // ['select', 'search']
             'search'
             )){
             $obj_data = Year::where(
-                // $req->select
                 'name'
                 ,'LIKE', '%'.$req->search.'%')
-            ->where('company_id', session('company_id'))
-            ->get();
-            $mapped_data = $obj_data->map(function($year, $key) {
-            return [
-                    $begin = new Carbon($year->begin),
-                    $end = new Carbon($year->end),
-                    'id' => $year->id,
-                    'closed' => $year->closed,
-                    'begin' => $begin->format('F,j Y'),
-                    'end' => $end->format('F,j Y'),
-                    'company_name' => $year->company->name,
-                    'company_id' => $year->company_id,
-                    // 'delete' =>
-                    // Document::where('year_id', $year->id)->first()
-                    //     ||
-                    //     $year->id != Year::where('company_id', session('company_id'))->orderBy('id','desc')->first()->id
-                    //     ? false : true,
-                ];
-            });
+            ->where('company_id', session('company_id'));
+
         }
         else{
-            $obj_data = Year::where('company_id', session('company_id'))->get();
-            $mapped_data = $obj_data->map(function($year, $key) {
+            $obj_data = Year::where('company_id', session('company_id'));
+        }
+
+        $mapped_data = $obj_data->get()->map(function($year, $key) {
             return [
                     $begin = new Carbon($year->begin),
                     $end = new Carbon($year->end),
@@ -60,21 +43,14 @@ class YearController extends FileMangementController
                     'end' => $end->format('F,j Y'),
                     'company_name' => $year->company->name,
                     'company_id' => $year->company_id,
-                    // 'delete' =>
-                    // Document::where('year_id', $year->id)->first()
-                    //     ||
-                    //     $year->id != Year::where('company_id', session('company_id'))->orderBy('id','desc')->first()->id
-                    //     ? false : true,
                 ];
             });
-        }
 
             return Inertia::render('Years/Index', [
             'mapped_data' => $mapped_data,
 
                 'balances' => $query
                     ->where('company_id', session('company_id'))
-                    // ->map(
                     ->paginate(10)
                     ->through(
                         function ($year) {

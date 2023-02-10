@@ -46,7 +46,7 @@ class HandleInertiaRequests extends Middleware
             'company' => Company::where('id', session('company_id'))->first(),
 
 
-            'companies' => Auth::check() ?  Auth::user()->companies : Company::get(),
+            'companies' => Auth::check() ?  Auth::user()->companies ? Auth::user()->companies : null : Company::get(),
             'year' => Year::where('company_id', session('company_id'))->where('id', session('year_id'))->first(),
             'years' => Year::where('company_id', session('company_id'))->get(),
             'team_id' => session('team_id'),

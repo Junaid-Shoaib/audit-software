@@ -98,11 +98,10 @@
             </div>
           </a-form-item>
           <a-form-item label="Incorp">
-            <a-datePicker
+            <a-date-picker
               v-model:value="form.incorp"
-              allowClear="true"
-              format="YYYY-MM-DD"
-              @click="china"
+              allow-clear
+              :format="'YYYY-MM-DD'"
             />
             <!-- :locale="locale" -->
             <!-- clearable -->
@@ -127,7 +126,8 @@
 <script>
 // import locale from "ant-design-vue/es/date-picker/locale/en_US";
 
-import moment, * as moments from "moment";
+// import moment, * as moments from "moment";
+import moment from "moment";
 import AppLayout from "@/Layouts/AppLayout";
 import {
   Form,
@@ -148,7 +148,7 @@ export default {
     "a-input": Input,
     "a-button": Button,
     "a-select": Select,
-    "a-datePicker": DatePicker,
+    "a-date-picker": DatePicker,
     moment,
   },
 
@@ -180,14 +180,16 @@ export default {
         fiscal: this.company.fiscal,
 
         // incorp: this.company.incorp == "" ? "" : this.company.incorp,
-        incorp: null,
+        incorp: this.company.incorp
+          ? moment(this.company.incorp, "YYYY-MM-DD")
+          : null,
+        // null,
         // "2022-02-02",
         // this.company.incorp ? moment(this.company.incorp) : null,
 
-        // this.company.incorp
-        // ?
-        // : null,
-        // moment(this.company.incorp, "YYYY-MM-DD"),
+        //   this.company.incorp
+        //     ? moment(this.company.incorp, "YYYY-MM-DD")
+        //     : null,
         // incorp:
         //   this.company.incorp != null ? new Date(this.company.incorp) : null,
       }),
@@ -195,19 +197,15 @@ export default {
   },
 
   methods: {
-    china() {
-      alert("clicked");
-      this.form.incorp = null;
-    },
     submit() {
       this.$inertia.put(route("companies.update", this.company.id), this.form);
     },
   },
-  mounted() {
-    this.form.incorp =
-      this.company.incorp == null
-        ? null
-        : moment(this.company.incorp, "YYYY-MM-DD");
-  },
+  //   mounted() {
+  //     this.form.incorp =
+  //       this.company.incorp == null
+  //         ? null
+  //         : moment(this.company.incorp, "YYYY-MM-DD");
+  //   },
 };
 </script>
