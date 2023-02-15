@@ -1,193 +1,96 @@
 <template>
   <app-layout>
     <template #header>
-      <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-        Create Advisor Accounts
-      </h2>
+      <h2>Create Advisor Accounts</h2>
     </template>
-    <div v-if="$page.props.flash.success" class="bg-red-600 text-center text-white">
-      {{ $page.props.flash.success }}
-    </div>
-    <div class="max-w-7xl mx-auto pb-2">
-      <div class="relative mt-5 ml-7 flex-row">
-        <div class="flex-1 inline-block">
-          <inertia-link
-            class="
-              border
-              bg-blue-400
-              rounded-xl
-              px-4
-              py-1
-              m-1
-              hover:text-white
-              hover:bg-blue-600
-            "
-            :href="route('advisor_accounts')"
-            >Back
-          </inertia-link>
-                 </div>
-      </div>
+    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 py-4">
+        <a-form-item>
+            <a-button :href="route('advisor_accounts')">Back </a-button>
+          </a-form-item>
 
       <div class="relative mt-5 flex-row border-t border-b border-gray-200">
         <div v-if="isError">{{ firstError }}</div>
-        <form @submit.prevent="form.post(route('advisor_accounts.store'))">
-          <div class="">
-            <table class="shadow-lg border mt-4 mb-4 ml-12 rounded-xl w-11/12">
-              <thead>
-                <tr class="bg-gray-700 text-white text-centre font-bold">
-                  <th class="px-3 pt-3 pb-3 border">Company Name</th>
-                  <th class="px-3 pt-3 pb-3 border">Advisor</th>
-                  <!-- <th class="px-3 pt-3 pb-3 border">Type</th>
-                  <th class="px-3 pt-3 pb-3 border">Currency</th> -->
-                  <th class="px-3 pt-3 pb-3 border">Actions</th>
+        <a-form :form="form" @submit.prevent="submit">
+          <div class="ant-table-content">
+            <!-- @submit.prevent="form.post(route('advisor_accounts.store'))"> -->
+            <table class="w-full">
+              <!-- class="shadow-lg border mt-4 mb-4 ml-12 rounded-xl w-11/12 -->
+              <thead class="ant-table-thead">
+                <tr>
+                  <!-- class="bg-gray-700 text-white text-centre font-bold" -->
+                  <th style="width:40%" class="ant-table-cell" colstart="0" colend="0">
+                    Company Name
+                  </th>
+                  <th style="width:40%" class="ant-table-cell" colstart="1" colend="1">
+                    Advisor
+                  </th>
+                  <!-- <th class="p-1 border">Type</th>
+                  <th class="p-1 border">Currency</th> -->
+                  <th style="width:20%" class="ant-table-cell" colstart="2" colend="2">
+                    Actions
+                  </th>
                 </tr>
               </thead>
-              <tbody>
-                <tr v-for="(account, index) in form.accounts" :key="account.id">
-                  <td class="w-4/12">
-                    <input
-                      v-model="account.name"
-                      type="text"
-                      disabled
-                      class="rounded-md w-full"
-                    />
+              <tbody class="ant-table-tbody">
+                <tr class="ant-table-row ant-table-row-level-0"  v-for="(account, index) in form.accounts" :key="account.id">
+                  <td class="ant-table-cell">
+                    <a-form-item style="margin-bottom:0px">
+                      <a-input
+                        v-model:value="account.name"
+                        type="text"
+                        disabled
+                        class="w-full"
+                      />
+                    </a-form-item>
                   </td>
-                  <td class="w-6/12 rounded-md">
-                    <multiselect
-                      class="w-full rounded-md border border-black"
-                      placeholder="Select Branch."
-                      v-model="account.advisor_id"
-                      track-by="id"
-                      label="address"
-                      :options="options"
-                    >
-                    </multiselect>
-                    <!-- <select v-model="account.branch_id" class="rounded-md w-full">
-                    <option
-                      v-for="branch in advisors"
-                      :key="branch.id"
-                      :value="branch.id"
-                    >
-                      {{ branch.name }} -
-                      {{ branch.address }}
-                    </option>
-                  </select> -->
+                  <td class="ant-table-cell">
+                    <a-form-item style="margin-bottom:0px">
+                      <a-select
+                        v-model:value="account.advisor_id"
+                        :options="options"
+                        show-search
+                        :field-names="{ label: 'address', value: 'id' }"
+                        optionFilterProp="name"
+                        mode="single"
+                        placeholder="Please select"
+                        showArrow
+                        class="w-full"
+                      />
+                    </a-form-item>
                   </td>
-                  <!-- <td class="3/12">
-                    <select v-model="account.type" class="rounded-md w-full">
-                      <option>CURRENT</option>
-                      <option>SAVING</option>
-                    </select>
-                  </td>
-                  <td class="2/12">
-                    <select
-                      v-model="account.currency"
-                      class="rounded-md w-full"
-                    >
-                      <option>PKR</option>
-                      <option>$</option>
-                      <option>USD</option>
-                      <option>EUR</option>
-                    </select>
-                  </td> -->
-                  <td>
-                    <button
-                      type="button"
-                      @click.prevent="deleteRow(index)"
-                      class="
-                        border
-                        bg-red-500
-                        rounded-xl
-                        px-4
-                        py-2
-                        m-1
-                        hover:text-white
-                        hover:bg-red-600
-                      "
-                    >
-                      Delete
-                    </button>
+                  <td v-if="index > 0" class="ant-table-cell">
+                    <a-form-item style="margin-bottom:0px">
+                      <a-button danger @click.prevent="deleteRow(index)">
+                        Delete
+                      </a-button>
+                    </a-form-item>
                   </td>
                 </tr>
               </tbody>
             </table>
           </div>
-          <div
-            class="
-              relative
-              mt-5
-              mb-5
-              ml-7
-              flex-row
-              bg-gray-100
-              justify-start
-              items-center
-            "
-          >
-            <button
-              class="
-                border
-                bg-blue-400
-                rounded-xl
-                px-4
-                py-1
-                m-1
-                hover:text-white
-                hover:bg-blue-600
-              "
-              type="button"
-              @click.prevent="addRow"
-            >
-              Add More Accounts
-            </button>
-
-            <button
-              type="submit"
-              class="
-                border
-                bg-green-500
-                rounded-xl
-                px-6
-                py-1
-                m-1
-                hover:text-white
-                hover:bg-green-600
-              "
-              :disabled="form.processing"
-            >
-              Save
-            </button>
-          </div>
-        </form>
+        <a-form-item>
+          <a-button type="button"
+          @click.prevent="addRow"
+          > Add More Accounts</a-button>
+            <a-button class="m-1" type="primary"  :disabled="form.processing"   @click="submitForm">Submit</a-button>
+            </a-form-item>
+        </a-form>
       </div>
 
       <div class="">
-        <table class="shadow-lg border mt-4 mb-4 ml-12 rounded-xl w-11/12">
-          <thead>
-            <tr class="bg-gray-700 text-white text-centre font-bold">
-              <th class="px-3 pt-3 pb-3 border">Company Name</th>
-              <th class="px-3 pt-3 pb-3 border">Advisor</th>
-              <!-- <th class="px-3 pt-3 pb-3 border">Type</th>
-              <th class="px-3 pt-3 pb-3 border">Currency</th> -->
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="item in balances" :key="item.id">
-               <td class="py-2 px-2 border text-left">{{ this.company_name }}</td>
-              <td class="py-2 px-2 border text-center">
-                {{ item.advisors }}
-              </td>
-              <!-- <td class="py-2 px-2 border text-center">{{ item.type }}</td> -->
-              <!-- <td class="py-2 px-2 border text-center">
-                {{ item.currency }}
-              </td> -->
-            </tr>
-            <!-- Null Balance -->
-            <tr v-if="balances.items === 0">
-              <td class="border-t px-6 py-4" colspan="4">No Record found.</td>
-            </tr>
-          </tbody>
-        </table>
+
+        <div class="">
+            <a-table
+            :columns="columns"
+            :data-source="balances"
+            :loading="loading"
+            class="mt-2"
+            size="small"
+            >
+            </a-table>
+      </div>
+
       </div>
     </div>
   </app-layout>
@@ -197,22 +100,42 @@
 import AppLayout from "@/Layouts/AppLayout";
 import { useForm } from "@inertiajs/inertia-vue3";
 import Multiselect from "@suadelabs/vue3-multiselect";
+import { Form, Input, Button, Select ,Table } from "ant-design-vue";
 
 export default {
   components: {
     AppLayout,
+    "a-form": Form,
+    "a-table": Table,
+    "a-form-item": Form.Item,
+    "a-input": Input,
+    "a-text-area": Input.TextArea,
+    "a-button": Button,
+    "a-select": Select,
     Multiselect,
   },
 
   props: {
     errors: Object,
-    advisors: Array,
     company_name: Object,
+    advisors: Array,
     balances: Object,
   },
 
   data() {
     return {
+        columns: [
+        {
+          title: "Company Name",
+          dataIndex: "company_name",
+          width: "50%",
+        },
+        {
+          title: "Advisors",
+          dataIndex: "advisors",
+        }
+
+      ],
       options: this.advisors,
     };
   },
@@ -221,10 +144,10 @@ export default {
     const form = useForm({
       accounts: [
         {
-          advisor_id: props.advisors[0],
-        //   type: "CURRENT",
+          advisor_id: props.advisors[0].id,
+          //   type: "CURRENT",
           name: props.company_name,
-        //   currency: "PKR",
+          //   currency: "PKR",
         },
       ],
     });
@@ -241,6 +164,11 @@ export default {
   },
 
   methods: {
+    submitForm() {
+      //   console.log(this.form);
+      this.$inertia.post(route("advisor_accounts.store"), this.form);
+      // Send form data to server using axios or fetch
+    },
     addRow() {
       this.form.accounts.push({
         advisor_id: this.advisors[0],

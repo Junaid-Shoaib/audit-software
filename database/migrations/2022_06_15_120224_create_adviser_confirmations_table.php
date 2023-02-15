@@ -14,20 +14,20 @@ class CreateAdviserConfirmationsTable extends Migration
     public function up()
     {
         Schema::create('adviser_confirmations', function (Blueprint $table) {
-                $table->id();
-                $table->date('sent')->nullable();
-                $table->date('reminder')->nullable();
-                $table->date('confirm_create')->nullable();
-                $table->date('received')->nullable();
-                $table->Longtext('path')->nullable();
-                $table->tinyInteger('enabled')->default('1');
-                $table->unsignedBigInteger('advisor_id');
-                $table->unsignedBigInteger('year_id');
-                $table->unsignedBigInteger('company_id');
-                $table->foreign('advisor_id')->references('id')->on('advisors');
-                $table->foreign('year_id')->references('id')->on('years');
-                $table->foreign('company_id')->references('id')->on('companies');
-                $table->timestamps();
+            $table->id();
+            $table->date('sent')->nullable();
+            $table->date('reminder')->nullable();
+            $table->date('confirm_create')->nullable();
+            $table->date('received')->nullable();
+            $table->Longtext('path')->nullable();
+            $table->tinyInteger('enabled')->default('1');
+            $table->unsignedBigInteger('advisor_id');
+            $table->unsignedBigInteger('year_id');
+            $table->unsignedBigInteger('company_id');
+            $table->foreign('advisor_id')->references('id')->on('adviser_accounts');
+            $table->foreign('year_id')->references('id')->on('years');
+            $table->foreign('company_id')->references('id')->on('companies');
+            $table->timestamps();
         });
     }
 

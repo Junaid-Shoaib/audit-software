@@ -8,7 +8,7 @@
         :href="route('advisor_accounts.create')"
         size="small"
         type="buttin"
-        >Add Advisor
+        >Add Advisor Account
       </a-button>
 
       <div class="">
@@ -21,21 +21,16 @@
         >
           <template #bodyCell="{ column, record }">
             <template v-if="column.key === 'actions'">
-              <a-button
-                size="small"
-                type="primary"
-                :href="route('advisors.edit', record.id)"
-                class="mr-2"
-                >Edit</a-button
-              >
-              <a-button
-                size="small"
-                v-if="record.delete"
-                danger
-                @click="destroy(record.id)"
-              >
-                Delete</a-button
-              >
+                <a-popconfirm title="Are you sure？" ok-text="Yes" cancel-text="No" @confirm="destroy(record.id)">
+                    <a-button
+                    size="small"
+                    v-if="record.delete"
+                    danger
+                    >
+                    <!-- @click="destroy(record.id)" -->
+                    Delete
+                    </a-button>
+                </a-popconfirm>
             </template>
           </template>
         </a-table>
@@ -55,7 +50,7 @@
 <script>
 import AppLayout from "@/Layouts/AppLayout";
 import Paginator from "@/Layouts/Paginator";
-import { Button, Table, Select, InputSearch } from "ant-design-vue";
+import { Button, Table, Select, InputSearch , Popconfirm} from "ant-design-vue";
 
 export default {
   components: {
@@ -63,6 +58,7 @@ export default {
     "a-button": Button,
     "a-table": Table,
     "a-select": Select,
+    "a-popconfirm": Popconfirm,
   },
 
   props: {
@@ -124,7 +120,7 @@ export default {
     //   this.params.direction = this.params.direction === "asc" ? "desc" : "asc";
     // },
     destroy(id) {
-      this.$inertia.delete(route("advisor_accounts.destroy", id));
+     this.$inertia.delete(route("advisor_accounts.destroy", id));
     },
   },
 };

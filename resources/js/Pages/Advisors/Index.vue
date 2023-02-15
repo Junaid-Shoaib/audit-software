@@ -36,13 +36,16 @@
                 class="mr-2"
                 >Edit</a-button
               >
-              <a-button
-                size="small"
-                v-if="record.delete"
-                danger
-                @click="destroy(record.id)"
-                >Delete</a-button
-              >
+              <a-popconfirm title="Are you sure？" ok-text="Yes" cancel-text="No" @confirm="destroy(record.id)">
+    <a-button
+       size="small"
+       v-if="record.delete"
+       danger
+       >
+       <!-- @click="destroy(record.id)" -->
+       Delete</a-button>
+  </a-popconfirm>
+
               <!-- v-if="item.delete && can['delete']" -->
             </template>
           </template>
@@ -54,7 +57,7 @@
 
 <script>
 import AppLayout from "@/Layouts/AppLayout";
-import { Button, Table, Select, InputSearch } from "ant-design-vue";
+import { Button, Table, Select, InputSearch ,Popconfirm } from "ant-design-vue";
 
 export default {
   components: {
@@ -63,7 +66,8 @@ export default {
     "a-table": Table,
     "a-select": Select,
     "a-inputSearch": InputSearch,
-  },
+    "a-popconfirm": Popconfirm,
+},
 
   props: {
     mapped_data: Object,
