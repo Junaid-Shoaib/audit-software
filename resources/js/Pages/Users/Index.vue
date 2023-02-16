@@ -52,6 +52,7 @@ export default {
     companies: Object,
     company: Object,
     mapped_data: Object,
+    filters: Object,
   },
 
   data() {
@@ -59,7 +60,7 @@ export default {
       // co_id: this.$page.props.co_id,
       co_id: this.company,
       options: this.companies,
-      search: "",
+      search: this.filters.search,
       columns: [
         {
           title: "Name",

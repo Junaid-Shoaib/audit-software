@@ -13,12 +13,13 @@ use Illuminate\Support\Facades\DB;
 use App;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\Request as Req;
 
 class CompanyController extends FileMangementController
 {
 
     // Listing
-    public function index()
+    public function index(Req $req)
     {
         // //Validating request
         // request()->validate([
@@ -55,31 +56,31 @@ class CompanyController extends FileMangementController
         //         request('direction')
         //     );
         // }
+        // dd(request()->has(
+        //     // ['select', 'search']
+        //     'search'
+        // ));
         if(request()->has(
             // ['select', 'search']
             'search'
             )){
-            $obj_data = auth()->user()->companies()->where(
-                // $req->select
-                'name'
-                ,'LIKE', '%'.$req->search.'%')
-            ->get();
-            $mapped_data = $obj_data->map(function($comp, $key) {
-            return [
-                    'id' => $comp->id,
-                    'name' => $comp->name,
-                    'address' => $comp->address,
-                    'email' => $comp->email,
-                    'web' => $comp->web,
-                    'phone' => $comp->phone,
-                    'fiscal' => $comp->fiscal,
-                    'incorp' => $comp->incorp,
-                    'delete' => Year::where('company_id', $comp->id)->first() != null ? false : true,
-                ];
-            });
+            // $obj_data = auth()->user()->companies()->where(
+            //     // $req->select
+            //     'name'
+            //     ,'LIKE', '%'.$req->search.'%')
+            //     ->orWhere('address','LIKE', '%'.$req->search.'%')
+            // ->get();
+            $obj_data = auth()->user()->companies()->where(function ($query) use($req) {
+                    $query->where('name', 'like', '%' . $req->search . '%')
+                    ->orWhere('address', 'like', '%' . $req->search . '%')
+                    ->orWhere('email', 'like', '%' . $req->search . '%')
+                    ->orWhere('web', 'like', '%' . $req->search . '%')
+                    ->orWhere('fiscal', 'like', '%' . $req->search . '%');
+                })->get();
         }
         else{
             $obj_data = auth()->user()->companies()->get();
+        }
             $mapped_data = $obj_data->map(function($comp, $key) {
             return [
                     'id' => $comp->id,
@@ -93,7 +94,6 @@ class CompanyController extends FileMangementController
                     'delete' => Year::where('company_id', $comp->id)->first() != null ? false : true,
                 ];
             });
-        }
 
         return Inertia::render('Company/Index', [
             // 'can' => [

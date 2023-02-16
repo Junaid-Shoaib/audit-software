@@ -4,17 +4,29 @@
     <template #header>
       <div class="grid grid-cols-2 items-center">
         <div v-if="folders" class="items-center">
-          <multiselect
-            style="width: 50%"
-            class="float-left rounded-md border border-black"
-            placeholder="Select Folder."
+          <!-- <multiselect
             v-model="form.folder"
-            track-by="id"
-            label="name"
+            placeholder="Select Folder."
+            style="width: 50%"
             :options="folders"
+            label="name"
+            class="float-left rounded-md border border-black"
+            track-by="id"
             @update:model-value="foch"
           >
-          </multiselect>
+          </multiselect> -->
+          <Select
+            show-search
+            optionFilterProp="name"
+            v-model:value="form.folder"
+            placeholder="Please select"
+            style="width: 200px; margin-left: 0.5rem"
+            :options="folders"
+            :field-names="{ label: 'name', value: 'id' }"
+            @change="foch"
+            mode="single"
+            size="small"
+          />
           <Button @click="folderModification" class="ml-2" size="small"
             >Folder Modification</Button
           >
@@ -27,7 +39,14 @@
     </template>
 
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 py-1">
-      <Button @click="uploadFile" size="small">Upload File</Button>
+      <InputSearch
+        v-model:value="search"
+        placeholder="input search text"
+        style="width: 200px"
+        @search="onSearch"
+        size="small"
+      />
+      <Button @click="uploadFile" class="ml-2" size="small">Upload File</Button>
       <Button @click="templates" class="ml-2" size="small">Templates</Button>
 
       <input hidden id="selected" @click="checkAll()" v-model="isCheckAll" />
@@ -148,6 +167,7 @@ export default {
     parent: Object,
     user_role: Object,
     mapped_data: Object,
+    filters: Object,
   },
 
   data() {
@@ -158,6 +178,7 @@ export default {
       selected: [],
       isCheckAll: false,
       folders: this.folders,
+      search: this.filters.search,
       columns:
         this.user_role == "partner"
           ? [
@@ -202,13 +223,33 @@ export default {
 
       form: {
         selected_arr: [],
-        folder: this.parent,
+        folder: this.parent.id,
         type: this.parent.name,
       },
     };
   },
 
   methods: {
+    onSearch() {
+      if (this.parent.name == "Planing" || this.parent.name == "Completion") {
+        this.$inertia.get(
+          route("filing", [this.parent.name.toLowerCase()]),
+          {
+            search: this.search,
+          },
+          { replace: true, preserveState: true }
+        );
+      } else {
+        this.$inertia.get(
+          route("filing", [this.form.folder]),
+          {
+            search: this.search,
+          },
+          { replace: true, preserveState: true }
+        );
+      }
+    },
+
     checkAll: function () {
       this.isCheckAll = !this.isCheckAll;
       this.form.selected_arr = [];
@@ -258,7 +299,8 @@ export default {
     },
 
     foch() {
-      this.$inertia.get(route("filing", this.form.folder["id"]));
+      //   this.$inertia.get(route("filing", this.form.folder["id"]));
+      this.$inertia.get(route("filing", this.form.folder));
     },
 
     uploadFile() {

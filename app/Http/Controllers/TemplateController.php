@@ -9,44 +9,37 @@ use App\Models\Company;
 use Inertia\Inertia;
 use File;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\Request as Req;
 
 class TemplateController extends Controller
 {
-    public function index()
+    public function index(Req $req)
     {
+        if(request()->has('search'))
+        {
+            $obj_data = Template::where(function ($query) use($req) {
+                    $query->where('name', 'like', '%' . $req->search . '%')
+                    ->orWhere('type', 'like', '%' . $req->search . '%');
+                })->get();
+        }
+        else{
+            $obj_data = Template::get();
+        }
+            $mapped_data = $obj_data->map(function($temp, $key) {
+            return [
+                    'id' => $temp->id,
+                    'name' => $temp->name,
+                    'path' => $temp->path,
+                    'type' => $temp->type,
+                ];
+            });
 
-        //Validating request
-            request()->validate([
-                'direction' => ['in:asc,desc'],
-                'field' => ['in:name,email']
-            ]);
-
-            //Searching request
-            $query = Template::query();
-            if (request('search')) {
-                $query->where('name', 'LIKE', '%' . request('search') . '%');
-                $query->orwhere('type', 'LIKE', '%' . request('search') . '%');
-            }
-            $balances = $query
-                ->paginate(10)
-                ->through(
-                    function ($temp) {
-                        return
-                            [
-                                'id' => $temp->id,
-                                'name' => $temp->name,
-                                'path' => $temp->path,
-                                'type' => $temp->type,
-                            ];
-                    }
-                );
-
-            return Inertia::render('Template/Index', [
-                'filters' => request()->all(['search', 'field', 'direction']),
-                'balances' => $balances,
-                'company' => Company::where('id', session('company_id'))->first(),
-                'companies' => auth()->user()->companies,
-            ]);
+        return Inertia::render('Template/Index', [
+            'mapped_data' => $mapped_data,
+            'filters' => request()->all(['search', 'field', 'direction']),
+            'company' => Company::where('id', session('company_id'))->first(),
+            'companies' => auth()->user()->companies,
+        ]);
 
     }
 
@@ -63,22 +56,23 @@ class TemplateController extends Controller
         $request->validate([
             'avatar'=> 'required|mimes:xlsx, xls , docx, docs'
         ]);
-            $path = strtolower($request->type);
-            $name = $request->file('avatar')->getClientOriginalName();
-            if(file_exists(public_path('temp/'.$name))){
-                return back()->with('success', $name.' Already Taken');
-            }else{
-                $request->file('avatar')->storeAs('/', $name, 'temp');
-                File::copy(public_path().'/temp/'. $name, storage_path('app/public/'.$path.'/'.$name));
-                Template::create([
-                    'name' => $name,
-                    'path' => $path.'/'.$name,
-                    'type' => strtolower($request->type),
-                    'year_id' => session('year_id'),
-                    'company_id' => session('company_id'),
-                ]);
-                return Redirect::route('templates')->with('success', 'File upload.');
-            }
+        $path = strtolower($request->type);
+        $name = $request->file('avatar')->getClientOriginalName();
+        if(file_exists(public_path('temp/'.$name)))
+        {
+            return back()->with('success', $name.' Already Taken');
+        } else {
+            $request->file('avatar')->storeAs('/', $name, 'temp');
+            File::copy(public_path().'/temp/'. $name, storage_path('app/public/'.$path.'/'.$name));
+            Template::create([
+                'name' => $name,
+                'path' => $path.'/'.$name,
+                'type' => strtolower($request->type),
+                'year_id' => session('year_id'),
+                'company_id' => session('company_id'),
+            ]);
+            return Redirect::route('templates')->with('success', 'File upload.');
+        }
     }
 
 

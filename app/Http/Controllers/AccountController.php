@@ -25,11 +25,13 @@ class AccountController extends Controller
                 'search'
                 )){
                 $obj_data = Account::where('company_id', session('company_id'))
-                    ->where(
-                        // $req->select
-                        'name'
-                        ,'LIKE', '%'.$req->search.'%')
-                    ->get();
+                    ->where(function ($query) use($req) {
+                        $query
+                        ->whereHas('accountGroup', function($q) use ($req) {
+                            $q->where('name', 'like', '%' . $req->search . '%');
+                        })
+                        ->orWhere('name', 'like', '%' . $req->search . '%');
+                    })->get();
             }
             else{
                 $obj_data = Account::where('company_id', session('company_id'))->get();

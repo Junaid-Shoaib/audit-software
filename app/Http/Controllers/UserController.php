@@ -60,35 +60,31 @@ class UserController extends Controller
                 // ['select', 'search']
                 'search'
                 )){
-                $obj_data = User::where(
-                        // $req->select
-                        'name'
-                        ,'LIKE', '%'.$req->search.'%')
-                    ->get();
-                $mapped_data = $obj_data->map(function($user, $key) {
-                return [
-                        'id' => $user->id,
-                        'name' => $user->name,
-                        'email' => $user->email,
-                        $cur_user = User::find($user->id),
-                        'role' => $cur_user->getRoleNames()[0],
-                        // 'delete' => Year::where('company_id', $comp->id)->first() != null ? true : false,
-                    ];
-                });
+                $obj_data = User::
+                where(function ($query) use($req) {
+                    $query->where('name', 'like', '%' . $req->search . '%')
+                    ->orWhere('email', 'like', '%' . $req->search . '%');
+                    // whereHas('roles', function($q) use ($req) {
+                    //     $q->where('roles.name',$req->search);
+                    // })
+
+                    // ->orWhere($cur_user->getRoleNames()[0], 'like', '%' . $req->search . '%');
+                })
+                ->get();
             }
             else{
                 $obj_data = User::get();
-                $mapped_data = $obj_data->map(function($user, $key) {
-                return [
-                        'id' => $user->id,
-                        'name' => $user->name,
-                        'email' => $user->email,
-                        $cur_user = User::find($user->id),
-                        'role' => $cur_user->getRoleNames()[0],
-                        // 'delete' => Year::where('company_id', $comp->id)->first() != null ? true : false,
-                    ];
-                });
             }
+            $mapped_data = $obj_data->map(function($user, $key) {
+                return [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    $cur_user = User::find($user->id),
+                    'role' => $cur_user->getRoleNames()[0],
+                    // 'delete' => Year::where('company_id', $comp->id)->first() != null ? true : false,
+                ];
+            });
 
 
             return Inertia::render('Users/Index', [

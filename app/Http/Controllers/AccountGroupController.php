@@ -53,26 +53,18 @@ class AccountGroupController extends Controller
                 'search'
                 )){
                 $obj_data = AccountGroup::where('company_id', session('company_id'))
-                    ->where(
-                        // $req->select
-                        'name'
-                        ,'LIKE', '%'.$req->search.'%')
-                    ->get();
-                $mapped_data = $obj_data->map(function($accountgroup, $key) {
-                return [
-                    'id' => $accountgroup->id,
-                    'name' => $accountgroup->name,
-                    'type_id' => $accountgroup->type_id,
-                    'type_name' => $accountgroup->accountType->name,
-                    'company_id' => $accountgroup->company_id,
-                    'company_name' => $accountgroup->company->name,
-                    'delete' => Account::where('group_id', $accountgroup->id)->first() ? false : true,
-                    ];
-                });
+                    ->where(function ($query) use($req) {
+                        $query
+                        ->whereHas('accountType', function($q) use ($req) {
+                            $q->where('name', 'like', '%' . $req->search . '%');
+                        })
+                        ->orWhere('name', 'like', '%' . $req->search . '%');
+                    })->get();
             }
             else{
                 $obj_data = AccountGroup::where('company_id', session('company_id'))->get();
-                $mapped_data = $obj_data->map(function($accountgroup, $key) {
+            }
+            $mapped_data = $obj_data->map(function($accountgroup, $key) {
                 return [
                     'id' => $accountgroup->id,
                     'name' => $accountgroup->name,
@@ -81,9 +73,8 @@ class AccountGroupController extends Controller
                     'company_id' => $accountgroup->company_id,
                     'company_name' => $accountgroup->company->name,
                     'delete' => Account::where('group_id', $accountgroup->id)->first() ? false : true,
-                    ];
-                });
-            }
+                ];
+            });
 
             return Inertia::render('AccountGroups/Index', [
                 'mapped_data' => $mapped_data,

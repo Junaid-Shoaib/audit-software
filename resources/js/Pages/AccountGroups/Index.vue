@@ -51,7 +51,7 @@ export default {
       co_id: this.$page.props.co_id,
       co_id: this.company,
       options: this.companies,
-      search: "",
+      search: this.filters.search,
 
       columns: [
         {
