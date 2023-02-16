@@ -48,12 +48,14 @@
       <Select
         v-if="type == 'Execution'"
         v-model:value="form.folder"
+        show-search
+        placeholder="Please select"
+        style="width: 200px; margin-left: 0.5rem"
         :options="folders"
         :field-names="{ label: 'name', value: 'id' }"
+        label-in-value
         mode="single"
-        placeholder="Please select"
         size="small"
-        style="width: 200px; margin-left: 0.5rem"
       />
       <Button @click="includeTemps()" class="ml-2" size="small"
         >Include Templates</Button

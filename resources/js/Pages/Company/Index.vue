@@ -5,7 +5,15 @@
     </template>
 
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 py-1">
-      <a-button @click="create" class="ml-2" size="small">Create</a-button>
+      <a-button @click="create" size="small">Create</a-button>
+      <a-inputSearch
+        v-model:value="search"
+        class="ml-2"
+        placeholder="input search text"
+        style="width: 200px"
+        @search="onSearch"
+        size="small"
+      />
       <a-button @click="isOpen2 = true" size="small" class="float-right"
         >Generate PDF</a-button
       >
@@ -158,6 +166,7 @@ export default {
       isOpen2: false,
       // co_id: this.cochange,
       // options: this.companies,
+      search: this.filters.search,
       columns: [
         // {
         //   title: "ID",

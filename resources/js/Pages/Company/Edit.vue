@@ -5,23 +5,23 @@
     </template>
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 py-4">
       <div class="">
-        <a-form :form="form" @submit.prevent="submit">
+        <a-form
+          :form="form"
+          @submit.prevent="submit"
+          :label-col="{ span: 4 }"
+          :wrapper-col="{ span: 14 }"
+        >
           <a-form-item label="Name">
-            <a-input
-              v-model:value="form.name"
-              placeholder="Enter your name"
-              style="width: 50%"
-            />
+            <a-input v-model:value="form.name" placeholder="Enter your name" />
 
             <div class="text-red-700 px-4 py-2" role="alert" v-if="errors.name">
               {{ errors.name }}
             </div>
           </a-form-item>
           <a-form-item label="Address ">
-            <a-input
+            <a-textarea
               v-model:value="form.address"
               placeholder="Enter your address"
-              style="width: 50%"
             />
 
             <div
@@ -37,7 +37,6 @@
             <a-input
               v-model:value="form.email"
               placeholder="Enter your email"
-              style="width: 50%"
             />
 
             <div
@@ -50,11 +49,7 @@
           </a-form-item>
 
           <a-form-item label="Web Address">
-            <a-input
-              v-model:value="form.web"
-              placeholder="Enter your web"
-              style="width: 50%"
-            />
+            <a-input v-model:value="form.web" placeholder="Enter your web" />
 
             <div class="text-red-700 px-4 py-2" role="alert" v-if="errors.web">
               {{ errors.web }}
@@ -65,7 +60,6 @@
             <a-input
               v-model:value="form.phone"
               placeholder="Enter your phone"
-              style="width: 50%"
             />
 
             <div
@@ -114,7 +108,7 @@
             </div>
           </a-form-item>
 
-          <a-form-item>
+          <a-form-item class="text-right">
             <a-button type="primary" @click="submit">Update Company</a-button>
           </a-form-item>
         </a-form>
@@ -146,6 +140,7 @@ export default {
     "a-form": Form,
     "a-form-item": Form.Item,
     "a-input": Input,
+    "a-textarea": Input.TextArea,
     "a-button": Button,
     "a-select": Select,
     "a-date-picker": DatePicker,
