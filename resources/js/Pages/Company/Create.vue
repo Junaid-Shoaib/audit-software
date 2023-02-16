@@ -271,7 +271,7 @@
             <div v-if="errors.incorp">{{ errors.incorp }}</div>
           </div> -->
           <a-form-item class="text-right">
-            <a-button type="primary" @click="submitForm">Submit</a-button>
+            <a-button type="primary"   :disabled="form.processing" @click="submitForm">Submit</a-button>
           </a-form-item>
           <!-- <div class="px-4 py-2 flex justify-center items-center">
             <button
