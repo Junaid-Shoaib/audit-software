@@ -17,7 +17,7 @@ class BankController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Req $req)
     {
 
         request()->validate([
@@ -34,8 +34,32 @@ class BankController extends Controller
             $query->orderBy(('name'), ('asc'));
         }
 
+        if(request()->has('search'))
+        {
+            $obj_data = Bank::where('name', 'like', '%' . $req->search . '%')
+                // ->where(function ($query) use($req) {
+                //     $query
+                //     ->whereHas('accountGroup', function($q) use ($req) {
+                //         $q->where('name', 'like', '%' . $req->search . '%');
+                //     })
+                //     ->orWhere('name', 'like', '%' . $req->search . '%');
+                // })
+                ->get();
+        }
+        else{
+            $obj_data = Bank::all();
+        }
+        $mapped_data = $obj_data->map(function($bank, $key) {
+            return [
+                'id' => $bank->id,
+                'name' => $bank->name,
+                'delete' => BankBranch::where('bank_id', $bank->id)->first() ? false : true,
+            ];
+        });
+
 
         return Inertia::render('Banks/Index', [
+            'mapped_data' => $mapped_data,
             'filters' => request()->all(['search', 'field', 'direction']),
             'balances' => $query->paginate(10)
                 ->through(

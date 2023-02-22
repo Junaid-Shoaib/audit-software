@@ -206,7 +206,6 @@ export default {
           title: "Phone",
           dataIndex: "phone",
         },
-
         {
           title: "Actions",
           dataIndex: "actions",

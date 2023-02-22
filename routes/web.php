@@ -507,7 +507,7 @@ Route::post('bank_accounts', [BankAccountController::class, 'store'])
     ->name('bank_accounts.store')
     ->middleware('auth');
 
-Route::get('bank_accounts/edit', [BankAccountController::class, 'edit'])
+Route::get('bank_accountss/edit', [BankAccountController::class, 'edit'])
     ->name('bank_accounts.edit')
     ->middleware('auth');
 

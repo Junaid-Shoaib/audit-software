@@ -8,7 +8,7 @@
       <Button v-if="team_exists" @click="edit" size="small"
         >Edit your Team</Button
       >
-      <Button v-else @click="create" class="ml-2" size="small">Add Team</Button>
+      <Button v-else @click="create" size="small">Add Team</Button>
       <Table
         :columns="columns"
         :data-source="mapped_data"

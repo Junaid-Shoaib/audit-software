@@ -1,122 +1,48 @@
 <template>
   <app-layout>
     <template #header>
-      <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-        Update Banks Branches
-      </h2>
+      <h2 class="header">Update Bank Branches</h2>
     </template>
-    <div v-if="$page.props.flash.success" class="bg-yellow-400 text-white">
-      {{ $page.props.flash.success }}
-    </div>
-    <div class="max-w-7xl mx-auto pb-2">
-      <div class="">
-        <form @submit.prevent="submit">
+
+    <div class="max-w-7xl mx-auto pb-2 sm:px-6 lg:px-8 py-4">
+      <Form
+        :form="form"
+        @submit.prevent="submit"
+        :label-col="{ span: 4 }"
+        :wrapper-col="{ span: 14 }"
+      >
+        <FormItem label="Branch">
+          <Textarea
+            v-model:value="form.address"
+            placeholder="Enter branch address"
+          />
           <div
-            class="
-              px-4
-              py-2
-              bg-gray-100
-              border-t border-gray-200
-              flex
-              justify-start
-              items-center
-            "
+            class="text-red-700 px-4 py-2"
+            role="alert"
+            v-if="errors.address"
           >
-            <inertia-link
-              class="
-                border
-                rounded-xl
-                px-4
-                py-1
-                m-1
-                bg-blue-400
-                hover:text-white
-                hover:bg-blue-600
-              "
-              :href="route('branches')"
-              >Back
-            </inertia-link>
+            {{ errors.address }}
           </div>
-          <!-- <div class="p-2 mr-2 mb-2 mt-4 ml-6 flex flex-wrap">
-          <label class="w-28 inline-block text-right mr-4">ID:</label>
-          <select
-            v-model="form.bank_id"
-            class="pr-2 pb-2 w-full lg:w-1/4 rounded-md"
-            label="bank_id"
-            placeholder="Enter type"
-          >
-            <option v-for="bank in banks" :key="bank.id" :value="bank.id">
-              {{ bank.name }}
-            </option>
-          </select>
-          <div v-if="errors.bank_id">{{ errors.bank_id }}</div>
-        </div> -->
-          <div class="p-2 mr-2 mb-2 mt-4 ml-6 flex flex-wrap">
-            <label class="w-28 inline-block text-right mr-4">Branch:</label>
-            <textarea
-              v-model="form.address"
-              rows="4"
-              cols="100"
-              class="
-                pr-2
-                pb-2
-                w-full
-                lg:w-1/4
-                rounded-md
-                leading-tight
-                text-transform:
-                capitalize
-              "
-              label="address"
-            ></textarea>
-            <!-- <input
-            type="text"
-            v-model="form.address"
-            class="pr-2 pb-2 w-full lg:w-1/4 rounded-md leading-tight"
-            label="address"
-          /> -->
-            <div v-if="errors.address">{{ errors.address }}</div>
-          </div>
-          <div
-            class="
-              px-4
-              py-2
-              bg-gray-100
-              border-t border-gray-200
-              flex
-              justify-start
-              items-center
-            "
-          >
-            <button
-              class="
-                border
-                bg-green-500
-                rounded-xl
-                px-4
-                py-2
-                ml-4
-                mt-4
-                hover:text-white
-                hover:bg-green-600
-              "
-              type="submit"
-            >
-              Update Branch
-            </button>
-          </div>
-        </form>
-      </div>
+        </FormItem>
+        <FormItem class="text-right">
+          <Button type="primary" @click="submit">Update Branch</Button>
+        </FormItem>
+      </Form>
     </div>
   </app-layout>
 </template>
 
 <script>
 import AppLayout from "@/Layouts/AppLayout";
+import { Form, FormItem, Textarea, Input, Button } from "ant-design-vue";
 
 export default {
   components: {
     AppLayout,
+    Form,
+    FormItem,
+    Textarea,
+    Button,
   },
 
   props: {

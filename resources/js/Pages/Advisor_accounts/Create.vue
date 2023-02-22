@@ -4,9 +4,9 @@
       <h2>Create Advisor Accounts</h2>
     </template>
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 py-4">
-        <a-form-item>
-            <a-button :href="route('advisor_accounts')">Back </a-button>
-          </a-form-item>
+      <a-form-item>
+        <a-button :href="route('advisor_accounts')">Back </a-button>
+      </a-form-item>
 
       <div class="relative mt-5 flex-row border-t border-b border-gray-200">
         <div v-if="isError">{{ firstError }}</div>
@@ -18,23 +18,42 @@
               <thead class="ant-table-thead">
                 <tr>
                   <!-- class="bg-gray-700 text-white text-centre font-bold" -->
-                  <th style="width:40%" class="ant-table-cell" colstart="0" colend="0">
+                  <th
+                    style="width: 40%"
+                    class="ant-table-cell"
+                    colstart="0"
+                    colend="0"
+                  >
                     Company Name
                   </th>
-                  <th style="width:40%" class="ant-table-cell" colstart="1" colend="1">
+                  <th
+                    style="width: 40%"
+                    class="ant-table-cell"
+                    colstart="1"
+                    colend="1"
+                  >
                     Advisor
                   </th>
                   <!-- <th class="p-1 border">Type</th>
                   <th class="p-1 border">Currency</th> -->
-                  <th style="width:20%" class="ant-table-cell" colstart="2" colend="2">
+                  <th
+                    style="width: 20%"
+                    class="ant-table-cell"
+                    colstart="2"
+                    colend="2"
+                  >
                     Actions
                   </th>
                 </tr>
               </thead>
               <tbody class="ant-table-tbody">
-                <tr class="ant-table-row ant-table-row-level-0"  v-for="(account, index) in form.accounts" :key="account.id">
+                <tr
+                  class="ant-table-row ant-table-row-level-0"
+                  v-for="(account, index) in form.accounts"
+                  :key="account.id"
+                >
                   <td class="ant-table-cell">
-                    <a-form-item style="margin-bottom:0px">
+                    <a-form-item style="margin-bottom: 0px">
                       <a-input
                         v-model:value="account.name"
                         type="text"
@@ -44,7 +63,7 @@
                     </a-form-item>
                   </td>
                   <td class="ant-table-cell">
-                    <a-form-item style="margin-bottom:0px">
+                    <a-form-item style="margin-bottom: 0px">
                       <a-select
                         v-model:value="account.advisor_id"
                         :options="options"
@@ -58,9 +77,13 @@
                       />
                     </a-form-item>
                   </td>
-                  <td v-if="index > 0" class="ant-table-cell">
-                    <a-form-item style="margin-bottom:0px">
-                      <a-button danger @click.prevent="deleteRow(index)">
+                  <td class="ant-table-cell">
+                    <a-form-item style="margin-bottom: 0px">
+                      <a-button
+                        v-if="index > 0"
+                        danger
+                        @click.prevent="deleteRow(index)"
+                      >
                         Delete
                       </a-button>
                     </a-form-item>
@@ -69,28 +92,32 @@
               </tbody>
             </table>
           </div>
-        <a-form-item>
-          <a-button type="button"
-          @click.prevent="addRow"
-          > Add More Accounts</a-button>
-            <a-button class="m-1" type="primary"  :disabled="form.processing"   @click="submitForm">Submit</a-button>
-            </a-form-item>
+          <a-form-item>
+            <a-button type="button" @click.prevent="addRow">
+              Add More Accounts</a-button
+            >
+            <a-button
+              class="m-1"
+              type="primary"
+              :disabled="form.processing"
+              @click="submitForm"
+              >Submit</a-button
+            >
+          </a-form-item>
         </a-form>
       </div>
 
       <div class="">
-
         <div class="">
-            <a-table
+          <a-table
             :columns="columns"
             :data-source="balances"
             :loading="loading"
             class="mt-2"
             size="small"
-            >
-            </a-table>
-      </div>
-
+          >
+          </a-table>
+        </div>
       </div>
     </div>
   </app-layout>
@@ -100,7 +127,7 @@
 import AppLayout from "@/Layouts/AppLayout";
 import { useForm } from "@inertiajs/inertia-vue3";
 import Multiselect from "@suadelabs/vue3-multiselect";
-import { Form, Input, Button, Select ,Table } from "ant-design-vue";
+import { Form, Input, Button, Select, Table } from "ant-design-vue";
 
 export default {
   components: {
@@ -124,7 +151,7 @@ export default {
 
   data() {
     return {
-        columns: [
+      columns: [
         {
           title: "Company Name",
           dataIndex: "company_name",
@@ -133,8 +160,7 @@ export default {
         {
           title: "Advisors",
           dataIndex: "advisors",
-        }
-
+        },
       ],
       options: this.advisors,
     };

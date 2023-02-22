@@ -1,133 +1,82 @@
 <template>
   <app-layout>
     <template #header>
-      <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-        Create Bank Branches
-      </h2>
+      <h2 class="header">Create Bank Branches</h2>
     </template>
-    <div v-if="$page.props.flash.success" class="bg-yellow-400 text-white">
-      {{ $page.props.flash.success }}
-    </div>
 
-    <div class="max-w-7xl mx-auto pb-2">
-      <div class="">
-        <form @submit.prevent="form.post(route('branches.store'))">
+    <div class="max-w-7xl mx-auto pb-2 sm:px-6 lg:px-8 py-4">
+      <Form
+        :form="form"
+        @submit.prevent="submit"
+        :label-col="{ span: 4 }"
+        :wrapper-col="{ span: 14 }"
+      >
+        <FormItem label="Bank">
+          <!-- optionFilterProp="name" -->
+          <Select
+            size="small"
+            v-model:value="form.bank_id"
+            :options="this.banks"
+            :field-names="{ label: 'name', value: 'id' }"
+            mode="single"
+                        optionFilterProp="name"
+            placeholder="Please select"
+            showArrow
+            class="w-full"
+          />
           <div
-            class="
-              px-4
-              py-2
-              bg-gray-100
-              border-t border-gray-200
-              flex
-              justify-start
-              items-center
-            "
+            class="text-red-700 px-4 py-2"
+            role="alert"
+            v-if="errors.bank_id"
           >
-            <inertia-link
-              class="
-                border
-                rounded-xl
-                px-4
-                py-1
-                m-1
-                bg-blue-400
-                hover:text-white
-                hover:bg-blue-600
-              "
-              :href="route('branches')"
-              >Back
-            </inertia-link>
+            {{ errors.bank_id }}
           </div>
-
-          <div class="p-2 mr-2 mb-2 mt-4 ml-6 flex flex-wrap">
-            <label class="w-28 inline-block text-right mr-4">Bank:</label>
-
-            <multiselect
-              class="max-h-10 w-full lg:w-1/4 rounded-md border border-black"
-              v-model="form.bank_id"
-              placeholder="Select Branch."
-              track-by="id"
-              label="name"
-              :options="options"
-            >
-            </multiselect>
-            <!-- <select
-            class="pr-2 pb-2 max-h-10 w-full lg:w-1/4 rounded-md"
-            label="bank_id"
-            v-model="form.bank_id"
-          >
-            <option v-for="bank in banks" :key="bank.id" :value="bank.id">
-              {{ bank.name }}
-            </option>
-          </select> -->
-            <!-- <div v-if="errors.bank_id">{{ errors.bank_id }}</div> -->
-            <label class="w-28 inline-block text-right ml-7 mr-4"
-              >Address:</label
-            >
-            <textarea
-              v-model="form.address"
-              rows="4"
-              cols="100"
-              class="
-                pr-2
-                pb-2
-                w-full
-                lg:w-1/4
-                rounded-md
-                leading-tight
-                text-transform:
-                capitalize
-              "
-              label="address"
-            ></textarea>
-            <button
-              class="
-                border
-                rounded-xl
-                px-8
-                py-2
-                ml-16
-                my-5
-                max-h-10
-                bg-green-500
-                hover:text-white
-                hover:bg-green-600
-              "
-              type="submit"
-              :disabled="form.processing"
-            >
-              Save
-            </button>
-          </div>
-          <div v-if="errors.address">{{ errors.address }}</div>
-          <!-- </div> -->
+        </FormItem>
+        <FormItem label="Address">
+          <Textarea
+            v-model:value="form.address"
+            placeholder="Enter branch address"
+            size="small"
+          />
 
           <div
-            class="
-              px-4
-              py-2
-              bg-gray-100
-              border-t border-gray-200
-              flex
-              justify-start
-              items-center
-            "
-          ></div>
-        </form>
-      </div>
+            class="text-red-700 px-4 py-2"
+            role="alert"
+            v-if="errors.address"
+          >
+            {{ errors.address }}
+          </div>
+        </FormItem>
+        <FormItem class="text-right">
+          <Button type="primary" @click="submit">Submit</Button>
+        </FormItem>
+      </Form>
+
+      <!-- <Table
+        :columns="columns"
+        :data-source="branches"
+        :loading="loading"
+        :custom-row="customRow"
+        class="mt-2"
+        size="small"
+      >
+        <template #bodyCell="{ column, record }">
+          <template v-if="column.key === 'address'">
+            <span v-if="record.bank_id == form.bank_id"> {{ record.add }}</span>
+          </template>
+        </template>
+      </Table> -->
+
       <div class="">
-        <table class="shadow-lg border mt-4 mb-4 ml-12 rounded-xl w-11/12">
-          <thead>
-            <tr class="bg-gray-700 text-white text-centre font-bold">
-              <th class="px-3 pt-3 pb-3 border">Branches</th>
+        <table class="ant-table ant-table-small w-full">
+          <thead class="ant-table-thead">
+            <tr class="ant-table-cell">
+              <th class="ant-design-head">Branches</th>
             </tr>
           </thead>
-          <tbody>
-            <tr v-for="item in branches" :key="item.id">
-              <td
-                v-if="item.bank_id == form.bank_id['id']"
-                class="py-2 px-2 border text-left"
-              >
+          <tbody class="ant-table-tbody">
+            <tr class="ant-design-row" v-for="item in branches" :key="item.id">
+              <td v-if="item.bank_id == form.bank_id" class="ant-design-column">
                 {{ item.add }}
               </td>
             </tr>
@@ -144,11 +93,27 @@
 <script>
 import AppLayout from "@/Layouts/AppLayout";
 import { useForm } from "@inertiajs/inertia-vue3";
+import {
+  Form,
+  FormItem,
+  Select,
+  Textarea,
+  Input,
+  Button,
+  Table,
+} from "ant-design-vue";
 import Multiselect from "@suadelabs/vue3-multiselect";
 
 export default {
   components: {
     AppLayout,
+    Form,
+    FormItem,
+    Select,
+    Textarea,
+    Input,
+    Button,
+    Table,
     Multiselect,
   },
 
@@ -162,6 +127,14 @@ export default {
   data() {
     return {
       options: this.banks,
+
+      columns: [
+        {
+          title: "Branches",
+          dataIndex: "add",
+          key: "address",
+        },
+      ],
     };
   },
 
@@ -169,10 +142,33 @@ export default {
     const form = useForm({
       address: null,
       accounts: props.accounts,
-      bank_id: props.banks[0],
+      bank_id: props.banks[0].id,
       //   bank_id: null,
     });
     return { form };
+  },
+
+  methods: {
+    submit() {
+      this.$inertia.post(route("branches.store"), this.form);
+    },
+    customRow(row) {
+      if (row.bank_id == this.form.bank_id) {
+        return {
+          attrs: {
+            "data-row-key": row.key,
+            class: "highlight-row",
+          },
+        };
+      } else {
+        return {
+          attrs: {
+            "data-row-key": row.key,
+            class: "hidden",
+          },
+        };
+      }
+    },
   },
 };
 </script>

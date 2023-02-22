@@ -16,49 +16,40 @@ class BankBranchController extends Controller
 
 
 
-    public function index()
+    public function index(Req $req)
     {
+        //FOR ANT-DESIGN ------------------
+        if(request()->has('search'))
+        {
+            $obj_data = BankBranch::
+                where(function ($query) use($req) {
+                    $query
+                    ->whereHas('bank', function($q) use ($req) {
+                        $q->where('name', 'like', '%' . $req->search . '%');
+                    })
+                    ->orWhere('address', 'like', '%' . $req->search . '%');
+                })->get();
 
-        request()->validate([
-            'direction' => ['in:asc,desc'],
-            'field' => ['in:bank_id,address'],
-        ]);
-
-        $query = BankBranch::query();
-
-        if (request('search')) {
-            $query->where('address', 'LIKE', '%' . request('search') . '%');
         }
-
-        if (request()->has(['field', 'direction'])) {
-            $query->orderBy(request('field'), request('direction'));
+        else{
+            $obj_data = BankBranch::all();
         }
-        else {
-            $query->orderBy(('bank_id'), ('asc'));
-        }
-
+        $mapped_data = $obj_data->map(function($branch, $key) {
+            return [
+                'id' => $branch->id,
+                'address' => $branch->address,
+                'bank_id' => $branch->bank_id,
+                'name' => $branch->bank->name,
+                'delete' => BankAccount::where('branch_id', $branch->id)->first() ? false : true,
+            ];
+        });
 
         return Inertia::render(
             'Branches/Index',
             [
+                'mapped_data' => $mapped_data,
                 'filters' => request()->all(['search', 'field', 'direction']),
-                'balances' => $query->paginate(10)
-                    ->through(
-                        function ($branch) {
-
-                            return [
-                                'id' => $branch->id,
-                                'address' => $branch->address,
-                                'bank_id' => $branch->bank_id,
-                                'name' => $branch->bank->name,
-                                'delete' => BankAccount::where('branch_id', $branch->id)->first() ? false : true,
-
-                            ];
-                        }
-                    ),
-
             ]
-
         );
     }
 
@@ -127,7 +118,7 @@ class BankBranchController extends Controller
         if ($branchi == true) {
 
             BankBranch::create([
-                'bank_id' => Request::input('bank_id')['id'],
+                'bank_id' => Request::input('bank_id'),
                 'address' => ucwords($address),
             ]);
 
@@ -164,7 +155,7 @@ class BankBranchController extends Controller
     //Branches Update
     public function update(Req $request, BankBranch $branch)
     {
-        // dd($branch);
+        // dd($request, $branch);
         Request::validate([
             'bank_id' => ['required'],
             'address' => ['required'],

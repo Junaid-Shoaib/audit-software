@@ -1,34 +1,18 @@
 <template>
   <app-layout>
     <template #header>
-      <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+      <h2>
         Update Bank Balances
       </h2>
     </template>
 
-    <div class="max-w-7xl mx-auto pb-2">
-      <div class="relative mt-5 ml-7 flex-row">
-        <div class="flex-1 inline-block">
-          <inertia-link
-            class="
-              border
-              bg-blue-400
-              rounded-xl
-              px-4
-              py-1
-              m-1
-              hover:text-white
-              hover:bg-blue-600
-            "
-            :href="route('balances')"
-            >Back
-          </inertia-link>
-        </div>
-      </div>
+    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 py-4">
+        <Button :href="route('balances')">Back </Button>
 
       <div class="relative mt-5 flex-row border-t border-b border-gray-200">
-        <form @submit.prevent="submit">
-          <div class="">
+        <Form :form="form" @submit.prevent="submit">
+
+          <div class="ant-table-content">
             <!-- <div
             class="
               px-4
@@ -53,8 +37,8 @@
             Add row
           </button> -->
             <div v-if="isError">{{ firstError }}</div>
-            <table class="shadow-lg border mt-4 mb-4 ml-12 rounded-xl w-11/12">
-              <thead class="bg-gray-700 text-white text-centre font-bold">
+            <table class="w-full">
+              <thead class="ant-table-thead">
                 <tr>
                   <th class="px-3 pt-3 pb-3 border">Branches</th>
                   <th class="px-3 pt-3 pb-3 border">Ledger</th>
@@ -63,80 +47,62 @@
                   <!-- <th class="px-4 pt-4 pb-4 border">Action</th> -->
                 </tr>
               </thead>
-              <tbody>
-                <tr v-for="balance in data" :key="balance.id">
-                  <td class="w-6/12">
-                    <input
-                      v-model="balance.branches"
-                      type="text"
-                      readonly
-                      class="rounded-md w-full my-1"
-                    />
+              <tbody class="ant-table-tbody">
+                <tr
+                  class="ant-table-row ant-table-row-level-0"
+                 v-for="balance in data" :key="balance.id">
+                  <td class="ant-table-cell">
+                    <Formitem style="margin-bottom: 0px">
+                      <Input
+                        v-model:value="balance.branches"
+                        readonly
+                        type="text"
+                        class="w-full"
+                      />
+                    </Formitem>
                   </td>
-                  <td class="w-2/12">
-                    <input
-                      v-model="balance.ledger"
-                      type="number"
-                      class="rounded-md w-full my-1"
-                    />
+                  <td class="ant-table-cell">
+                    <Formitem style="margin-bottom: 0px">
+                      <Input
+                        v-model:value="balance.ledger"
+                        type="number"
+                        class="w-full"
+                      />
+                    </Formitem>
                   </td>
-                  <td class="w-2/12">
-                    <input
-                      v-model="balance.statement"
-                      type="number"
-                      class="rounded-md w-full my-1"
-                    />
+                  <td class="ant-table-cell">
+                    <Formitem style="margin-bottom: 0px">
+                      <Input
+                        v-model:value="balance.statement"
+                        type="number"
+                        class="w-full"
+                      />
+                    </Formitem>
                   </td>
-                  <td class="w-2/12">
-                    <input
-                      v-model="balance.confirmation"
-                      type="number"
-                      class="rounded-md w-full my-1"
-                    />
+                  <td class="ant-table-cell">
+                    <Formitem style="margin-bottom: 0px">
+                      <Input
+                        v-model:value="balance.confirmation"
+                        type="number"
+                        class="w-full"
+                      />
+                    </Formitem>
                   </td>
-                  <!-- <td>
-                  <select v-model="balance.account_id" class="rounded-md w-36">
-                    <option
-                      v-for="account in accounts"
-                      :key="account.id"
-                      :value="account.id"
-                    >
-                      {{ account.branch }}
-                    </option>
-                  </select>
-                </td> -->
                 </tr>
               </tbody>
             </table>
           </div>
-          <div
-            class="
-              px-4
-              py-2
-              bg-gray-100
-              border-t border-gray-200
-              flex
-              justify-start
-              items-center
-            "
-          >
-            <button
-              class="
-                border
-                bg-green-500
-                hover:text-white
-                hover:bg-green-600
-                rounded-xl
-                px-4
-                py-2
-                ml-4
-                mt-4
-              "
-              type="submit"
+          <Formitem>
+
+            <Button
+              class="m-1"
+              type="primary"
+
+              @click="submit"
+              >Update Balance</Button
             >
-              Update Balance
-            </button>
-          </div>
+              <!-- :disabled="form.processing" -->
+          </Formitem>
         </form>
       </div>
     </div>
@@ -145,10 +111,17 @@
 
 <script>
 import AppLayout from "@/Layouts/AppLayout";
+import { Button, Table, Select, Form, FormItem, Input } from "ant-design-vue";
 
 export default {
   components: {
     AppLayout,
+    Button,
+    Table,
+    Select,
+    Form,
+    FormItem,
+    Input,
   },
 
   props: {
