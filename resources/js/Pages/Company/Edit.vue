@@ -96,7 +96,8 @@
               v-model:value="form.incorp"
               allow-clear
               :format="'YYYY-MM-DD'"
-            />
+              :disabled-date="disabledDate"
+              />
             <!-- :locale="locale" -->
             <!-- clearable -->
             <div
@@ -121,7 +122,8 @@
 // import locale from "ant-design-vue/es/date-picker/locale/en_US";
 
 // import moment, * as moments from "moment";
-import moment from "moment";
+// import moment from "moment";
+import dayjs, { Dayjs } from 'dayjs';
 import AppLayout from "@/Layouts/AppLayout";
 import {
   Form,
@@ -144,7 +146,8 @@ export default {
     "a-button": Button,
     "a-select": Select,
     "a-date-picker": DatePicker,
-    moment,
+    // moment,
+    dayjs,
   },
 
   props: {
@@ -155,7 +158,8 @@ export default {
 
   data() {
     return {
-      locale: moment.locale("en-us"),
+    //   locale: moment.locale("en-us"),
+
       fiscals: [
         { name: "June" },
         { name: "July" },
@@ -163,9 +167,6 @@ export default {
         { name: "December" },
       ],
 
-      //   mounted() {
-      //     this.form.incorp = new Date(this.company.incorp);
-      //   },
       form: this.$inertia.form({
         name: this.company.name,
         address: this.company.address,
@@ -173,34 +174,22 @@ export default {
         web: this.company.web,
         phone: this.company.phone,
         fiscal: this.company.fiscal,
-
-        // incorp: this.company.incorp == "" ? "" : this.company.incorp,
         incorp: this.company.incorp
-          ? moment(this.company.incorp, "YYYY-MM-DD")
+          ? dayjs( "YYYY-MM-DD", this.company.incorp)
           : null,
-        // null,
-        // "2022-02-02",
-        // this.company.incorp ? moment(this.company.incorp) : null,
-
-        //   this.company.incorp
-        //     ? moment(this.company.incorp, "YYYY-MM-DD")
-        //     : null,
-        // incorp:
+        // "2022-02-02"
         //   this.company.incorp != null ? new Date(this.company.incorp) : null,
       }),
     };
   },
 
+
+
   methods: {
-    submit() {
+      submit() {
       this.$inertia.put(route("companies.update", this.company.id), this.form);
     },
+
   },
-  //   mounted() {
-  //     this.form.incorp =
-  //       this.company.incorp == null
-  //         ? null
-  //         : moment(this.company.incorp, "YYYY-MM-DD");
-  //   },
 };
 </script>

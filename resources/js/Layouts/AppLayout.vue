@@ -417,7 +417,6 @@ export default {
 
   methods: {
     coch(value) {
-      //   alert(value);
       this.$inertia.get(route("companies.coch", value));
     },
     yrch(value) {

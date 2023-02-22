@@ -63,7 +63,7 @@
 import AppLayout from "@/Layouts/AppLayout";
 import Paginator from "@/Layouts/Paginator";
 import { ref } from 'vue';
-import { Button, Table, Input , Select, InputSearch , Popconfirm} from "ant-design-vue";
+import { Button, Table, Input } from "ant-design-vue";
 import Multiselect from "@suadelabs/vue3-multiselect";
 
 export default {
@@ -79,10 +79,7 @@ export default {
   props: {
     errors: Object,
     balances: Object,
-    companies: Object,
-    years: Object,
     create: Object,
-    cochange: Object,
   },
 
   setup() {
@@ -90,7 +87,7 @@ export default {
 
     const chooseFile = () => {
       fileInput.value.click();
-    };
+        };
 
     return {
       fileInput,
@@ -105,36 +102,31 @@ export default {
         {
           title: "Advisor",
           dataIndex: "branch",
-          width: "30%",
         },
         {
           title: "Create Date",
           dataIndex: "confirm_create",
-          width: "10%",
 
         },
         {
           title: "Sent Date",
           dataIndex: "sent",
-          width: "10%",
+
 
         },
         {
           title: "Reminder Date",
           dataIndex: "reminder",
-          width: "10%",
 
         },
         {
           title: "Received Date",
           dataIndex: "received",
-          width: "10%",
         },
         {
           title: "Actions",
           dataIndex: "actions",
           key: "actions",
-          width: "30%",
         },
       ],
     };
@@ -162,12 +154,7 @@ export default {
     destroy(id) {
       this.$inertia.delete(route("confirmations.destroy", id));
     },
-    coch() {
-      this.$inertia.get(route("companies.coch", this.co_id));
-    },
-    yrch() {
-      this.$inertia.get(route("companies.yrch", this.yr_id));
-    },
+
   },
 };
 </script>

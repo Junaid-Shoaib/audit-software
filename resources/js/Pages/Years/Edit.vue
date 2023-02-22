@@ -40,7 +40,7 @@
 
 <script>
 import AppLayout from "@/Layouts/AppLayout";
-import moment, * as moments from "moment";
+import dayjs, { Dayjs } from 'dayjs';
 import { Form, Input, Button, DatePicker } from "ant-design-vue";
 
 export default {
@@ -51,7 +51,7 @@ export default {
     "a-input": Input,
     "a-button": Button,
     "a-date-picker": DatePicker,
-    moment,
+    dayjs,
   },
 
   props: {
@@ -64,8 +64,12 @@ export default {
       form: {
         // begin: moment(this.year.begin, "YYYY-MM-DD"),
         // end: moment(this.year.end, "YYYY-MM-DD"),
-        begin: null,
-        end: null,
+        begin: this.year.begin
+                    ? dayjs("YYYY-MM-DD", this.year.begin)
+                    : null,
+        end: this.year.end
+                    ? dayjs("YYYY-MM-DD", this.year.end)
+                    : null,
       },
     };
   },

@@ -51,26 +51,19 @@
                         <a-input
                             v-model:value="confirm.sent"
                             type="date"
-                            upper-limit="upper"
-                            lower-limit="lower"
+                             :min="lower"
+                             :max="upper"
                             class="w-full"
                         />
                     </a-form-item>
-                    <!-- <input
-                      v-model="confirm.sent"
-                      type="date"
-                      :upper-limit="upper"
-                      :lower-limit="lower"
-                      class="rounded-md w-full my-1"
-                    /> -->
                   </td>
                   <td class="ant-table-cell">
                     <a-form-item style="margin-bottom:0px">
                         <a-input
                       v-model:value="confirm.reminder"
                       type="date"
-                      :upper-limit="upper"
-                      :lower-limit="lower"
+                        :min="lower"
+                        :max="upper"
                       class="rounded-md w-full my-1"
                     />
                     </a-form-item>
@@ -80,9 +73,8 @@
                         <a-input
                       v-model:value="confirm.received"
                       type="date"
-                      :upper-limit="upper"
-                      :lower-limit="lower"
-                      class="rounded-md w-full my-1"
+                        :min="lower"
+                        :max="upper"
                     />
                     </a-form-item>
                   </td>
@@ -128,9 +120,13 @@ export default {
 
   data() {
     return {
-      balances: this.data,
-      upper: new Date(this.year.end),
-      lower: new Date(this.year.begin),
+        balances: this.data,
+        lower: this.year.begin
+            ? this.year.begin
+            : null  ,
+        upper: this.year.end
+            ? this.year.end
+            : null,
     };
   },
 
