@@ -52,58 +52,59 @@
                   class="ant-table-row ant-table-row-level-0"
                  v-for="balance in data" :key="balance.id">
                   <td class="ant-table-cell">
-                    <Formitem style="margin-bottom: 0px">
+                    <FormItem style="margin-bottom: 0px">
                       <Input
                         v-model:value="balance.branches"
                         readonly
                         type="text"
                         class="w-full"
                       />
-                    </Formitem>
+                    </FormItem>
                   </td>
                   <td class="ant-table-cell">
-                    <Formitem style="margin-bottom: 0px">
+                    <FormItem style="margin-bottom: 0px">
                       <Input
                         v-model:value="balance.ledger"
                         type="number"
                         class="w-full"
                       />
-                    </Formitem>
+                    </FormItem>
                   </td>
                   <td class="ant-table-cell">
-                    <Formitem style="margin-bottom: 0px">
+                    <FormItem style="margin-bottom: 0px">
                       <Input
                         v-model:value="balance.statement"
                         type="number"
                         class="w-full"
                       />
-                    </Formitem>
+                    </FormItem>
                   </td>
                   <td class="ant-table-cell">
-                    <Formitem style="margin-bottom: 0px">
+                    <FormItem style="margin-bottom: 0px">
                       <Input
                         v-model:value="balance.confirmation"
                         type="number"
                         class="w-full"
                       />
-                    </Formitem>
+                    </FormItem>
                   </td>
                 </tr>
               </tbody>
             </table>
           </div>
-          <Formitem>
+          <FormItem>
 
             <Button
               class="m-1"
               type="primary"
-
               @click="submit"
+
+
               >Update Balance</Button
             >
               <!-- :disabled="form.processing" -->
-          </Formitem>
-        </form>
+          </FormItem>
+        </Form>
       </div>
     </div>
   </app-layout>

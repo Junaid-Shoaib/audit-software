@@ -1,85 +1,92 @@
 <template>
-  <app-layout>
-    <template #header>
-      <h2>
-        Create Bank Balances
-      </h2>
-    </template>
-    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 py-4">
-        <Button :href="route('balances')">Back </Button>
+    <app-layout>
+        <template #header>
+            <h2>Create Bank Balances</h2>
+        </template>
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 py-4">
+            <Button :href="route('balances')">Back </Button>
 
-      <div class="relative mt-5 flex-row border-t border-b border-gray-200">
-            <div v-if="isError">{{ firstError }}</div>
-        <Form :form="form" @submit.prevent="submit">
-          <div class="ant-table-content">
-
-            <table style="table-layout: auto;" class="ant-table ant-table-small w-full">
-              <thead class="ant-table-thead">
-                <tr class="ant-table-cell">
-                  <th class="ant-table-cell">Ledger</th>
-                  <th class="ant-table-cell">Account</th>
-                  <th class="ant-table-cell">Action</th>
-                </tr>
-              </thead>
-              <tbody class="ant-table-tbody">
-                <tr class="ant-table-row ant-table-row-level-0" v-for="(balance, index) in form.balances" :key="balance.id">
-                  <td class="ant-table-cell">
-                     <FormItem  style="margin-bottom: 0px">
-                    <Input
-
-                        v-model:value="balance.ledger"
-                        type="number"
-                        class="w-full"
-                      />
-                     </FormItem>
-                  </td>
-                  <td class="ant-table-cell">
-                     <FormItem  style="margin-bottom: 0px">
-          <Select
-
-            v-model:value="balance.account_id.id"
-            :options="options"
-            :field-names="{ label: 'branch', value: 'id' }"
-            mode="single"
-                        optionFilterProp="branch"
-            placeholder="Please select"
-            showArrow
-            class="w-full"
-          />
-        </FormItem>
-                  </td>
-                  <td class="ant-table-cell">
-                     <FormItem  style="margin-bottom: 0px">
-
-                    <Button
-v-if="index > 0"
-              danger
-              @click="deleteRow(index)"
-              >Delete</Button
+            <div
+                class="relative mt-5 flex-row border-t border-b border-gray-200"
             >
-        </FormItem>
-
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <Formitem>
-            <Button type="button" @click.prevent="addRow">
-              Add More Balances</Button
-            >
-            <Button
-              class="m-1"
-              type="primary"
-              :disabled="form.processing"
-              @click="submit"
-              >Submit</Button
-            >
-          </Formitem>
-        </Form>
-      </div>
-    </div>
-  </app-layout>
+                <div v-if="isError">{{ firstError }}</div>
+                <Form :form="form" @submit.prevent="submit">
+                    <div class="ant-table-content">
+                        <table
+                            style="table-layout: auto"
+                            class="ant-table ant-table-small w-full"
+                        >
+                            <thead class="ant-table-thead">
+                                <tr class="ant-table-cell">
+                                    <th class="ant-table-cell">Ledger</th>
+                                    <th class="ant-table-cell">Account</th>
+                                    <th class="ant-table-cell">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody class="ant-table-tbody">
+                                <tr
+                                    class="ant-table-row ant-table-row-level-0"
+                                    v-for="(balance, index) in form.balances"
+                                    :key="balance.id"
+                                >
+                                    <td class="ant-table-cell">
+                                        <FormItem style="margin-bottom: 0px">
+                                            <Input
+                                                v-model:value="balance.ledger"
+                                                type="number"
+                                                class="w-full"
+                                            />
+                                        </FormItem>
+                                    </td>
+                                    <td class="ant-table-cell">
+                                        <FormItem style="margin-bottom: 0px">
+                                            <Select
+                                                v-model:value="
+                                                    balance.account_id.id
+                                                "
+                                                :options="options"
+                                                :field-names="{
+                                                    label: 'branch',
+                                                    value: 'id',
+                                                }"
+                                                mode="single"
+                                                optionFilterProp="branch"
+                                                placeholder="Please select"
+                                                showArrow
+                                                class="w-full"
+                                            />
+                                        </FormItem>
+                                    </td>
+                                    <td class="ant-table-cell">
+                                        <FormItem style="margin-bottom: 0px">
+                                            <Button
+                                                v-if="index > 0"
+                                                danger
+                                                @click="deleteRow(index)"
+                                                >Delete</Button
+                                            >
+                                        </FormItem>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <Formitem>
+                        <Button type="button" @click.prevent="addRow">
+                            Add More Balances</Button
+                        >
+                        <Button
+                            class="m-1"
+                            type="primary"
+                            :disabled="form.processing"
+                            @click="submit"
+                            >Submit</Button
+                        >
+                    </Formitem>
+                </Form>
+            </div>
+        </div>
+    </app-layout>
 </template>
 
 <script>
@@ -87,64 +94,69 @@ import AppLayout from "@/Layouts/AppLayout";
 import { useForm } from "@inertiajs/inertia-vue3";
 import { Form, FormItem, Input, Button, Select, Table } from "ant-design-vue";
 
-
 export default {
-  components: {
-    AppLayout,Form, FormItem, Input, Button, Select, Table,
-  },
+    components: {
+        AppLayout,
+        Form,
+        FormItem,
+        Input,
+        Button,
+        Select,
+        Table,
+    },
 
-  props: {
-    errors: Object,
-    accounts: Array,
-  },
+    props: {
+        errors: Object,
+        accounts: Array,
+    },
 
-  data() {
-    return {
-      options: this.accounts,
-    };
-  },
+    data() {
+        return {
+            options: this.accounts,
+        };
+    },
 
-  setup(props) {
-    const form = useForm({
-      balances: [
-        {
-          ledger: "",
-          statement: "",
-          confirmation: "",
-          account_id: props.accounts[0],
-          //   account_id: props.accounts[0].id,
+    setup(props) {
+        const form = useForm({
+            balances: [
+                {
+                    ledger: "",
+                    statement: "",
+                    confirmation: "",
+                    account_id: props.accounts[0],
+                    //   account_id: props.accounts[0].id,
+                },
+            ],
+        });
+        return { form };
+    },
+
+    watch: {
+        errors: function () {
+            if (this.errors) {
+                this.firstError = this.errors[Object.keys(this.errors)[0]];
+                this.isError = true;
+            }
         },
-      ],
-    });
-    return { form };
-  },
-
-  watch: {
-    errors: function () {
-      if (this.errors) {
-        this.firstError = this.errors[Object.keys(this.errors)[0]];
-        this.isError = true;
-      }
-    },
-  },
-
-  methods: {
-    submit() {
-      this.$inertia.post(route("balances.store"), this.form);
     },
 
-    addRow() {
-      this.form.balances.push({
-        ledger: "",
-        statement: "",
-        confirmation: "",
-        account_id: this.accounts[0],
-      });
-    },
+    methods: {
+        submit() {
+            this.$inertia.post(route("balances.store"), this.form);
+        },
 
-    deleteRow(index) {
-      this.form.balances.splice(index, 1);
+        addRow() {
+            this.form.balances.push({
+                ledger: "",
+                statement: "",
+                confirmation: "",
+                account_id: this.accounts[0],
+            });
+        },
+
+        deleteRow(index) {
+            this.form.balances.splice(index, 1);
+        },
     },
-  },
 };
 </script>

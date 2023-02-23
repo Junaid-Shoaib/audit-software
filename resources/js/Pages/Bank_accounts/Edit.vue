@@ -1,184 +1,176 @@
 <template>
-  <app-layout>
-    <template #header>
-      <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-        Update Bank Accounts
-      </h2>
-    </template>
-    <div class="max-w-7xl mx-auto pb-2">
-      <div class="relative mt-5 ml-7 flex-row">
-        <div class="flex-1 inline-block">
-          <inertia-link
-            class="
-              border
-              bg-blue-400
-              rounded-xl
-              px-4
-              py-1
-              m-1
-              hover:text-white hover:bg-blue-600
-            "
-            :href="route('bank_accounts')"
-            >Back
-          </inertia-link>
-        </div>
-      </div>
+    <app-layout>
+        <template #header>
+            <h2>Update Bank Accounts</h2>
+        </template>
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 py-4">
+            <Button :href="route('bank_accounts')">Back </Button>
 
-      <div class="relative mt-5 flex-row border-t border-b border-gray-200">
-        <form @submit.prevent="submit">
-          <div class="">
-            <div v-if="isError">{{ firstError }}</div>
-            <table class="shadow-lg border mt-4 mb-4 ml-12 rounded-xl w-11/12">
-              <thead class="bg-gray-700 text-white text-centre font-bold">
-                <tr>
-                  <th class="px-3 pt-3 pb-3 border">Account Number</th>
-                  <th class="px-3 pt-3 pb-3 border">Branches</th>
-                  <th class="px-3 pt-3 pb-3 border">Type</th>
-                  <th class="px-3 pt-3 pb-3 border">Currency</th>
-                  <!-- <th class="px-4 pt-4 pb-4 border">Action</th> -->
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="account in data" :key="account.id">
-                  <td class="w-3/12">
-                    <input
-                      v-model="account.name"
-                      type="number"
-                      class="rounded-md w-full my-1"
-                    />
-                  </td>
-                  <td class="w-4/12">
-                    <input
-                      v-model="account.branches"
-                      type="text"
-                      readonly
-                      class="rounded-md w-full my-1"
-                    />
-                  </td>
-                  <td class="w-3/12">
-                    <select
-                      v-model="account.type"
-                      class="rounded-md w-full my-1"
-                    >
-                      <option>CURRENT</option>
-                      <option>SAVING</option>
-                    </select>
-                  </td>
-                  <td class="w-2/12">
-                    <select
-                      v-model="account.currency"
-                      class="rounded-md w-full my-1"
-                    >
-                      <option>PKR</option>
-                      <option>$</option>
-                      <option>USD</option>
-                      <option>EUR</option>
-                    </select>
-                  </td>
-                  <!-- <td>
-                  <select v-model="account.account_id" class="rounded-md w-36">
-                    <option
-                      v-for="account in accounts"
-                      :key="account.id"
-                      :value="account.id"
-                    >
-                      {{ account.branch }}
-                    </option>
-                  </select>
-                </td> -->
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div
-            class="
-              px-4
-              py-2
-              bg-gray-100
-              border-t border-gray-200
-              flex
-              justify-start
-              items-center
-            "
-          >
-            <button
-              class="
-                border
-                bg-green-500
-                rounded-xl
-                px-4
-                py-2
-                ml-4
-                mt-4
-                hover:text-white hover:bg-green-600
-              "
-              type="submit"
+            <div
+                class="relative mt-5 flex-row border-t border-b border-gray-200"
             >
-              Update Account
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </app-layout>
+                <Form :form="form" @submit.prevent="submit">
+                    <div class="">
+                        <div v-if="isError">{{ firstError }}</div>
+                        <table class="w-full">
+                            <thead class="ant-table-thead">
+                                <tr>
+                                    <th class="px-3 pt-3 pb-3 border">
+                                        Account Number
+                                    </th>
+                                    <th class="px-3 pt-3 pb-3 border">
+                                        Branches
+                                    </th>
+                                    <th class="px-3 pt-3 pb-3 border">Type</th>
+                                    <th class="px-3 pt-3 pb-3 border">
+                                        Currency
+                                    </th>
+                                    <!-- <th class="px-4 pt-4 pb-4 border">Action</th> -->
+                                </tr>
+                            </thead>
+                            <tbody class="ant-table-tbody">
+                                <tr v-for="account in data" :key="account.id">
+                                    <td class="ant-table-cell">
+                                        <FormItem style="margin-bottom: 0px">
+                                            <Input
+                                                v-model:value="account.name"
+                                                type="number"
+                                                class="w-full"
+                                            />
+                                        </FormItem>
+                                    </td>
+                                    <td class="ant-table-cell">
+                                        <FormItem style="margin-bottom: 0px">
+                                            <Input
+                                                v-model:value="account.branches"
+                                                type="text"
+                                                disabled
+                                                class="w-full"
+                                            />
+                                        </FormItem>
+                                    </td>
+                                    <td class="ant-table-cell">
+                                        <Formitem style="margin-bottom: 0px">
+                                            <Select
+                                                v-model:value="account.type"
+                                                :options="type_options"
+                                                :field-names="{
+                                                    label: 'name',
+                                                    value: 'name',
+                                                }"
+                                                optionFilterProp="name"
+                                                mode="single"
+                                                placeholder="Please select"
+                                                showArrow
+                                                class="w-full"
+                                            />
+                                        </Formitem>
+                                    </td>
+                                    <td class="ant-table-cell">
+                                        <Formitem style="margin-bottom: 0px">
+                                            <Select
+                                                v-model:value="account.currency"
+                                                :options="currency_options"
+                                                :field-names="{
+                                                    label: 'name',
+                                                    value: 'name',
+                                                }"
+                                                optionFilterProp="name"
+                                                mode="single"
+                                                placeholder="Please select"
+                                                showArrow
+                                                class="w-full"
+                                            />
+                                        </Formitem>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <FormItem>
+                        <Button class="m-1" type="primary" @click="submit"
+                            >Update Account</Button
+                        >
+                        <!-- :disabled="form.processing" -->
+                    </FormItem>
+                </Form>
+            </div>
+        </div>
+    </app-layout>
 </template>
 
 <script>
 import AppLayout from "@/Layouts/AppLayout";
+import { Button, Table, Select, Form, FormItem, Input } from "ant-design-vue";
 
 export default {
-  components: {
-    AppLayout,
-  },
-
-  props: {
-    errors: Object,
-    data: Object,
-  },
-
-  data() {
-    return {
-      balances: this.data,
-      isError: false,
-      firstError: "",
-    };
-  },
-
-  watch: {
-    errors: function () {
-      if (this.errors) {
-        this.firstError = this.errors[Object.keys(this.errors)[0]];
-        this.isError = true;
-      }
-    },
-    data: function () {
-      this.balances = this.data;
-    },
-  },
-
-  methods: {
-    submit() {
-      this.$inertia.put(route("accounts.update", this.balances[0]), {
-        balances: this.balances,
-      });
-    },
-    // doFormat($item) {
-    //   var $i = format($item, "yyyy-MM-dd");
-    //   return $i;
-    // },
-
-    addRow() {
-      this.balances.push({
-        name: null,
-        type: null,
-        currency: null,
-        // account_id: this.accounts[0].id,
-      });
+    components: {
+        AppLayout,
+        Button,
+        Table,
+        Select,
+        Form,
+        FormItem,
+        Input,
     },
 
-    deleteRow(index) {
-      this.balances.splice(index, 1);
+    props: {
+        errors: Object,
+        data: Object,
     },
-  },
+
+    data() {
+        return {
+            balances: this.data,
+            isError: false,
+            firstError: "",
+
+            currency_options: [
+                { name: "PKR" },
+                { name: "$" },
+                { name: "USD" },
+                { name: "EUR" },
+            ],
+            type_options: [{ name: "CURRENT" }, { name: "SAVING" }],
+        };
+    },
+
+    watch: {
+        errors: function () {
+            if (this.errors) {
+                this.firstError = this.errors[Object.keys(this.errors)[0]];
+                this.isError = true;
+            }
+        },
+        data: function () {
+            this.balances = this.data;
+        },
+    },
+
+    methods: {
+        submit() {
+            this.$inertia.put(route("bank_accounts.update", this.balances[0]), {
+                balances: this.balances,
+            });
+        },
+        // doFormat($item) {
+        //   var $i = format($item, "yyyy-MM-dd");
+        //   return $i;
+        // },
+
+        addRow() {
+            this.balances.push({
+                name: null,
+                type: null,
+                currency: null,
+                // account_id: this.accounts[0].id,
+            });
+        },
+
+        deleteRow(index) {
+            this.balances.splice(index, 1);
+        },
+    },
 };
 </script>

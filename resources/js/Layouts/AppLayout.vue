@@ -7,7 +7,7 @@
       @breakpoint="onBreakpoint"
     >
       <div class="logo">
-        <h2 class="logotext">MZ-Audit</h2>
+        <h2 class="logotext">MZ-AMS</h2>
       </div>
       <a-menu theme="dark" mode="inline" v-model:selectedKeys="selectedKeys">
         <a-menu-item key="1">
@@ -336,7 +336,7 @@
         </div>
       </a-layout-content>
       <a-layout-footer style="text-align: center">
-        MZ-AUDIT ©2023 Created by Digital Solution Department
+        MZ-AMS ©2023 Created by Digital Solution Department
       </a-layout-footer>
     </a-layout>
   </a-layout>
