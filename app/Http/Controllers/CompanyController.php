@@ -75,7 +75,8 @@ class CompanyController extends FileMangementController
                     ->orWhere('address', 'like', '%' . $req->search . '%')
                     ->orWhere('email', 'like', '%' . $req->search . '%')
                     ->orWhere('web', 'like', '%' . $req->search . '%')
-                    ->orWhere('fiscal', 'like', '%' . $req->search . '%');
+                    // ->orWhere('fiscal', 'like', '%' . $req->search . '%')
+                    ->orWhere('phone', 'like', '%' . $req->search . '%');
                 })->get();
         }
         else{
@@ -123,7 +124,6 @@ class CompanyController extends FileMangementController
     // Store function
     public function store()
     {
-
 
         Request::validate([
             'name' => ['required', 'unique:companies'],
@@ -232,6 +232,7 @@ class CompanyController extends FileMangementController
     // Update function
     public function update(Company $company)
     {
+        // dd(Request::input('fiscal'),Request::input('incorp'), $company);
               Request::validate([
             'name' => ['required'],
             'address' => ['nullable'],
