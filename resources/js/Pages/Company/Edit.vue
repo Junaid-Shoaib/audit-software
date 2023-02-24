@@ -92,13 +92,13 @@
             </div>
           </a-form-item>
           <a-form-item label="Incorp">
-            <a-date-picker
+            <a-input
               v-model:value="form.incorp"
-              allow-clear
-              :format="'YYYY-MM-DD'"
-              :disabled-date="disabledDate"
-              />
-            <!-- :locale="locale" -->
+                           type="date"
+                           />
+                           <!-- :min="lower"
+                           :max="upper" -->
+                      <!-- :locale="locale" -->
             <!-- clearable -->
             <div
               class="text-red-700 px-4 py-2"
@@ -174,11 +174,9 @@ export default {
         web: this.company.web,
         phone: this.company.phone,
         fiscal: this.company.fiscal,
-        incorp: this.company.incorp
-          ? dayjs( "YYYY-MM-DD", this.company.incorp)
-          : null,
-        // "2022-02-02"
-        //   this.company.incorp != null ? new Date(this.company.incorp) : null,
+        incorp:  this.company.incorp
+                    ? this.company.incorp
+                    : null,
       }),
     };
   },

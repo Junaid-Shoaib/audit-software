@@ -85,222 +85,81 @@
       <div class="max-w-7xl m-4 sm:px-6 lg:px-8">
         <div class="">
           <!-- target="_blank" -->
-          <a-form
-            :form="form"
-            @submit.prevent="submit_materiality"
-            v-bind:action="'https://www.google.com/'"
-            ref="form_materiality"
-            :label-col="{ span: 4 }"
-            :wrapper-col="{ span: 14 }"
-          >
-            <a-form-item label="Pre Tax Income :">
-              <a-input
-                type="text"
-                name="preTax"
-                class="text-center pr-2 pb-2 w-full rounded-md"
-                value="5"
-              >
-              </a-input>
-            </a-form-item>
-            <a-form-item label="Total Assets :">
-              <a-input
-                type="text"
-                name="tAsset"
-                class="text-center pr-2 pb-2 w-full rounded-md"
-                value="0.5"
-              ></a-input>
-            </a-form-item>
-            <a-form-item label="Equity :">
-              <a-input
-                type="text"
-                name="equity"
-                class="text-center pr-2 pb-2 w-full rounded-md"
-                value="1"
-              ></a-input>
-            </a-form-item>
-            <a-form-item label="Total Net Revenues :">
-              <a-input
-                type="text"
-                name="tAsset"
-                class="text-center pr-2 pb-2 w-full rounded-md"
-                value="0.5"
-              ></a-input>
-            </a-form-item>
-            <!-- <div class="p-2 flex flex-wrap">
-              <table class="table2">
-                <tr class="tablerowhead bg-gray-700 text-white">
-                  <th class="py-1 px-4 rounded-l-md">Particular</th>
-                  <th class="py-1 px-4 rounded-r-md">Percentage %</th>
-                </tr>
-                <tr>
-                  <td>
-                    <a-form-item>
-                      <a-input value="Pre Tax Income" disabled></a-input>
-                    </a-form-item>
-                  </td>
-                  <td>
-                    <a-form-item>
-                      <a-input
-                        type="text"
-                        name="preTax"
-                        class="text-center pr-2 pb-2 w-full rounded-md"
-                        value="5"
-                      >
-                      </a-input>
-                    </a-form-item>
-                  </td>
-                </tr>
-
-                <tr>
-                  <td>
-                    <a-form-item>
-                      <a-input value="Total Assets" disabled></a-input>
-                    </a-form-item>
-                  </td>
-                  <td>
-                    <a-form-item>
-                      <a-input
-                        type="text"
-                        name="tAsset"
-                        class="text-center pr-2 pb-2 w-full rounded-md"
-                        value="0.5"
-                      ></a-input>
-                    </a-form-item>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <a-form-item>
-                      <a-input value="Equity" disabled></a-input>
-                    </a-form-item>
-                  </td>
-                  <td>
-                    <a-form-item>
-                      <a-input
-                        type="text"
-                        name="equity"
-                        class="text-center pr-2 pb-2 w-full rounded-md"
-                        value="1"
-                      ></a-input>
-                    </a-form-item>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <a-form-item>
-                      <a-input value="Total Net Revenues" disabled></a-input>
-                    </a-form-item>
-                  </td>
-                  <td>
-                    <a-form-item>
-                      <a-input
-                        type="text"
-                        name="netRevenue"
-                        class="text-center pr-2 pb-2 w-full rounded-md"
-                        value="0.5"
-                      ></a-input>
-                    </a-form-item>
-                  </td>
-                </tr>
-              </table>
-            </div> -->
-            <a-form-item class="text-right">
-              <a-button class="float-right trailbutton px-4" :html-type="submit"
-                >Download</a-button
-              >
-            </a-form-item>
-          </a-form>
-
-          <!-- <form
+          <form
             @submit.prevent="submit_materiality"
             v-bind:action="'materiality-download'"
             ref="form_materiality"
-          >
-            <div class="p-2 flex flex-wrap">
-              <table class="table2">
-                <tr class="tablerowhead bg-gray-700 text-white">
-                  <th class="py-1 px-4 rounded-l-md">Particular</th>
-                  <th class="py-1 px-4 rounded-r-md">Percentage %</th>
-                </tr>
-                <tr>
-                  <td>
-                    <input
-                      type="text"
-                      value="Pre Tax Income"
-                      class="pr-2 pb-2 w-full rounded-md"
-                      disabled
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="text"
-                      name="preTax"
-                      class="text-center pr-2 pb-2 w-full rounded-md"
-                      value="5"
-                    />
-                  </td>
-                </tr>
 
-                <tr>
-                  <td>
-                    <input
-                      type="text"
-                      value="Total Assets"
-                      class="pr-2 pb-2 w-full rounded-md"
-                      disabled
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="text"
-                      name="tAsset"
-                      class="text-center pr-2 pb-2 w-full rounded-md"
-                      value="0.5"
-                    />
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <input
-                      type="text"
-                      value="Equity"
-                      class="pr-2 pb-2 w-full rounded-md"
-                      disabled
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="text"
-                      name="equity"
-                      class="text-center pr-2 pb-2 w-full rounded-md"
-                      value="1"
-                    />
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <input
-                      type="text"
-                      value="Total Net Revenues"
-                      class="pr-2 pb-2 w-full rounded-md"
-                      disabled
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="text"
-                      name="netRevenue"
-                      class="text-center pr-2 pb-2 w-full rounded-md"
-                      value="0.5"
-                    />
-                  </td>
-                </tr>
-              </table>
-            </div>
-            <button class="float-right trailbutton px-4" type="submit">
-              Download
-            </button>
-          </form> -->
+            >
+          <a-form-item
+          :label-col="{ span: 4 }"
+                    :wrapper-col="{ span: 14 }"
+                    label="Pre Tax Income :">
+                  <a-input
+                      v-model:value="form_mt.preTax"
+                    type="text"
+                    name="preTax"
+                    class="text-center pr-2 pb-2 w-full rounded-md"
+                    value="5"
+                  >
+                </a-input>
+                <div class="text-red-700 px-4 py-2" role="alert" v-if="errors.preTax">
+                  {{ errors.preTax }}
+                </div>
+                </a-form-item>
+                <a-form-item :label-col="{ span: 4 }"
+                    :wrapper-col="{ span: 14 }"
+                    label="Total Assets :">
+                  <a-input
+                      v-model:value="form_mt.tAsset"
+                        type="text"
+                    name="tAsset"
+                    class="text-center pr-2 pb-2 w-full rounded-md"
+                    value="0.5"
+                  ></a-input>
+                  <div class="text-red-700 px-4 py-2" role="alert" v-if="errors.tAsset">
+                      {{ errors.tAsset }}
+                    </div>
+                </a-form-item>
+                <a-form-item
+                :label-col="{ span: 4 }"
+                    :wrapper-col="{ span: 14 }"
+                    label="Equity :">
+                  <a-input
+
+                        v-model:value="form_mt.equity"
+                    type="text"
+                    name="equity"
+                    class="text-center pr-2 pb-2 w-full rounded-md"
+                    value="1"
+                  ></a-input>
+                  <div class="text-red-700 px-4 py-2" role="alert" v-if="errors.equity">
+                          {{ errors.equity }}
+                        </div>
+                </a-form-item>
+                <a-form-item
+                :label-col="{ span: 4 }"
+                :wrapper-col="{ span: 14 }" label="Total Net Revenues :">
+                  <a-input
+                    v-model:value="form_mt.netRevenue"
+                    type="text"
+                    name="netRevenue"
+                    class="text-center pr-2 pb-2 w-full rounded-md"
+                    value="0.5"
+                  ></a-input>
+                    <div class="text-red-700 px-4 py-2" role="alert" v-if="errors.netRevenue">
+                              {{ errors.netRevenue }}
+                            </div>
+                </a-form-item>
+
+               <a-form-item  :label-col="{ span: 4 }"
+                    :wrapper-col="{ span: 14 }"
+                    class="text-right">
+                  <a-button class="float-right trailbutton px-4" htmlType="submit"
+                    >Download</a-button
+                  >
+                </a-form-item>
+          </form>
         </div>
       </div>
     </div>
@@ -345,10 +204,10 @@ export default {
     return {
       value: null,
       form_mt: {
-        preTax: null,
-        tAsset: null,
-        equity: null,
-        netRevenue: null,
+        preTax: 5,
+        tAsset: 0.5,
+        equity: 1,
+        netRevenue: 0.5,
       },
     };
   },

@@ -11,9 +11,9 @@
         :wrapper-col="{ span: 14 }"
       >
         <a-form-item label="Begin Date">
-          <a-date-picker
+          <a-input
+          type="date"
             class="w-full"
-            mode="date"
             v-model:value="form.begin"
           />
 
@@ -23,7 +23,7 @@
         </a-form-item>
 
         <a-form-item label="End Date">
-          <a-date-picker class="w-full" v-model:value="form.end" />
+          <a-input class="w-full" type="date" v-model:value="form.end" />
 
           <div class="text-red-700 px-4 py-2" role="alert" v-if="errors.end">
             {{ errors.end }}
@@ -40,8 +40,7 @@
 
 <script>
 import AppLayout from "@/Layouts/AppLayout";
-import dayjs, { Dayjs } from 'dayjs';
-import { Form, Input, Button, DatePicker } from "ant-design-vue";
+import { Form, Input, Button,  } from "ant-design-vue";
 
 export default {
   components: {
@@ -50,9 +49,7 @@ export default {
     "a-form-item": Form.Item,
     "a-input": Input,
     "a-button": Button,
-    "a-date-picker": DatePicker,
-    dayjs,
-  },
+},
 
   props: {
     errors: Object,
@@ -65,10 +62,10 @@ export default {
         // begin: moment(this.year.begin, "YYYY-MM-DD"),
         // end: moment(this.year.end, "YYYY-MM-DD"),
         begin: this.year.begin
-                    ? dayjs("YYYY-MM-DD", this.year.begin)
+                    ? this.year.begin
                     : null,
         end: this.year.end
-                    ? dayjs("YYYY-MM-DD", this.year.end)
+                    ? this.year.end
                     : null,
       },
     };

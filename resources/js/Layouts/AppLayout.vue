@@ -1,14 +1,16 @@
 <template>
   <a-layout style="min-height: 100vh">
+
     <a-layout-sider
       breakpoint="lg"
       collapsed-width="0"
       @collapse="onCollapse"
       @breakpoint="onBreakpoint"
     >
-      <div class="logo">
-        <h2 class="logotext">MZ-AMS</h2>
-      </div>
+     <div class="logo">
+            <h2 class="logotext">MZ-AMS</h2>
+          </div>
+
       <a-menu theme="dark" mode="inline" v-model:selectedKeys="selectedKeys">
         <a-menu-item key="1">
           <jet-nav-link
@@ -62,11 +64,11 @@
           key="sub2"
         >
           <template #title>
-            <span><SettingOutlined class="mr-2" />Confirmation</span>
+            <span><CarryOutOutlined  class="mr-2" />Confirmation</span>
           </template>
           <a-sub-menu key="subsub1">
             <template #title>
-              <span><SettingOutlined class="mr-2" />Advisor Account</span>
+              <span><AccountBookOutlined class="mr-2" />Advisor Account</span>
             </template>
             <a-menu-item key="14">
               <jet-nav-link
@@ -82,21 +84,22 @@
                 :href="route('advisor_accounts')"
                 :active="route().current('advisor_accounts')"
               >
-                <LogoutOutlined class="mr-2" />
+                <AccountBookOutlined class="mr-2" />
                 Advisor Account
               </jet-nav-link>
             </a-menu-item>
           </a-sub-menu>
           <a-sub-menu key="subsub2">
             <template #title>
-              <span><SettingOutlined class="mr-2" />Bank Detail</span>
+              <span><BankFilled class="mr-2" />Bank Detail</span>
             </template>
             <a-menu-item key="16">
               <jet-nav-link
                 :href="route('banks')"
                 :active="route().current('banks')"
               >
-                <UserOutlined class="mr-2" />
+                <BankOutlined class="mr-2" />
+
                 Banks
               </jet-nav-link>
             </a-menu-item>
@@ -105,7 +108,7 @@
                 :href="route('branches')"
                 :active="route().current('branches')"
               >
-                <LogoutOutlined class="mr-2" />
+                <BranchesOutlined class="mr-2" />
                 Branches
               </jet-nav-link>
             </a-menu-item>
@@ -114,7 +117,7 @@
                 :href="route('bank_accounts')"
                 :active="route().current('bank_accounts')"
               >
-                <LogoutOutlined class="mr-2" />
+                <AccountBookOutlined class="mr-2" />
                 Bank Accounts
               </jet-nav-link>
             </a-menu-item>
@@ -125,7 +128,7 @@
               :href="route('balances')"
               :active="route().current('balances')"
             >
-              <LogoutOutlined class="mr-2" />
+              <BankFilled class="mr-2" />
               Bank Balances
             </jet-nav-link>
           </a-menu-item>
@@ -135,7 +138,7 @@
               :href="route('confirmations')"
               :active="route().current('confirmations')"
             >
-              <LogoutOutlined class="mr-2" />
+              <CarryOutOutlined class="mr-2" />
               Bank Confirmations
             </jet-nav-link>
           </a-menu-item>
@@ -145,7 +148,7 @@
               :href="route('advisor_confirmations')"
               :active="route().current('advisor_confirmations')"
             >
-              <LogoutOutlined class="mr-2" />
+              <CheckOutlined class="mr-2" />
               Advisor Confirmations
             </jet-nav-link>
           </a-menu-item>
@@ -357,6 +360,10 @@ import {
   GroupOutlined,
   LogoutOutlined,
   SettingOutlined,
+  CarryOutOutlined,
+  BankOutlined,
+  CheckOutlined,
+  BranchesOutlined,
 } from "@ant-design/icons-vue";
 import ApplicationLogo from "@/Jetstream/ApplicationLogo";
 import JetNavLink from "@/Jetstream/NavLink";
@@ -383,6 +390,7 @@ export default {
     UserAddOutlined,
     CalendarFilled,
     BankFilled,
+    CheckOutlined,
     UsergroupAddOutlined,
     UploadOutlined,
     FileOutlined,
@@ -392,6 +400,9 @@ export default {
     UserOutlined,
     SettingOutlined,
     LogoutOutlined,
+    CarryOutOutlined,
+    BankOutlined,
+    BranchesOutlined,
     Select,
   },
 
@@ -430,6 +441,7 @@ export default {
 </script>
 
 <style>
+
 .ant-layout-sider-children .logo {
   /* height: 32px; */
   background: rgba(255, 255, 255, 0.2);
