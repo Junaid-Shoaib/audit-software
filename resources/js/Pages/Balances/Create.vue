@@ -42,15 +42,17 @@
                                         <FormItem style="margin-bottom: 0px">
                                             <Select
                                                 v-model:value="
-                                                    balance.account_id.id
+                                                    balance.account_id
                                                 "
                                                 :options="options"
                                                 :field-names="{
                                                     label: 'branch',
                                                     value: 'id',
                                                 }"
-                                                mode="single"
+                                                show-search
+                                                filterOption="true"
                                                 optionFilterProp="branch"
+                                                mode="single"
                                                 placeholder="Please select"
                                                 showArrow
                                                 class="w-full"
@@ -123,7 +125,7 @@ export default {
                     ledger: "",
                     statement: "",
                     confirmation: "",
-                    account_id: props.accounts[0],
+                    account_id: props.accounts[0].id,
                     //   account_id: props.accounts[0].id,
                 },
             ],
@@ -150,7 +152,7 @@ export default {
                 ledger: "",
                 statement: "",
                 confirmation: "",
-                account_id: this.accounts[0],
+                account_id: this.accounts[0].id,
             });
         },
 

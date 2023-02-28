@@ -141,7 +141,7 @@ class BankBalanceController extends Controller
                 'ledger' => $balance['ledger'],
                 'statement' => $balance['statement'],
                 'confirmation' => $balance['confirmation'],
-                'account_id' => $balance['account_id']['id'],
+                'account_id' => $balance['account_id'],
                 'company_id' => session('company_id'),
                 'year_id' => session('year_id'),
             ]);
