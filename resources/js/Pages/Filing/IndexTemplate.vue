@@ -51,12 +51,12 @@
                 <Select
                     v-if="type == 'Execution'"
                     v-model:value="form.folder"
+                    allowClear
+                    placeholder="Select folder"
                     show-search
-                    placeholder="Please select"
                     style="width: 200px; margin-left: 0.5rem"
                     :options="folders"
                     :field-names="{ label: 'name', value: 'id' }"
-                    label-in-value
                     mode="single"
                     size="small"
                 />
@@ -143,7 +143,7 @@ export default {
             //   type: this.balances_name,
             form: {
                 selected_arr: [],
-                folder: null,
+                folder: ``,
                 type: this.type,
             },
             search: "",
