@@ -820,7 +820,7 @@ class FileMangementController extends Controller
                         ->where('is_folder', '0')
                         ->first();
                     if ($type == 'Execution') {
-                        $path = session('company_id') . '/' . session('year_id') . '/' . $parent->id . '/' . $folder['id'] . '/' . $template->name;
+                        $path = session('company_id') . '/' . session('year_id') . '/' . $parent->id . '/' . $folder . '/' . $template->name;
                     } else {
                         $path = session('company_id') . '/' . session('year_id') . '/' . $parent->id . '/' . $template->name;
                     }
@@ -858,13 +858,13 @@ class FileMangementController extends Controller
                         $file_exists = FileManager::where('name', $template->name)
                             ->where('company_id', session('company_id'))
                             ->where('year_id', session('year_id'))
-                            ->where('parent_id', $folder['id'])
+                            ->where('parent_id', $folder)
                             ->first();
                         if (!$file_exists) {
                             $folderObj = FileManager::create([
                                 'name' => $template->name,
                                 'is_folder' => 1,
-                                'parent_id' => $folder['id'],
+                                'parent_id' => $folder,
                                 'path' => $path,
                                 'year_id' => session('year_id'),
                                 'company_id' => session('company_id'),
@@ -894,7 +894,7 @@ class FileMangementController extends Controller
                 }
             }
             if ($type == 'Execution') {
-                return Redirect::route("filing", [$folder['id']])->with('success', 'Templates included successfully');
+                return Redirect::route("filing", [$folder])->with('success', 'Templates included successfully');
             } else {
                 return Redirect::route("filing", [lcfirst($type)])->with('success', 'Templates included successfully');
             }
