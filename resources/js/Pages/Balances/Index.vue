@@ -17,7 +17,7 @@
       >
       <Table
         :columns="columns"
-        :data-source="balances.data"
+        :data-source="balances"
         :loading="loading"
         class="mt-2"
         size="small"

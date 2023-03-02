@@ -1,7 +1,7 @@
 <template>
   <app-layout>
       <template #header>
-      <h2>Advisor Confirmations</h2>
+      <h2>Bank Confirmations</h2>
     </template>
     <div  class="bg-red-600 text-white text-center" v-if="errors.file">{{ errors.file }}</div>
 
@@ -27,7 +27,7 @@
             <a-button size="small" class="ml-1" href="word">Generate Bank Letters</a-button>
             <a-button size="small" class="ml-1" href="bankConfig">Generate Remaining Pages</a-button>
                 <a-button size="small" class="ml-1" href="ex">Generate Control Sheet</a-button>
-                <a-button size="small" class="ml-1" href="branchespdf" target="_blank">Generate Control Sheet</a-button>
+                <a-button size="small" class="ml-1" href="branchespdf" target="_blank">Generate Branch Pdf</a-button>
 
     <div class="">
         <a-table

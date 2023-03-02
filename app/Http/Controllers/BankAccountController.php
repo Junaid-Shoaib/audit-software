@@ -39,7 +39,7 @@ class BankAccountController extends Controller
 
 
         $active_co = Setting::where('user_id', Auth::user()->id)
-        ->where('key', 'active_company')->first();
+            ->where('key', 'active_company')->first();
         $coch_hold = Company::where('id', $active_co->value)->first();
 
 
@@ -51,31 +51,31 @@ class BankAccountController extends Controller
                 [
                     'filters' => request()->all(['search', 'field', 'direction']),
                     'balances' => $query
-                    ->where('company_id', session('company_id'))
-                    ->paginate(15)
-                    ->through(
-                        function ($branch) {
-                            return
-                                [
-                                    'id' => $branch->id,
-                                    'name' => $branch->name,
-                                    'type' => $branch->type,
-                                    'currency' => $branch->currency,
-                                    'branches' => $branch->bankBranch->bank->name . " - " . $branch->bankBranch->address,
-                                    'delete' => BankBalance::where('account_id', $branch->id)->first() ? false : true,
-                                ];
-                        }
-                    ),
+                        ->where('company_id', session('company_id'))
+                        ->paginate(15)
+                        ->through(
+                            function ($branch) {
+                                return
+                                    [
+                                        'id' => $branch->id,
+                                        'name' => $branch->name,
+                                        'type' => $branch->type,
+                                        'currency' => $branch->currency,
+                                        'branches' => $branch->bankBranch->bank->name . " - " . $branch->bankBranch->address,
+                                        'delete' => BankBalance::where('account_id', $branch->id)->first() ? false : true,
+                                    ];
+                            }
+                        ),
 
                     'dataEdit' => BankAccount::where('company_id', session('company_id'))->first(),
 
                     'companies' => Company::all()
-                    ->map(function ($company) {
-                        return [
-                            'id' => $company->id,
-                            'name' => $company->name,
-                        ];
-                    }),
+                        ->map(function ($company) {
+                            return [
+                                'id' => $company->id,
+                                'name' => $company->name,
+                            ];
+                        }),
 
 
                     'cochange' => $coch_hold,
@@ -105,11 +105,13 @@ class BankAccountController extends Controller
         $data  = BankBranch::all()->map->only('bank_id')->first();
         if ($data) {
 
+
             return Inertia::render('Bank_accounts/Create', [
 
                 //just fetch crete
-                'balances' => BankAccount::all()
-                    ->where('company_id', session('company_id'))
+                'balances' => BankAccount::where('company_id', session('company_id'))
+                    // ->where('year_id', session('year_id'))
+                    ->get()
                     ->map(
                         function ($branch) {
                             return

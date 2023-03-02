@@ -9,10 +9,12 @@ use App\Models\BankAccount;
 use App\Models\BankBalance;
 use App\Models\Year;
 use App\Models\Setting;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Company;
 use Inertia\Inertia;
 use Carbon\Carbon;
+use Illuminate\Validation\Rule;
 
 class BankBalanceController extends Controller
 {
@@ -23,13 +25,15 @@ class BankBalanceController extends Controller
         $active_co = Setting::where('user_id', Auth::user()->id)->where('key', 'active_company')->first();
         $coch_hold = Company::where('id', $active_co->value)->first();
 
+
         return Inertia::render(
             'Balances/Index',
             [
                 'balances' => BankBalance::where('company_id', session('company_id'))
 
-                    ->where('year_id', session('year_id'))->paginate(10)->withQueryString()
-                    ->through(
+                    ->where('year_id', session('year_id'))
+                    ->get()
+                    ->map(
                         fn ($bal) =>
                         [
                             'id' => $bal->id,
@@ -40,17 +44,17 @@ class BankBalanceController extends Controller
                         ]
                     ),
 
-                    'dataEdit' => BankBalance::where('company_id', session('company_id'))
-            ->where('year_id', session('year_id'))->first(),
+                'dataEdit' => BankBalance::where('company_id', session('company_id'))
+                    ->where('year_id', session('year_id'))->first(),
 
                 'cochange' => $coch_hold,
                 'companies' => Company::all()
-                ->map(function ($company) {
-                    return [
-                        'id' => $company->id,
-                        'name' => $company->name,
-                    ];
-                }),
+                    ->map(function ($company) {
+                        return [
+                            'id' => $company->id,
+                            'name' => $company->name,
+                        ];
+                    }),
 
 
                 'years' => Year::where('company_id', session('company_id'))->get()
@@ -130,9 +134,16 @@ class BankBalanceController extends Controller
     public function store(Req $request)
     {
 
+
+
         Request::validate([
-            'balances.*.account_id' => ['required'],
-            'balances.*.ledger' => ['required'],
+            'balances.*.ledger' => [
+                'required'
+            ],
+            'balances.*.account_id' => [
+                'required',
+
+            ],
         ]);
 
         foreach ($request->balances as $balance) {
@@ -178,8 +189,6 @@ class BankBalanceController extends Controller
 
     public function update(Req $request, BankBalance $balance)
     {
-        // dd($request);
-
         Request::validate([
             'balances.*.ledger' => ['required'],
         ]);
