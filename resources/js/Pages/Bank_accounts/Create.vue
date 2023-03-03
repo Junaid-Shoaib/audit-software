@@ -22,7 +22,9 @@
             <div
                 class="relative mt-5 flex-row border-t border-b border-gray-200"
             >
-                <div v-if="isError">{{ firstError }}</div>
+                <div class="bg-red-600 text-white text-center" v-if="isError">
+                    {{ firstError }}
+                </div>
                 <!-- <form @submit.prevent="form.post(route('bank_accounts.store'))"> -->
                 <Form :form="form" @submit.prevent="submit">
                     <div class="ant-table-content">

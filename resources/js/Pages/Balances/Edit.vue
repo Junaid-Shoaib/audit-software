@@ -35,7 +35,12 @@
           >
             Add row
           </button> -->
-                        <div v-if="isError">{{ firstError }}</div>
+                        <div
+                            class="bg-red-600 text-white text-center"
+                            v-if="isError"
+                        >
+                            {{ firstError }}
+                        </div>
                         <table class="w-full">
                             <thead class="ant-table-thead">
                                 <tr>
