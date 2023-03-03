@@ -52,7 +52,9 @@
                     v-if="type == 'Execution'"
                     v-model:value="form.folder"
                     allowClear
-                    placeholder="Select folder"
+                    placeholder="Select Folder"
+                    filterOption="true"
+                    optionFilterProp="name"
                     show-search
                     style="width: 200px; margin-left: 0.5rem"
                     :options="folders"
@@ -143,7 +145,7 @@ export default {
             //   type: this.balances_name,
             form: {
                 selected_arr: [],
-                folder: ``,
+                folder: [],
                 type: this.type,
             },
             search: "",

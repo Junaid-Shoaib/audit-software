@@ -8,10 +8,14 @@
                 <a-button :href="route('advisor_accounts')">Back </a-button>
             </a-form-item>
 
+
+            <div v-if="isError" class="bg-red-100 mt-2 border border-red-400 text-red-700 px-4 py-1 rounded relative" role="alert">
+                       <span class="block sm:inline">{{ firstError }}</span>
+               </div>
             <div
                 class="relative mt-5 flex-row border-t border-b border-gray-200"
             >
-                <div v-if="isError">{{ firstError }}</div>
+
                 <a-form :form="form" @submit.prevent="submit">
                     <div class="ant-table-content">
                         <!-- @submit.prevent="form.post(route('advisor_accounts.store'))"> -->
@@ -160,6 +164,7 @@ export default {
 
     data() {
         return {
+            isError: false,
             columns: [
                 {
                     title: "Company Name",
@@ -189,24 +194,22 @@ export default {
         return { form };
     },
 
-    watch: {
-        errors: function () {
-            if (this.errors) {
-                this.firstError = this.errors[Object.keys(this.errors)[0]];
-                this.isError = true;
-            }
-        },
-    },
-
     methods: {
         submitForm() {
+             const advisorIds = this.form.accounts.map(account => account.advisor_id);
+            if (new Set(advisorIds).size !== advisorIds.length) {
+                this.firstError = 'Advisor Select must be unique';
+                this.isError = true;
+                return;
+            }
+
             //   console.log(this.form);
             this.$inertia.post(route("advisor_accounts.store"), this.form);
             // Send form data to server using axios or fetch
         },
         addRow() {
             this.form.accounts.push({
-                advisor_id: this.advisors[0],
+                advisor_id: this.advisors[0].id,
                 // type: "CURRENT",
                 name: this.company_name,
                 // currency: "PKR",

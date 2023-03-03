@@ -190,7 +190,7 @@ class BankBalanceController extends Controller
     public function update(Req $request, BankBalance $balance)
     {
         Request::validate([
-            'balances.*.ledger' => ['required'],
+            'balances.*.ledger' => 'required|numeric    |min:1',
         ]);
         foreach ($request->balances as $balance) {
             $bal = BankBalance::find($balance['id']);

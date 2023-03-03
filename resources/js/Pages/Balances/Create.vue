@@ -7,15 +7,14 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 py-4">
                 <Button :href="route('balances')">Back </Button>
 
+
                 <div v-if="isError" class="bg-red-100 mt-2 border border-red-400 text-red-700 px-4 py-1 rounded relative" role="alert">
-                    <strong class="font-bold px-1">Error!</strong>
                     <span class="block sm:inline">{{ firstError }}</span>
                 </div>
 
                 <div v-if="isSelect" class="bg-red-100 mt-2 border border-red-400 text-red-700 px-4 py-1 rounded relative" role="alert">
-                        <strong class="font-bold px-1">Error!</strong>
                         <span class="block sm:inline">Account Select must be unique.</span>
-                    </div>
+                </div>
 
             <div class="relative mt-5 flex-row border-t border-b border-gray-200">
                 <Form :form="form" @submit.prevent="submit">
@@ -148,6 +147,7 @@ export default {
             if (this.errors) {
                 this.firstError = this.errors[Object.keys(this.errors)[0]];
                 this.isError = true;
+                this.isSelect = false;
             }
         },
     },
@@ -158,8 +158,6 @@ export default {
             if (new Set(accountIds).size !== accountIds.length) {
                 this.isSelect = true;
                 this.isError = false;
-
-                // alert('Account Select must be unique.');
                 return;
             }
 
