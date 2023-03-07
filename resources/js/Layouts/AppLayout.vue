@@ -350,6 +350,7 @@
                 </div>
                 <div
                     :style="{
+                        overflow: 'auto',
                         padding: '24px',
                         background: '#fff',
                         minHeight: '360px',

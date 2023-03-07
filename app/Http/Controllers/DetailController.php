@@ -75,7 +75,7 @@ class DetailController extends Controller
 
             $obj_data = Detail::where('company_id', session('company_id'))
                 ->groupBy('account_id')->get();
-            $mapped_data = $obj_data->map(function($obj, $key) {
+            $mapped_data = $obj_data->map(function ($obj, $key) {
                 return [
                     'id' => $obj->id,
                     'date' => Carbon::parse($obj->date)->format('F,j Y'),
@@ -97,8 +97,8 @@ class DetailController extends Controller
                     'year_id' => $obj->year_id,
                     'account_id' => $obj->account_id,
                     // 'delete' => Year::where('company_id', $comp->id)->first() != null ? true : false,
-                    ];
-                });
+                ];
+            });
         } else {
             $mapped_data = null;
             $query = null;

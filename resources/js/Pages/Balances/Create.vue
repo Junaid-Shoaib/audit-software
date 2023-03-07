@@ -7,7 +7,6 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 py-4">
                 <Button :href="route('balances')">Back </Button>
 
-
                 <div v-if="isError" class="bg-red-100 mt-2 border border-red-400 text-red-700 px-4 py-1 rounded relative" role="alert">
                     <span class="block sm:inline">{{ firstError }}</span>
                 </div>
