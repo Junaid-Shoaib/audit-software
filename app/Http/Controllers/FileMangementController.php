@@ -408,9 +408,12 @@ class FileMangementController extends Controller
     public function storeFile(Request $request, $parent_id)
     {
         // Request::validate([
-        //     // 'avatar'=> ['required'],
-        //     'avatar'=> 'required | mimes:pdf,docx,xlsx,jpeg,jpg,png',
+        //     'avatar'=> ['required'],
+        //     // 'avatar'=> 'required | mimes:pdf,docx,xlsx,jpeg,jpg,png',
         // ]);
+        if(!Request::file('avatar')) {
+            return back()->with('error', 'File not selected');
+        }
 
         //Custome validation of file type ...because laravel validation giving error on some files
         $extension = Request::file('avatar')->getClientOriginalExtension();
@@ -686,7 +689,7 @@ class FileMangementController extends Controller
                 return response()->download(public_path($fileName));
             }
         } else {
-            return back()->with('warning', 'Tempalate Not Selected');
+            return back()->with('warning', 'Template Not Selected');
         }
     }
 
@@ -737,7 +740,7 @@ class FileMangementController extends Controller
                 }
             }
         } else {
-            return back()->with('warning', 'tempalate Not Fount');
+            return back()->with('warning', 'Template Not Found');
         };
     }
 
@@ -786,7 +789,7 @@ class FileMangementController extends Controller
                 return back()->with('warning', 'Please Create Team First');
             }
         } else {
-            return back()->with('warning', 'tempalate Not Fount');
+            return back()->with('warning', 'Template Not Found');
         };
     }
 
@@ -899,7 +902,7 @@ class FileMangementController extends Controller
                 return Redirect::route("filing", [lcfirst($type)])->with('success', 'Templates included successfully');
             }
         } else {
-            return back()->with('warning', 'Tempalate Not Selected');
+            return back()->with('warning', 'Template Not Selected');
         }
     }
 
