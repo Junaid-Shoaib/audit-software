@@ -84,12 +84,12 @@ class CreateCoreTables extends Migration
 
         Schema::create('trials', function (Blueprint $table) {
             $table->id();
-            $table->decimal('opn_debit',14,2);
-            $table->decimal('remain_debit',14,2);
-            $table->decimal('cls_debit',14,2);
-            $table->decimal('opn_credit',14,2);
-            $table->decimal('remain_credit',14,2);
-            $table->decimal('cls_credit',14,2);
+            $table->decimal('opn_debit', 14, 2);
+            $table->decimal('remain_debit', 14, 2);
+            $table->decimal('cls_debit', 14, 2);
+            $table->decimal('opn_credit', 14, 2);
+            $table->decimal('remain_credit', 14, 2);
+            $table->decimal('cls_credit', 14, 2);
             $table->tinyInteger('enabled')->default('1');
             $table->unsignedBigInteger('company_id');
             $table->unsignedBigInteger('year_id');
@@ -169,7 +169,7 @@ class CreateCoreTables extends Migration
             $table->string('name');
             $table->string('path');
             $table->tinyInteger('enabled')->default('1');
-            $table->enum('type',  ['planing', 'completion', 'execution']);
+            $table->enum('type',  ['planing', 'completion', 'execution', 'report']);
             $table->unsignedBigInteger('company_id')->nullable();
             $table->unsignedBigInteger('year_id')->nullable();
             $table->foreign('company_id')->references('id')->on('companies');
@@ -196,7 +196,6 @@ class CreateCoreTables extends Migration
             $table->foreign('year_id')->references('id')->on('years');
             $table->timestamps();
         });
-
     }
 
     /**

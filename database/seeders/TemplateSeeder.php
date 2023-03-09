@@ -22,6 +22,7 @@ class TemplateSeeder extends Seeder
         Storage::makeDirectory('/public/' . 'planing');
         Storage::makeDirectory('/public/' . 'execution');
         Storage::makeDirectory('/public/' . 'completion');
+        Storage::makeDirectory('/public/' . 'report');
         $planings = [
             '0' => 'Acceptance Memo.docx',
             '1' => 'Accounting Estimates - Planning.docx',
@@ -45,7 +46,7 @@ class TemplateSeeder extends Seeder
             '19' => 'Fraud Risk Factors Checklist.docx',
             '20' => 'General Purpose CIS Template.docx',
             '21' => 'Going Concern - Planning.docx',
-			'22' => 'Going Concern Assessment.docx',
+            '22' => 'Going Concern Assessment.docx',
             '23' => 'Group Audit and Use of Work of Component Auditors.docx',
             '24' => 'Internal Control Template.docx',
             '25' => 'ISA 315 (Revised) Template.docx',
@@ -81,14 +82,14 @@ class TemplateSeeder extends Seeder
         ];
 
         foreach ($planings as $key => $value) {
-          $planing = new Template();
-          $planing->name = $value;
-          $planing->path = 'planing/'.$value;
-          $planing->type = 'planing';
-          $planing->company_id = session('company_id');
-          $planing->year_id = session('year_id');
-          File::copy(public_path('/temp/'. $value), storage_path('app/public/planing/'.$value));
-          $planing->save();
+            $planing = new Template();
+            $planing->name = $value;
+            $planing->path = 'planing/' . $value;
+            $planing->type = 'planing';
+            $planing->company_id = session('company_id');
+            $planing->year_id = session('year_id');
+            File::copy(public_path('/temp/' . $value), storage_path('app/public/planing/' . $value));
+            $planing->save();
         }
 
         $completion = [
@@ -125,11 +126,11 @@ class TemplateSeeder extends Seeder
         foreach ($completion as $key => $value) {
             $completion = new Template();
             $completion->name = $value;
-            $completion->path = 'completion/'.$value;
+            $completion->path = 'completion/' . $value;
             $completion->type = 'completion';
             $completion->company_id = session('company_id');
             $completion->year_id = session('year_id');
-            File::copy(public_path('/temp/'. $value), storage_path('app/public/completion/'.$value));
+            File::copy(public_path('/temp/' . $value), storage_path('app/public/completion/' . $value));
             $completion->save();
         }
 
@@ -203,11 +204,11 @@ class TemplateSeeder extends Seeder
         foreach ($execution as $key => $value) {
             $execution = new Template();
             $execution->name = $value;
-            $execution->path = 'execution/'.$value;
+            $execution->path = 'execution/' . $value;
             $execution->type = 'execution';
             $execution->company_id = session('company_id');
             $execution->year_id = session('year_id');
-            File::copy(public_path('/temp/'. $value), storage_path('app/public/execution/'.$value));
+            File::copy(public_path('/temp/' . $value), storage_path('app/public/execution/' . $value));
             $execution->save();
         }
     }

@@ -103,9 +103,10 @@ export default {
   data() {
     return {
       types: [
-        { name: "Planning" },
+        { name: "Planing" },
         { name: "Completion" },
         { name: "Execution" },
+        { name: "Report" },
       ],
     };
   },
