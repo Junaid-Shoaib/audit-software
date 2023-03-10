@@ -38,8 +38,8 @@ class FileMangementController extends Controller
 
         // --- condition -------- if parameter is String and equal to planing or completion  OR  we get an object of planing or completion folder
         if (
-            $parent_name_id == 'planing' || $parent_name_id == 'completion'
-            || $plan_comp_name == 'planing' || $plan_comp_name == 'completion'
+            $parent_name_id == 'planing' || $parent_name_id == 'completion' || $parent_name_id == 'report'
+            || $plan_comp_name == 'planing' || $plan_comp_name == 'completion' || $plan_comp_name == 'report'
         ) {
             /*  ----- if $plan_comp_name is not null and we pass the upper condition then it's mean
                   we get an object of Planing or completion folder
@@ -505,7 +505,7 @@ class FileMangementController extends Controller
     public function defaultFolders()
     {
         $constFoldersName = [
-            'planing', 'completion', 'execution',
+            'planing', 'completion', 'report', 'execution',
             //ASSETS
             'Fixed Assets', 'Investment Properties', 'Investments',
             'Long Term Loans And Advances', 'Long Term Deposits And Prepayments', 'Stores, Spares And Stock-In-Trade',

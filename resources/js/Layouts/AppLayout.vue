@@ -270,6 +270,23 @@
                 </a-menu-item>
 
                 <a-menu-item
+                    key="22"
+                    v-if="
+                        this.$page.props.co_id &&
+                        this.$page.props.yr_id &&
+                        this.$page.props.team_id
+                    "
+                >
+                    <jet-nav-link
+                        :href="route('filing', ['report'])"
+                        :active="route().current('filing.report')"
+                    >
+                        <FileOutlined class="mr-2" />
+                        Report
+                    </jet-nav-link>
+                </a-menu-item>
+
+                <a-menu-item
                     key="11"
                     v-if="
                         this.$page.props.co_id &&
