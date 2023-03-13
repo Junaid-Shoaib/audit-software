@@ -50,10 +50,22 @@ class TemplateController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'avatar' => 'required|mimes:xlsx, xls , docx, docs'
-            // 'title' => 'required|unique:table_name,type_field_name,' . $this->type_field_name,
-        ]);
+        // $request->validate([
+        //     'avatar' => 'required|mimes:xlsx, xls , docx, docs'
+        //     // 'title' => 'required|unique:table_name,type_field_name,' . $this->type_field_name,
+        // ]);
+
+        if(!$request->file('avatar')) {
+            return back()->with('error', 'File not selected');
+        }
+
+        //Custome validation of file type ...because laravel validation giving error on some files
+        $extension = $request->file('avatar')->getClientOriginalExtension();
+        if ($extension == 'pdf' || $extension == 'docx' || $extension == 'xlsx' || $extension == 'jpeg' || $extension == 'jpg' || $extension == 'png') {
+        } else {
+            return back()->with('error', 'The file must be a file of type: pdf, docx, xlsx, jpeg, jpg, png.');
+        }
+
         $path = strtolower($request->type);
         $name = $request->file('avatar')->getClientOriginalName();
         if (file_exists(public_path('temp/' . $name))) {
@@ -92,7 +104,7 @@ class TemplateController extends Controller
                 $temp->delete();
                 return back()->with('success', $temp->name . ' deleted');
             } else {
-                return Redirect::route('templates')->with('File does not exists.');
+                return Redirect::route('templates')->with('error', 'File does not exists.');
             }
         } catch (Throwable $e) {
             return back()->with('error', $e);

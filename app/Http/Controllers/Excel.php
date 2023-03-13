@@ -45,9 +45,24 @@ class Excel extends Controller
     // Trial Upload & Read function
     public function __invoke(Request $request)
     {
-        $request->validate([
-            'file' => 'required|mimes:xlsx, xls'
-        ]);
+        // $request->validate([
+        //     'file' => 'required|mimes:xlsx, xls'
+        // ]);
+        // dd($request->file('file'));
+        if(!$request->file('file')) {
+            return back()->with('error', 'File not selected');
+        }
+
+        //Custome validation of file type ...because laravel validation giving error on some files
+        $extension = $request->file('file')->getClientOriginalExtension();
+        if ($extension == 'xlsx' || $extension == 'xls'
+            //  || $extension == 'pdf' || $extension == 'docx' || $extension == 'jpeg' || $extension == 'jpg' || $extension == 'png'
+             ) {
+        } else {
+            return back()->with('error', 'The file must be a file of type: xls, xlsx.');
+            // return back()->with('error', 'The file must be a file of type: pdf, docx, xlsx, jpeg, jpg, png.');
+        }
+
 
         DB::beginTransaction();
         // try {
