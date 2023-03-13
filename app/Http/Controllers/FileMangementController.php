@@ -135,27 +135,24 @@ class FileMangementController extends Controller
             }
 
             // checking the Auth user to render the data according to user roles and permissions
-            if (Auth::user()->roles[0]->name == "staff" || Auth::user()->roles[0]->name == "super-admin")
-            {
+            if (Auth::user()->roles[0]->name == "staff" || Auth::user()->roles[0]->name == "super-admin") {
                 // For ant-design data table ----------------
-                if(request()->has('search'))
-                {
+                if (request()->has('search')) {
                     $obj_data = FileManager::where('company_id', session('company_id'))
                         ->where('year_id', session('year_id'))
                         ->where('is_folder', 1)
                         ->where('parent_id', $parent['id'])
                         ->where('name', 'like', '%' . $req->search . '%')
                         ->get();
-                }
-                else {
+                } else {
                     $obj_data = FileManager::where('company_id', session('company_id'))
                         ->where('year_id', session('year_id'))
                         ->where('is_folder', 1)
                         ->where('parent_id', $parent['id'])
                         ->get();
                 }
-                $mapped_data = $obj_data->map(function($obj, $key) {
-                return [
+                $mapped_data = $obj_data->map(function ($obj, $key) {
+                    return [
                         'id' => $obj->id,
                         'name' => $obj->name,
                         'is_folder' => $obj->is_folder,
@@ -170,11 +167,9 @@ class FileMangementController extends Controller
                     ->where('year_id', session('year_id'))
                     ->where('is_folder', 1)
                     ->where('parent_id', $parent['id'])->get()->pluck('name');
-
             } else if (Auth::user()->roles[0]->name == "manager") {
                 // For ant-design data table ----------------
-                if(request()->has('search'))
-                {
+                if (request()->has('search')) {
                     $obj_data = FileManager::where('company_id', session('company_id'))
                         ->where('year_id', session('year_id'))
                         ->where('is_folder', 1)
@@ -182,8 +177,7 @@ class FileMangementController extends Controller
                         ->where('parent_id', $parent['id'])
                         ->where('name', 'like', '%' . $req->search . '%')
                         ->get();
-                }
-                else {
+                } else {
                     $obj_data = FileManager::where('company_id', session('company_id'))
                         ->where('year_id', session('year_id'))
                         ->where('is_folder', 1)
@@ -191,8 +185,8 @@ class FileMangementController extends Controller
                         ->where('parent_id', $parent['id'])
                         ->get();
                 }
-                $mapped_data = $obj_data->map(function($obj, $key) {
-                return [
+                $mapped_data = $obj_data->map(function ($obj, $key) {
+                    return [
                         'id' => $obj->id,
                         'name' => $obj->name,
                         'is_folder' => $obj->is_folder,
@@ -211,8 +205,7 @@ class FileMangementController extends Controller
                     ->where('parent_id', $parent['id'])->get()->pluck('name');
             } else if (Auth::user()->roles[0]->name == "partner") {
                 // For ant-design data table ----------------
-                if(request()->has('search'))
-                {
+                if (request()->has('search')) {
                     $obj_data = FileManager::where('company_id', session('company_id'))
                         ->where('year_id', session('year_id'))
                         ->where('is_folder', 1)
@@ -221,8 +214,7 @@ class FileMangementController extends Controller
                         ->where('parent_id', $parent['id'])
                         ->where('name', 'like', '%' . $req->search . '%')
                         ->get();
-                }
-                else {
+                } else {
                     $obj_data = FileManager::where('company_id', session('company_id'))
                         ->where('year_id', session('year_id'))
                         ->where('is_folder', 1)
@@ -231,8 +223,8 @@ class FileMangementController extends Controller
                         ->where('parent_id', $parent['id'])
                         ->get();
                 }
-                $mapped_data = $obj_data->map(function($obj, $key) {
-                return [
+                $mapped_data = $obj_data->map(function ($obj, $key) {
+                    return [
                         'id' => $obj->id,
                         'name' => $obj->name,
                         'is_folder' => $obj->is_folder,
@@ -325,21 +317,20 @@ class FileMangementController extends Controller
                     }
                 );
 
-            if(request()->has('search')){
+            if (request()->has('search')) {
                 $obj_data = FileManager::where('company_id', session('company_id'))
-                ->where('year_id', session('year_id'))
-                ->where('is_folder', 0)
-                ->where('parent_id', $execution['id'])
-                ->where('name','LIKE', '%'.$req->search.'%')
-                ->get();
-            }
-            else{
+                    ->where('year_id', session('year_id'))
+                    ->where('is_folder', 0)
+                    ->where('parent_id', $execution['id'])
+                    ->where('name', 'LIKE', '%' . $req->search . '%')
+                    ->get();
+            } else {
                 $obj_data = FileManager::where('company_id', session('company_id'))
-                ->where('year_id', session('year_id'))
-                ->where('is_folder', 0)
-                ->where('parent_id', $execution['id'])->get();
+                    ->where('year_id', session('year_id'))
+                    ->where('is_folder', 0)
+                    ->where('parent_id', $execution['id'])->get();
             }
-            $mapped_data = $obj_data->map(function($obj, $key) {
+            $mapped_data = $obj_data->map(function ($obj, $key) {
                 return [
                     'id' => $obj->id,
                     'name' => $obj->name,
@@ -350,8 +341,8 @@ class FileMangementController extends Controller
                         ->where('parent_id', $obj->id)
                         ->where('is_folder', 1)
                         ->first() ? false : true,
-                    ];
-                });
+                ];
+            });
 
             return Inertia::render('Filing/FolderIndex', [
                 'mapped_data' => $mapped_data,
@@ -411,7 +402,7 @@ class FileMangementController extends Controller
         //     'avatar'=> ['required'],
         //     // 'avatar'=> 'required | mimes:pdf,docx,xlsx,jpeg,jpg,png',
         // ]);
-        if(!Request::file('avatar')) {
+        if (!Request::file('avatar')) {
             return back()->with('error', 'File not selected');
         }
 
@@ -617,24 +608,25 @@ class FileMangementController extends Controller
             // names of the templates to perform the select all or multi-select functionality
             $balances_name = Template::where('type', $type)->get()->pluck('name');
 
-            if(request()->has(
+            if (request()->has(
                 // ['select', 'search']
                 'search'
-                )){
+            )) {
                 $obj_data = Template::where('company_id', session('company_id'))
                     ->where('type', lcfirst($type))
                     ->where(
                         // $req->select
-                        'name'
-                        ,'LIKE', '%'.$req->search.'%')
+                        'name',
+                        'LIKE',
+                        '%' . $req->search . '%'
+                    )
                     ->get();
-            }
-            else{
+            } else {
                 $obj_data = Template::where('company_id', session('company_id'))
                     ->where('type', lcfirst($type))
                     ->get();
             }
-            $mapped_data = $obj_data->map(function($temp, $key) {
+            $mapped_data = $obj_data->map(function ($temp, $key) {
                 return [
                     'id' => $temp->id,
                     'name' => $temp->name,
@@ -761,6 +753,8 @@ class FileMangementController extends Controller
             if ($partner != null && $manager != null && $staff != null) {
                 $start = $year->begin ? new Carbon($year->begin) : null;
                 $end = $year->end ? new Carbon($year->end) : null;
+                $now = Carbon::now();
+                $location = 'Karachi';
                 $names = str_replace(["&"], "&amp;", $year->company->name);
                 $name = $year->company->name;
                 if (strtolower($extension[1]) == 'docx' || strtolower($extension[1]) == 'docs') {
@@ -771,6 +765,8 @@ class FileMangementController extends Controller
                     $templateProcessor->setValue('user', ucwords($staff->name));
                     $templateProcessor->setValue('start', $start->format("F j Y"));
                     $templateProcessor->setValue('end', $end->format("F j Y"));
+                    $templateProcessor->setValue('now', $now->format("F j Y"));
+                    $templateProcessor->setValue('location', $location);
                     $templateProcessor->saveAs(storage_path('app/public/' . $template->path));
                     return $template;
                 } else {
