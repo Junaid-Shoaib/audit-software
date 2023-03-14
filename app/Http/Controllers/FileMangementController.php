@@ -779,7 +779,8 @@ class FileMangementController extends Controller
                     $worksheet->getCell('C7')->setValue(ucwords($partner->name));
                     $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xls');
                     $writer->save(storage_path('app/public/' . $template->path));
-                    return response()->download(storage_path('app/public/' . $template->path));
+                    return $template;
+                    // return response()->download(storage_path('app/public/' . $template->path));
                 }
             } else {
                 return back()->with('warning', 'Please Create Team First');
@@ -818,6 +819,15 @@ class FileMangementController extends Controller
                         ->where('name', $template->type)
                         ->where('is_folder', '0')
                         ->first();
+                    //to include/save the reports template in completion folder
+                    if($parent->name == "report")
+                    {
+                        $parent = FileManager::where('company_id', session('company_id'))
+                            ->where('year_id', session('year_id'))
+                            ->where('name', 'completion')
+                            ->where('is_folder', '0')
+                            ->first();
+                    }
                     if ($type == 'Execution') {
                         $path = session('company_id') . '/' . session('year_id') . '/' . $parent->id . '/' . $folder . '/' . $template->name;
                     } else {
@@ -894,6 +904,8 @@ class FileMangementController extends Controller
             }
             if ($type == 'Execution') {
                 return Redirect::route("filing", [$folder])->with('success', 'Templates included successfully');
+            } else if ($type == 'Report') {
+                return Redirect::route("filing", ['completion'])->with('success', 'Templates included successfully');
             } else {
                 return Redirect::route("filing", [lcfirst($type)])->with('success', 'Templates included successfully');
             }

@@ -18,9 +18,6 @@
                 @change="accch"
                 size="small"
             />
-            <a-button @click="addRow" size="small" class="ml-2"
-                >Add row</a-button
-            >
 
             <div class="relative mt-5 flex-row border-b border-gray-200">
                 <div v-if="isError" class="bg-red-600 text-white text-center">
@@ -257,8 +254,10 @@
                             </tbody>
                         </table>
                     </div>
+
                     <a-form-item style="margin-top: 10px">
-                        <a-button type="primary" htmlType="submit">
+                        <a-button @click="addRow">Add row</a-button>
+                        <a-button class="ml-2" type="primary" htmlType="submit">
                             Update Details
                         </a-button>
                     </a-form-item>
