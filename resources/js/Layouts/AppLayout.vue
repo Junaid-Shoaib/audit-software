@@ -46,22 +46,7 @@
                         Teams
                     </jet-nav-link>
                 </a-menu-item>
-                <a-menu-item
-                    key="4"
-                    v-if="
-                        this.$page.props.co_id &&
-                        this.$page.props.yr_id &&
-                        this.$page.props.team_id
-                    "
-                >
-                    <jet-nav-link
-                        :href="route('users')"
-                        :active="route().current('users')"
-                    >
-                        <UsergroupAddOutlined class="mr-2" />
-                        Users
-                    </jet-nav-link>
-                </a-menu-item>
+
                 <a-sub-menu
                     v-if="this.$page.props.co_id && this.$page.props.yr_id"
                     key="sub2"
@@ -270,23 +255,6 @@
                 </a-menu-item>
 
                 <a-menu-item
-                    key="22"
-                    v-if="
-                        this.$page.props.co_id &&
-                        this.$page.props.yr_id &&
-                        this.$page.props.team_id
-                    "
-                >
-                    <jet-nav-link
-                        :href="route('filing', ['report'])"
-                        :active="route().current('filing.report')"
-                    >
-                        <FileOutlined class="mr-2" />
-                        Report
-                    </jet-nav-link>
-                </a-menu-item>
-
-                <a-menu-item
                     key="11"
                     v-if="
                         this.$page.props.co_id &&
@@ -300,6 +268,40 @@
                     >
                         <FileOutlined class="mr-2" />
                         Details
+                    </jet-nav-link>
+                </a-menu-item>
+
+                <a-menu-item
+                    key="22"
+                    v-if="
+                        this.$page.props.co_id &&
+                        this.$page.props.yr_id &&
+                        this.$page.props.team_id
+                    "
+                >
+                    <jet-nav-link
+                        :href="route('index_temp', ['Report'])"
+                        :active="route().current('index_temp.report')"
+                    >
+                        <FileOutlined class="mr-2" />
+                        Audit Reports
+                    </jet-nav-link>
+                </a-menu-item>
+
+                <a-menu-item
+                    key="4"
+                    v-if="
+                        this.$page.props.co_id &&
+                        this.$page.props.yr_id &&
+                        this.$page.props.team_id
+                    "
+                >
+                    <jet-nav-link
+                        :href="route('users')"
+                        :active="route().current('users')"
+                    >
+                        <UsergroupAddOutlined class="mr-2" />
+                        Users
                     </jet-nav-link>
                 </a-menu-item>
 
@@ -325,7 +327,7 @@
                 </a-sub-menu>
             </a-menu>
         </a-layout-sider>
-        <a-layout>
+        <a-layout :style="{ height: '100vh' }">
             <!-- :style="{ background: '#fff', padding: 0 }" -->
             <a-layout-header v-if="$slots.header">
                 <!-- <header v-if="$slots.header"> -->
@@ -334,7 +336,7 @@
             </a-layout-header>
             <FlashMessage />
 
-            <a-layout-content :style="{ margin: '24px 16px 0' }">
+            <a-layout-content :style="{ margin: '12px 16px 0' }">
                 <div style="margin-bottom: 10px">
                     <Breadcrumb>
                         <Select
@@ -371,6 +373,7 @@
                         padding: '24px',
                         background: '#fff',
                         minHeight: '360px',
+                        height: '94%',
                     }"
                 >
                     <slot />
@@ -483,6 +486,12 @@ export default {
 </script>
 
 <style>
+.ant-layout-sider-children {
+    height: 100vh;
+    overflow: auto;
+    margin-top: -0.1px;
+    padding-top: 0.1px;
+}
 .ant-layout-sider-children .logo {
     /* height: 32px; */
     background: rgba(255, 255, 255, 0.2);
@@ -515,5 +524,13 @@ export default {
     color: white;
     font-weight: bold;
     font-size: 18px;
+}
+.ant-table.ant-table-small .ant-table-title,
+.ant-table.ant-table-small .ant-table-footer,
+.ant-table.ant-table-small .ant-table-thead > tr > th,
+.ant-table.ant-table-small .ant-table-tbody > tr > td,
+.ant-table.ant-table-small tfoot > tr > th,
+.ant-table.ant-table-small tfoot > tr > td {
+    padding: 6px 8px !important;
 }
 </style>
