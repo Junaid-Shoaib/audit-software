@@ -337,34 +337,106 @@
             <FlashMessage />
 
             <a-layout-content :style="{ margin: '12px 16px 0' }">
-                <div style="margin-bottom: 10px">
+                <div :style="{ marginBottom: '10px' }">
                     <Breadcrumb>
-                        <Select
-                            :options="years"
-                            :field-names="{ label: 'end', value: 'id' }"
-                            show-search
-                            filterOption="true"
-                            v-model:value="selectedyear"
-                            optionFilterProp="end"
-                            mode="single"
-                            placeholder="Please select Year"
-                            showArrow
-                            @change="yrch"
-                            class="w-1/2"
-                        />
-                        <Select
-                            :options="options"
-                            :field-names="{ label: 'name', value: 'id' }"
-                            show-search
-                            filterOption="true"
-                            v-model:value="selected"
-                            optionFilterProp="name"
-                            mode="single"
-                            placeholder="Please select Company"
-                            showArrow
-                            @change="coch"
-                            class="w-1/2"
-                        />
+                        <!-- <a-divider orientation="left">Normal</a-divider>
+                        <a-row type="flex">
+                            <a-col :span="6" :order="4"
+                                ><Select
+                                    :options="options"
+                                    :field-names="{
+                                        label: 'name',
+                                        value: 'id',
+                                    }"
+                                    show-search
+                                    filterOption="true"
+                                    v-model:value="selected"
+                                    optionFilterProp="name"
+                                    mode="single"
+                                    placeholder="Please select Company"
+                                    showArrow
+                                    @change="coch"
+                                    class="w-full"
+                            /></a-col>
+                            <a-col :span="6" :order="3"
+                                ><Select
+                                    :options="years"
+                                    :field-names="{ label: 'end', value: 'id' }"
+                                    show-search
+                                    filterOption="true"
+                                    v-model:value="selectedyear"
+                                    optionFilterProp="end"
+                                    mode="single"
+                                    placeholder="Please select Year"
+                                    showArrow
+                                    @change="yrch"
+                                    class="w-full"
+                            /></a-col>
+                            <a-col :span="6" :order="2">3 col-order-2</a-col>
+                            <a-col :span="6" :order="1">4 col-order-1</a-col>
+                        </a-row>
+                        <a-divider orientation="left">Responsive</a-divider> -->
+                        <a-row type="flex">
+                            <a-col
+                                :span="6"
+                                :xs="{ order: 1 }"
+                                :sm="{ order: 2 }"
+                                :md="{ order: 3 }"
+                                :lg="{ order: 4 }"
+                            >
+                                <Select
+                                    :options="options"
+                                    :field-names="{
+                                        label: 'name',
+                                        value: 'id',
+                                    }"
+                                    show-search
+                                    filterOption="true"
+                                    v-model:value="selected"
+                                    optionFilterProp="name"
+                                    mode="single"
+                                    placeholder="Please select Company"
+                                    showArrow
+                                    @change="coch"
+                                    class="w-full"
+                                />
+                            </a-col>
+                            <a-col
+                                :span="6"
+                                :xs="{ order: 2 }"
+                                :sm="{ order: 1 }"
+                                :md="{ order: 4 }"
+                                :lg="{ order: 3 }"
+                            >
+                                <Select
+                                    :options="years"
+                                    :field-names="{ label: 'end', value: 'id' }"
+                                    show-search
+                                    filterOption="true"
+                                    v-model:value="selectedyear"
+                                    optionFilterProp="end"
+                                    mode="single"
+                                    placeholder="Please select Year"
+                                    showArrow
+                                    @change="yrch"
+                                    class="w-full"
+                                />
+                            </a-col>
+                            <a-col
+                                :span="6"
+                                :xs="{ order: 3 }"
+                                :sm="{ order: 4 }"
+                                :md="{ order: 2 }"
+                                :lg="{ order: 2 }"
+                            ></a-col>
+                            <a-col
+                                :span="6"
+                                :xs="{ order: 4 }"
+                                :sm="{ order: 3 }"
+                                :md="{ order: 1 }"
+                                :lg="{ order: 1 }"
+                            ></a-col>
+                        </a-row>
                     </Breadcrumb>
                 </div>
                 <div
@@ -408,7 +480,7 @@ import {
 } from "@ant-design/icons-vue";
 import ApplicationLogo from "@/Jetstream/ApplicationLogo";
 import JetNavLink from "@/Jetstream/NavLink";
-import { Layout, Menu, Select, Button } from "ant-design-vue";
+import { Layout, Menu, Select, Button, Row, Col } from "ant-design-vue";
 import "ant-design-vue/dist/antd.css";
 import FlashMessage from "@/Layouts/FlashMessage";
 
@@ -423,6 +495,8 @@ export default {
         "a-menu-item": Menu.Item,
         "a-sub-menu": Menu.SubMenu,
         "a-button": Button,
+        "a-row": Row,
+        "a-col": Col,
         JetNavLink,
         ApplicationLogo,
         FlashMessage,
