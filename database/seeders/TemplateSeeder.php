@@ -211,5 +211,28 @@ class TemplateSeeder extends Seeder
             File::copy(public_path('/temp/' . $value), storage_path('app/public/execution/' . $value));
             $execution->save();
         }
+
+
+        $reports = [
+            '01' => 'Auditors Report to the Trustees-Board of Governors-Management Committee.docx',
+            '02' => 'Cost Auditors Report.docx',
+            '03' => 'Independent Reasonable Assurance Report on Statement of Free Float of Shares.docx',
+            '04' => 'Review Report on the Statement of Compliance contained in Listed Companies.docx',
+            '05' => 'Report on Review of Interim Financial Statements.docx',
+            '06' => 'Report on the Audit of the Financial Statements of.docx',
+            '07' => 'Auditor‘s Report on Consolidated Financial Statements of Holding Company.docx',
+            '08' => 'Review Report on Statement of Net Capital Balance.docx',
+        ];
+
+        foreach ($reports as $key => $value) {
+            $report = new Template();
+            $report->name = $value;
+            $report->path = 'report/' . $value;
+            $report->type = 'report';
+            $report->company_id = session('company_id');
+            $report->year_id = session('year_id');
+            File::copy(public_path('/temp/' . $value), storage_path('app/public/report/' . $value));
+            $report->save();
+        }
     }
 }

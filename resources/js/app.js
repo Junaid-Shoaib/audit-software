@@ -29,5 +29,5 @@ InertiaProgress.init({
     includeCSS: true,
 
     // Whether the NProgress spinner will be shown.
-    showSpinner: false,
+    showSpinner: true,
 })
