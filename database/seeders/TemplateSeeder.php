@@ -220,7 +220,7 @@ class TemplateSeeder extends Seeder
             '04' => 'Review Report on the Statement of Compliance contained in Listed Companies.docx',
             '05' => 'Report on Review of Interim Financial Statements.docx',
             '06' => 'Report on the Audit of the Financial Statements of.docx',
-            '07' => 'Auditor‘s Report on Consolidated Financial Statements of Holding Company.docx',
+            '07' => 'Auditors Report on Consolidated Financial Statements of Holding Company.docx',
             '08' => 'Review Report on Statement of Net Capital Balance.docx',
         ];
 
