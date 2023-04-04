@@ -34,7 +34,23 @@
                             <a-input type="file" v-on:change="onFileChange" />
                         </a-form-item>
                         <a-form-item class="text-center">
-                            <a-button type="primary" :html-type="submit"
+                            <a
+                                v-if="acc_grp"
+                                class="ant-btn ant-btn-primary mx-1"
+                                href="/uploadedTB"
+                                >Download uploaded file</a
+                            >
+                            <a-button
+                                v-if="acc_grp"
+                                danger
+                                @click.prevent="destroy"
+                                >Delete</a-button
+                            >
+
+                            <a-button
+                                type="primary"
+                                :html-type="submit"
+                                class="ml-1"
                                 >Submit</a-button
                             >
                             <a
@@ -224,6 +240,7 @@ export default {
         show_folder: Boolean,
         show_upload: Boolean,
         show_groups: Boolean,
+        acc_grp: Object,
     },
 
     data() {
@@ -241,6 +258,9 @@ export default {
     methods: {
         submit() {
             this.form.post(route("trial.read"));
+        },
+        destroy() {
+            this.$inertia.delete(route("excel.destroy"));
         },
         submit_materiality: function () {
             this.$refs.form_materiality.submit();

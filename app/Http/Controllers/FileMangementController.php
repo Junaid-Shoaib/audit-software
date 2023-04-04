@@ -695,6 +695,13 @@ class FileMangementController extends Controller
             $partner = $year->users()->role('partner')->first();
             $manager = $year->users()->role('manager')->first();
             $staff = $year->users()->role('staff')->first();
+            $staffs = $year->users()->role('staff')->get();
+            foreach($staffs as $single_staff)
+            {
+                if($single_staff->name == auth()->user()->name) {
+                    $staff == $single_staff;
+                }
+            }
             foreach ($templates as $key => $template) {
                 # code...
                 $extension =   explode(".", ($template->name));
@@ -747,6 +754,13 @@ class FileMangementController extends Controller
             $partner = $year->users()->role('partner')->first();
             $manager = $year->users()->role('manager')->first();
             $staff = $year->users()->role('staff')->first();
+            $staffs = $year->users()->role('staff')->get();
+            foreach($staffs as $single_staff)
+            {
+                if($single_staff->name == auth()->user()->name) {
+                    $staff == $single_staff;
+                }
+            }
             //   dd($partner->name , $manager->name , $staff->name);
 
 
@@ -810,7 +824,14 @@ class FileMangementController extends Controller
                     ->where('id', session('year_id'))->first();
                 $partner = $year->users()->role('partner')->first();
                 $manager = $year->users()->role('manager')->first();
+                $staffs = $year->users()->role('staff')->get();
                 $staff = $year->users()->role('staff')->first();
+                foreach($staffs as $single_staff)
+                {
+                    if($single_staff->name == auth()->user()->name) {
+                        $staff == $single_staff;
+                    }
+                }
 
                 if ($partner != null && $manager != null && $staff != null) {
                     //------------ creating path to save file
