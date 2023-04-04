@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Models\AccountGroup;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
@@ -60,41 +61,44 @@ class CompanyController extends FileMangementController
         //     // ['select', 'search']
         //     'search'
         // ));
-        if(request()->has(
+        if (request()->has(
             // ['select', 'search']
             'search'
-            )){
+        )) {
             // $obj_data = auth()->user()->companies()->where(
             //     // $req->select
             //     'name'
             //     ,'LIKE', '%'.$req->search.'%')
             //     ->orWhere('address','LIKE', '%'.$req->search.'%')
             // ->get();
-            $obj_data = auth()->user()->companies()->where(function ($query) use($req) {
-                    $query->where('name', 'like', '%' . $req->search . '%')
+            $obj_data = auth()->user()->companies()->whereHas('users', function ($query) {
+                $query->where('location', Auth::user()->location);
+            })->where(function ($query) use ($req) {
+                $query->where('name', 'like', '%' . $req->search . '%')
                     ->orWhere('address', 'like', '%' . $req->search . '%')
                     ->orWhere('email', 'like', '%' . $req->search . '%')
                     ->orWhere('web', 'like', '%' . $req->search . '%')
                     // ->orWhere('fiscal', 'like', '%' . $req->search . '%')
                     ->orWhere('phone', 'like', '%' . $req->search . '%');
-                })->get();
+            })->get();
+        } else {
+            $obj_data = auth()->user()->companies()->whereHas('users', function ($query) {
+                $query->where('location', Auth::user()->location);
+            })->get();
         }
-        else{
-            $obj_data = auth()->user()->companies()->get();
-        }
-            $mapped_data = $obj_data->map(function($comp, $key) {
+        $mapped_data = $obj_data->map(function ($comp, $key) {
             return [
-                    'id' => $comp->id,
-                    'name' => $comp->name,
-                    'address' => $comp->address,
-                    'email' => $comp->email,
-                    'web' => $comp->web,
-                    'phone' => $comp->phone,
-                    'fiscal' => $comp->fiscal,
-                    'incorp' => $comp->incorp,
-                    'delete' => Year::where('company_id', $comp->id)->first() != null ? false : true,
-                ];
-            });
+                'id' => $comp->id,
+                'name' => $comp->name,
+                'address' => $comp->address,
+                'email' => $comp->email,
+                'web' => $comp->web,
+                'phone' => $comp->phone,
+                'fiscal' => $comp->fiscal,
+                'incorp' => $comp->incorp,
+                'delete' => Year::where('company_id', $comp->id)->first() != null ? false : true,
+            ];
+        });
 
         return Inertia::render('Company/Index', [
             // 'can' => [
@@ -207,7 +211,7 @@ class CompanyController extends FileMangementController
             // Calling the function from DefaultFoldersCreation controller ---- to generate the default folder
             $this->defaultFolders();
         });
-            session(['team_id' => null]);
+        session(['team_id' => null]);
         return Redirect::route('companies')->with('success', 'Company created');
     }
 
@@ -233,7 +237,7 @@ class CompanyController extends FileMangementController
     public function update(Company $company)
     {
         // dd(Request::input('fiscal'),Request::input('incorp'), $company);
-              Request::validate([
+        Request::validate([
             'name' => ['required'],
             'address' => ['nullable'],
             'email' => ['nullable'],
@@ -250,10 +254,10 @@ class CompanyController extends FileMangementController
         $company->phone = Request::input('phone');
         $company->fiscal = Request::input('fiscal');
 
-        if(Request::input('incorp') != null){
+        if (Request::input('incorp') != null) {
             $incorp =  new carbon(Request::input('incorp'));
             $company->incorp = $incorp->format('Y-m-d');
-        }else{
+        } else {
             $company->incorp = null;
         }
 
@@ -284,9 +288,9 @@ class CompanyController extends FileMangementController
 
             $active_yr = Year::where('company_id', $id)->latest()->first();
             session(['year_id' => $active_yr->id]);
-            if($active_yr->users()->first()){
+            if ($active_yr->users()->first()) {
                 session(['team_id' => $active_yr->users()->first()->id]);
-            }else{
+            } else {
                 session(['team_id' => null]);
             }
             return Redirect::back();
@@ -298,7 +302,8 @@ class CompanyController extends FileMangementController
 
 
     // Trial Template Download Function
-    public function trial_pattern(){
+    public function trial_pattern()
+    {
         return response()->download(public_path('/trial_upload.xlsx'));
     }
 
@@ -306,35 +311,53 @@ class CompanyController extends FileMangementController
     public function companypdf($fiscal)
     {
 
-        if($fiscal == 'all'){
-            $company = Company::get();
+        if ($fiscal == 'all') {
+            $company = Auth::user()->companies()->whereHas(
+                'users',
+                function ($query) {
+                    $query->where('location', Auth::user()->location);
+                }
+            )->orderBy('id', 'Asc')->get();
         }
         // dd('march');
-        if($fiscal == 'march'){
-            $company = Company::where('fiscal',$fiscal)->orderBy('id','Asc')->get();
+        if ($fiscal == 'march') {
+            $company = Auth::user()->companies()->where('fiscal', $fiscal)->whereHas(
+                'users',
+                function ($query) {
+                    $query->where('location', Auth::user()->location);
+                }
+            )->orderBy('id', 'Asc')->get();
         }
 
-        if($fiscal == 'june'){
-            $company = Company::where('fiscal',$fiscal)->orderBy('id','Asc')->get();
+        if ($fiscal == 'june') {
+            $company = Auth::user()->companies()->where('fiscal', $fiscal)->whereHas(
+                'users',
+                function ($query) {
+                    $query->where('location', Auth::user()->location);
+                }
+            )->orderBy('id', 'Asc')->get();
         }
 
-        if($fiscal == 'september'){
-            $company = Company::where('fiscal',$fiscal)->orderBy('id','Asc')->get();
+        if ($fiscal == 'september') {
+            $company = Company::where('location', auth()->user()->location)->where('fiscal', $fiscal)->orderBy('id', 'Asc')->get();
         }
 
-        if($fiscal == 'december'){
-            $company = Company::where('fiscal',$fiscal)->orderBy('id','Asc')->get();
+        if ($fiscal == 'december') {
+            $company = Auth::user()->companies()->where('fiscal', $fiscal)->whereHas(
+                'users',
+                function ($query) {
+                    $query->where('location', Auth::user()->location);
+                }
+            )->orderBy('id', 'Asc')->get();
         }
 
         if ($company->isNotEmpty()) {
-        $pdf = app('dompdf.wrapper');
-        $pdf->getDomPDF()->set_option("enable_php", true);
-        $pdf->loadView('companypdf', compact( 'company' ));
-        return $pdf->stream('Clients.pdf');
-        }
-        else{
-            return back()->with('error','No Fiscal Found');
+            $pdf = app('dompdf.wrapper');
+            $pdf->getDomPDF()->set_option("enable_php", true);
+            $pdf->loadView('companypdf', compact('company'));
+            return $pdf->stream('Clients.pdf');
+        } else {
+            return back()->with('error', 'No Fiscal Found');
         }
     }
-
 }

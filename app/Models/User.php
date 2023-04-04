@@ -19,7 +19,7 @@ class User extends Authenticatable
     use HasProfilePhoto;
     use Notifiable;
     use TwoFactorAuthenticatable;
-//For Roles n Permissions
+    //For Roles n Permissions
     use HasRoles;
 
     /**
@@ -31,6 +31,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'location'
     ];
 
     /**

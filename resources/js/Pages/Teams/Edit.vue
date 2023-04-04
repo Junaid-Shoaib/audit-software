@@ -18,7 +18,7 @@
               :field-names="{ label: 'name', value: 'id' }"
               filterOption="true"
               optionFilterProp="name"
-              mode="multiple"
+              mode="single"
               placeholder="Please select"
               showArrow
               class="w-full"
@@ -39,7 +39,7 @@
               :field-names="{ label: 'name', value: 'id' }"
               filterOption="true"
               optionFilterProp="name"
-              mode="multiple"
+              mode="single"
               placeholder="Please select"
               showArrow
               class="w-full"

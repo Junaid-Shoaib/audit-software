@@ -19,8 +19,7 @@ class UserController extends Controller
 {
     public function index(Req $req)
     {
-        if(auth()->user()->can('manage') || auth()->user()->can('edit'))
-        {
+        if (auth()->user()->can('manage') || auth()->user()->can('edit')) {
             //Validating request
             request()->validate([
                 'direction' => ['in:asc,desc'],
@@ -31,7 +30,7 @@ class UserController extends Controller
             //             dd($user->getRoleNames()[0]);
 
             $query =
-            // auth()->user()->companies()->getQuery()->paginate(10)
+                // auth()->user()->companies()->getQuery()->paginate(10)
                 User::getQuery()->paginate(10)
                 ->withQueryString()
                 ->through(
@@ -56,26 +55,25 @@ class UserController extends Controller
             //         request('direction')
             //     );
             // }
-            if(request()->has(
+            if (request()->has(
                 // ['select', 'search']
                 'search'
-                )){
-                $obj_data = User::
-                where(function ($query) use($req) {
-                    $query->where('name', 'like', '%' . $req->search . '%')
-                    ->orWhere('email', 'like', '%' . $req->search . '%');
-                    // whereHas('roles', function($q) use ($req) {
-                    //     $q->where('roles.name',$req->search);
-                    // })
+            )) {
+                $obj_data = User::where('location', auth()->user()->location)
+                    ->where(function ($query) use ($req) {
+                        $query->where('name', 'like', '%' . $req->search . '%')
+                            ->orWhere('email', 'like', '%' . $req->search . '%');
+                        // whereHas('roles', function($q) use ($req) {
+                        //     $q->where('roles.name',$req->search);
+                        // })
 
-                    // ->orWhere($cur_user->getRoleNames()[0], 'like', '%' . $req->search . '%');
-                })
-                ->get();
+                        // ->orWhere($cur_user->getRoleNames()[0], 'like', '%' . $req->search . '%');
+                    })
+                    ->get();
+            } else {
+                $obj_data = User::where('location', auth()->user()->location)->get();
             }
-            else{
-                $obj_data = User::get();
-            }
-            $mapped_data = $obj_data->map(function($user, $key) {
+            $mapped_data = $obj_data->map(function ($user, $key) {
                 return [
                     'id' => $user->id,
                     'name' => $user->name,
@@ -98,9 +96,6 @@ class UserController extends Controller
                 'mapped_data' => $mapped_data,
                 'balances' => $query,
                 'filters' => request()->all(['search', 'field', 'direction']),
-                'company' => Company::where('id', session('company_id'))->first(),
-                // 'companies' => Auth::user()->companies,
-                'companies' => Company::all(),
             ]);
         } else {
             return Redirect::route('companies')->with('error', 'You don\'t have access for this page');
@@ -114,7 +109,7 @@ class UserController extends Controller
 
     public function store()
     {
-         Request::validate([
+        Request::validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             // 'password' => $this->passwordRules(),
@@ -126,6 +121,7 @@ class UserController extends Controller
 
         User::create([
             'name' => Request::input('name'),
+            'location' => auth()->user()->location,
             'email' => Request::input('email'),
             'password' => Hash::make(Request::input('password')),
         ])->assignRole($role);

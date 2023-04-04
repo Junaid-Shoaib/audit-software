@@ -50,6 +50,10 @@ class PermissionsDemoSeeder extends Seeder
         $role4->givePermissionTo('read');
         $role4->givePermissionTo('manage');
 
+
+
+
+
         $user = new User();
         $user->name = 'haris';
         $user->email = 'haris@gmail.com';
@@ -85,30 +89,75 @@ class PermissionsDemoSeeder extends Seeder
         $user->save();
         $user->assignRole($role1);
 
-        // $user = \App\Models\User::factory()->create([
-        //     'name' => 'haris',
-        //     'email' => 'haris@gmail.com',
-        //     'password' => Hash::make('mzk123456'),
-        // ]);
-        // $user->assignRole($role4);
 
-        // $user = \App\Models\User::factory()->create([
-        //     'name' => 'Example Admin User',
-        //     'email' => 'admin@example.com',
-        // ]);
-        // $user->assignRole($role2);
+        //islamabad Uesr
+        $user = new User();
+        $user->name = 'Islamabad Partner';
+        $user->email = 'isl_partner@gmail.com';
+        $user->location = 'islamabad';
+        $user->password = Hash::make('mzk123456');
+        $user->save();
+        $user->assignRole($role3);
 
-        // $user = \App\Models\User::factory()->create([
-        //     'name' => 'Example Super-Admin User',
-        //     'email' => 'superadmin@example.com',
-        // ]);
-        // $user->assignRole($role3);
+        $user = new User();
+        $user->name = 'Islamabad Manager';
+        $user->email = 'isl_manager@gmail.com';
+        $user->location = 'islamabad';
+        $user->password = Hash::make('mzk123456');
+        $user->save();
+        $user->assignRole($role2);
 
-        // $this->call([
-        //     PermissionsDemoSeeder::class,
-        // ]);
+        $user = new User();
+        $user->name = 'Islamabad Staff1';
+        $user->email = 'isl_staff1@gmail.com';
+        $user->location = 'islamabad';
+        $user->password = Hash::make('mzk123456');
+        $user->save();
+        $user->assignRole($role1);
 
-        // $user = \App\Models\User::all()->where('name', 'Haris')->first();
-        // $user->assignRole($role3);
+        $user = new User();
+        $user->name = 'Islamabad Staff2';
+        $user->email = 'isl_staff2@gmail.com';
+        $user->location = 'islamabad';
+        $user->password = Hash::make('mzk123456');
+        $user->save();
+        $user->assignRole($role1);
+
+
+        //Lahore
+
+
+        //islamabad Uesr
+        $user = new User();
+        $user->name = 'lahore Partner';
+        $user->email = 'lah_partner@gmail.com';
+        $user->location = 'lahore';
+        $user->password = Hash::make('mzk123456');
+        $user->save();
+        $user->assignRole($role3);
+
+        $user = new User();
+        $user->name = 'lahore Manager';
+        $user->email = 'lah_manager@gmail.com';
+        $user->location = 'lahore';
+        $user->password = Hash::make('mzk123456');
+        $user->save();
+        $user->assignRole($role2);
+
+        $user = new User();
+        $user->name = 'lahore Staff1';
+        $user->email = 'lah_staff1@gmail.com';
+        $user->location = 'lahore';
+        $user->password = Hash::make('mzk123456');
+        $user->save();
+        $user->assignRole($role1);
+
+        $user = new User();
+        $user->name = 'lahore Staff2';
+        $user->email = 'lah_staff2@gmail.com';
+        $user->location = 'lahore';
+        $user->password = Hash::make('mzk123456');
+        $user->save();
+        $user->assignRole($role1);
     }
 }

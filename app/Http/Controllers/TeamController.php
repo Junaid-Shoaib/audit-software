@@ -18,8 +18,7 @@ class TeamController extends Controller
     public function index()
     {
         // checking the current user have a company or not
-        if(auth()->user()->companies()->first())
-        {
+        if (auth()->user()->companies()->first()) {
             //Validating request
             request()->validate([
                 'direction' => ['in:asc,desc'],
@@ -28,23 +27,22 @@ class TeamController extends Controller
 
             $year = Year::find(session('year_id'));
             // checking the year for current user
-            if($year)
-            {
+            if ($year) {
                 $query =
-                $year->users()->getQuery()->paginate(10)
-                ->withQueryString()
-                        ->through(
-                                fn ($user) =>
-                                [
-                                    // dd($user),
-                                    'id' => $user->id,
-                                    'name' => $user->name,
-                                    'email' => $user->email,
-                                    $cur_user = User::find($user->user_id),
-                                    'role' => $cur_user->getRoleNames()[0],
-                                    // 'delete' => Year::where('company_id', $comp->id)->first() != null ? true : false,
-                                ],
-                            );
+                    $year->users()->getQuery()->paginate(10)
+                    ->withQueryString()
+                    ->through(
+                        fn ($user) =>
+                        [
+                            // dd($user),
+                            'id' => $user->id,
+                            'name' => $user->name,
+                            'email' => $user->email,
+                            $cur_user = User::find($user->user_id),
+                            'role' => $cur_user->getRoleNames()[0],
+                            // 'delete' => Year::where('company_id', $comp->id)->first() != null ? true : false,
+                        ],
+                    );
 
                 if (request('search')) {
                     $query->where('name', 'LIKE', '%' . request('search') . '%');
@@ -60,14 +58,14 @@ class TeamController extends Controller
                 // For ant-design data table ---------
 
                 $obj_data = $year->users()->get();
-                $mapped_data = $obj_data->map(function($user, $key) {
-                return [
-                    'id' => $user->id,
-                    'name' => $user->name,
-                    'email' => $user->email,
-                    $cur_user = User::find($user->id),
-                    'role' => $cur_user->getRoleNames()[0],
-                    // 'delete' => Year::where('company_id', $comp->id)->first() != null ? true : false,
+                $mapped_data = $obj_data->map(function ($user, $key) {
+                    return [
+                        'id' => $user->id,
+                        'name' => $user->name,
+                        'email' => $user->email,
+                        $cur_user = User::find($user->id),
+                        'role' => $cur_user->getRoleNames()[0],
+                        // 'delete' => Year::where('company_id', $comp->id)->first() != null ? true : false,
                     ];
                 });
             } else {
@@ -98,17 +96,16 @@ class TeamController extends Controller
 
     public function create()
     {
-        $partner = User::role('partner')->first();
-        $staf = [User::role('staff')->first()];
-        $manager = User::role('manager')->first();
+        $partner = User::where('location', auth()->user()->location)->role('partner')->first();
+        $staf = [User::where('location', auth()->user()->location)->role('staff')->first()];
+        $manager = User::where('location', auth()->user()->location)->role('manager')->first();
 
         // if we have at least one manager, partner and 1 staff only then user can
         // redirect to create page otherwise he/she have to create these
-        if($partner && $manager && $staf)
-        {
-            $partners = User::role('partner')->get();
-            $staff = User::role('staff')->get()->toArray();
-            $managers = User::role('manager')->get();
+        if ($partner && $manager && $staf) {
+            $partners = User::where('location', auth()->user()->location)->role('partner')->get();
+            $staff = User::where('location', auth()->user()->location)->role('staff')->get()->toArray();
+            $managers = User::where('location', auth()->user()->location)->role('manager')->get();
 
             return Inertia::render('Teams/Create', [
                 'partners' => $partners,
@@ -120,17 +117,13 @@ class TeamController extends Controller
                 'manager' => $manager,
             ]);
         } else {
-            if(!$partner)
-            {
+            if (!$partner) {
                 return Redirect::route('teams')->with('warning', 'Partner not found, Can\'t create team without partner.');
-            } elseif(!$manager)
-            {
+            } elseif (!$manager) {
                 return Redirect::route('teams')->with('warning', 'Manager not found, Can\'t create team without manager.');
-            } elseif(!$staf)
-            {
+            } elseif (!$staf) {
                 return Redirect::route('teams')->with('warning', 'Staff not found, Can\'t create team without staff.');
-            } else
-            {
+            } else {
                 return Redirect::route('teams')->with('warning', 'User not found, May some members are missing to create a team.');
             }
         }
@@ -147,97 +140,92 @@ class TeamController extends Controller
         // DB::transaction(function () {
         //     try {
 
-                $year = Year::find(session('year_id'));
-                $company = Company::find(session('company_id'));
+        $year = Year::find(session('year_id'));
+        $company = Company::find(session('company_id'));
 
-                $partner_id = Request::input('partner');
-                $manager_id = Request::input('manager');
+        $partner_id = Request::input('partner');
+        $manager_id = Request::input('manager');
 
-                /* attaching the users with the company & year to create team
+        /* attaching the users with the company & year to create team
                     we have pivot table of companies_users & years_users
                     to create team we attach the user with the year because team can be change for next year
                     and attaching company to the user because we showing/listing companies according to the users
                 */
 
-                // checking ig already we have connection with this user or not
-                if(!$company->users()->where('user_id', $partner_id)->first())
-                {
-                    $company->users()->attach($partner_id);
+        // checking ig already we have connection with this user or not
+        if (!$company->users()->where('user_id', $partner_id)->first()) {
+            $company->users()->attach($partner_id);
+            Setting::create([
+                'key' => 'active_company',
+                'value' => $company->id,
+                'user_id' => $partner_id,
+            ]);
+            Setting::create([
+                'key' => 'active_year',
+                'value' => $year->id,
+                'user_id' => $partner_id,
+            ]);
+        }
+        if (!$company->users()->where('user_id', $manager_id)->first()) {
+            $company->users()->attach($manager_id);
+            Setting::create([
+                'key' => 'active_company',
+                'value' => $company->id,
+                'user_id' => $manager_id,
+            ]);
+            Setting::create([
+                'key' => 'active_year',
+                'value' => $year->id,
+                'user_id' => $manager_id,
+            ]);
+        }
+
+        $year->users()->attach($partner_id);
+        $year->users()->attach($manager_id);
+
+        //staff can be multiple that's why using foreach loop
+        // if user select only one staff member
+        $staff = Request::input('staff');
+        if (is_int($staff)) {
+            $staf = $staff;
+            $year->users()->attach($staf);
+            if (!$company->users()->where('user_id', $staf)->first()) {
+                $company->users()->attach($staf);
+                Setting::create([
+                    'key' => 'active_company',
+                    'value' => $company->id,
+                    'user_id' => $staf,
+                ]);
+                Setting::create([
+                    'key' => 'active_year',
+                    'value' => $year->id,
+                    'user_id' => $staf,
+                ]);
+            }
+        } else {
+            foreach ($staff as $staf) {
+                $year->users()->attach($staf);
+                if (!$company->users()->where('user_id', $staf)->first()) {
+                    $company->users()->attach($staf);
                     Setting::create([
                         'key' => 'active_company',
                         'value' => $company->id,
-                        'user_id' => $partner_id,
+                        'user_id' => $staf,
                     ]);
                     Setting::create([
                         'key' => 'active_year',
                         'value' => $year->id,
-                        'user_id' => $partner_id,
+                        'user_id' => $staf,
                     ]);
                 }
-                if(!$company->users()->where('user_id', $manager_id)->first())
-                {
-                    $company->users()->attach($manager_id);
-                    Setting::create([
-                        'key' => 'active_company',
-                        'value' => $company->id,
-                        'user_id' => $manager_id,
-                    ]);
-                    Setting::create([
-                        'key' => 'active_year',
-                        'value' => $year->id,
-                        'user_id' => $manager_id,
-                    ]);
-                }
-
-                $year->users()->attach($partner_id);
-                $year->users()->attach($manager_id);
-
-                //staff can be multiple that's why using foreach loop
-                // if user select only one staff member
-                $staff = Request::input('staff');
-                if(is_int($staff)) {
-                    $staf = $staff;
-                    $year->users()->attach($staf);
-                    if(!$company->users()->where('user_id', $staf)->first())
-                    {
-                        $company->users()->attach($staf);
-                        Setting::create([
-                            'key' => 'active_company',
-                            'value' => $company->id,
-                            'user_id' => $staf,
-                        ]);
-                        Setting::create([
-                            'key' => 'active_year',
-                            'value' => $year->id,
-                            'user_id' => $staf,
-                        ]);
-                    }
-                } else {
-                    foreach($staff as $staf)
-                    {
-                        $year->users()->attach($staf);
-                        if(!$company->users()->where('user_id', $staf)->first())
-                        {
-                            $company->users()->attach($staf);
-                            Setting::create([
-                                'key' => 'active_company',
-                                'value' => $company->id,
-                                'user_id' => $staf,
-                            ]);
-                            Setting::create([
-                                'key' => 'active_year',
-                                'value' => $year->id,
-                                'user_id' => $staf,
-                            ]);
-                        }
-                    }
-                }
-                session(['team_id' => $year->users()->first()->id]);
-                return Redirect::route('teams')->with('success', 'Team created.');
-            // } catch (Exception $e) {
-            //     return back()->with('error', $e);
-            //     // return $e;
-            // }
+            }
+        }
+        session(['team_id' => $year->users()->first()->id]);
+        return Redirect::route('teams')->with('success', 'Team created.');
+        // } catch (Exception $e) {
+        //     return back()->with('error', $e);
+        //     // return $e;
+        // }
         // });
     }
 
@@ -249,9 +237,9 @@ class TeamController extends Controller
         $manager = $year->users()->role('manager')->get();
         $staf = $year->users()->role('staff')->get();
 
-        $partners = User::role('partner')->get();
-        $staff = User::role('staff')->get();
-        $managers = User::role('manager')->get();
+        $partners = User::where('location', auth()->user()->location)->role('partner')->get();
+        $staff = User::where('location', auth()->user()->location)->role('staff')->get();
+        $managers = User::where('location', auth()->user()->location)->role('manager')->get();
 
         return Inertia::render('Teams/Edit', [
             'partners' => $partners,
@@ -275,15 +263,32 @@ class TeamController extends Controller
 
         $year = Year::find(session('year_id'));
         $pre_users = $year->users()->get();
-        foreach($pre_users as $pre_user)
-        {
+        $settings_year = Setting::where('value', session('year_id'))
+            ->where('key', 'active_year')->get();
+
+        foreach ($settings_year as $s_year) {
+            if ($s_year) {
+                $s_year->delete();
+            }
+        }
+
+        $settings_company = Setting::where('value', session('company_id'))
+            ->where('key', 'active_company')->get();
+
+        foreach ($settings_company as $s_company) {
+            if ($s_company) {
+                $s_company->delete();
+            }
+        }
+
+
+        foreach ($pre_users as $pre_user) {
             $year->users()->detach($pre_user->id);
         }
 
         $company = Company::find(session('company_id'));
         $pre_users = $company->users()->get();
-        foreach($pre_users as $pre_user)
-        {
+        foreach ($pre_users as $pre_user) {
             $company->users()->detach($pre_user->id);
         }
 
@@ -293,14 +298,100 @@ class TeamController extends Controller
         $staff = Request::input('staff');
 
         $year->users()->attach($partner_id);
-        $year->users()->attach($manager_id);
         $company->users()->attach($partner_id);
+        // dd($partner_id[0]);
+        if (is_int($partner_id)) {
+            Setting::create([
+                'key' => 'active_company',
+                'value' => $company->id,
+                'user_id' => $partner_id,
+            ]);
+            Setting::create([
+                'key' => 'active_year',
+                'value' => $year->id,
+                'user_id' => $partner_id,
+            ]);
+        } else {
+            Setting::create([
+                'key' => 'active_company',
+                'value' => $company->id,
+                'user_id' => $partner_id[0],
+            ]);
+            Setting::create([
+                'key' => 'active_year',
+                'value' => $year->id,
+                'user_id' => $partner_id[0],
+            ]);
+        }
+
+        $year->users()->attach($manager_id);
         $company->users()->attach($manager_id);
-        foreach($staff as $staf)
-        {
+        if (is_int($manager_id)) {
+            Setting::create([
+                'key' => 'active_company',
+                'value' => $company->id,
+                'user_id' => $manager_id,
+            ]);
+            Setting::create([
+                'key' => 'active_year',
+                'value' => $year->id,
+                'user_id' => $manager_id,
+            ]);
+        } else {
+            Setting::create([
+                'key' => 'active_company',
+                'value' => $company->id,
+                'user_id' => $manager_id[0],
+            ]);
+            Setting::create([
+                'key' => 'active_year',
+                'value' => $year->id,
+                'user_id' => $manager_id[0],
+            ]);
+        }
+        foreach ($staff as $staf) {
             $year->users()->attach($staf);
             $company->users()->attach($staf);
+            Setting::create([
+                'key' => 'active_company',
+                'value' => $company->id,
+                'user_id' => $staf,
+            ]);
+            Setting::create([
+                'key' => 'active_year',
+                'value' => $year->id,
+                'user_id' => $staf,
+            ]);
         }
+
+        // if (is_int($staff)) {
+        //     Setting::create([
+        //         'key' => 'active_company',
+        //         'value' => $company->id,
+        //         'user_id' => $staf,
+        //     ]);
+        //     Setting::create([
+        //         'key' => 'active_year',
+        //         'value' => $year->id,
+        //         'user_id' => $staf,
+        //     ]);
+        // } else {
+        //     foreach ($staff as $staf) {
+        //         dd(!$company->users()->where('user_id', $staf)->first());
+        //         Setting::create([
+        //             'key' => 'active_company',
+        //             'value' => $company->id,
+        //             'user_id' => $staf,
+        //         ]);
+        //         Setting::create([
+        //             'key' => 'active_year',
+        //             'value' => $year->id,
+        //             'user_id' => $staf,
+        //         ]);
+        //     }
+        // }
+
+
         session(['team_id' => $year->users()->first()->id]);
         return Redirect::route('teams')->with('success', 'Team updated.');
     }

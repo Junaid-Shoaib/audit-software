@@ -1343,11 +1343,11 @@ select {
 .w-36 {
   width: 9rem;
 }
-.w-64 {
-  width: 16rem;
-}
 .w-32 {
   width: 8rem;
+}
+.w-64 {
+  width: 16rem;
 }
 .w-2\/5 {
   width: 40%;
@@ -1552,13 +1552,13 @@ select {
   border-top-right-radius: 9999px;
   border-bottom-right-radius: 9999px;
 }
-.rounded-l-2xl {
-  border-top-left-radius: 1rem;
-  border-bottom-left-radius: 1rem;
-}
 .rounded-r-2xl {
   border-top-right-radius: 1rem;
   border-bottom-right-radius: 1rem;
+}
+.rounded-l-2xl {
+  border-top-left-radius: 1rem;
+  border-bottom-left-radius: 1rem;
 }
 .border {
   border-width: 1px;
