@@ -70,6 +70,10 @@ Route::post('trial/read', Excel::class)->name('trial.read')->middleware('auth');
 Route::get('lead', [Excel::class, 'lead'])->name('lead')->middleware('auth');
 Route::get('materiality-download', [Excel::class, 'materiality'])->name('materiality')->middleware('auth');
 
+Route::delete('excel', [Excel::class, 'destroy'])
+    ->name('excel.destroy')
+    ->middleware('auth');
+
 //COMPANIES -------------------- STARTS ---------------------------
 Route::get('companies', [CompanyController::class, 'index'])
     ->name('companies')
@@ -105,6 +109,7 @@ Route::get('company-pdf/{fiscal}', [CompanyController::class, 'companypdf'])
 
 
 Route::get('trialpattern', [CompanyController::class, 'trial_pattern'])->name('trial.pattern')->middleware('auth');
+Route::get('uploadedTB', [CompanyController::class, 'uploaded_TB'])->name('trial.uploaded')->middleware('auth');
 
 
 //COMPANIES -------------------- END ---------------------------
