@@ -74,6 +74,9 @@ Route::delete('excel', [Excel::class, 'destroy'])
     ->name('excel.destroy')
     ->middleware('auth');
 
+Route::get('trialpattern', [Excel::class, 'trial_pattern'])->name('trial.pattern')->middleware('auth');
+Route::get('uploadedTB', [Excel::class, 'uploaded_TB'])->name('trial.uploaded')->middleware('auth');
+
 //COMPANIES -------------------- STARTS ---------------------------
 Route::get('companies', [CompanyController::class, 'index'])
     ->name('companies')
@@ -106,10 +109,6 @@ Route::get('companies/coch/{id}', [CompanyController::class, 'coch'])
 Route::get('company-pdf/{fiscal}', [CompanyController::class, 'companypdf'])
 ->name('companypdf')
 ->middleware('auth');
-
-
-Route::get('trialpattern', [CompanyController::class, 'trial_pattern'])->name('trial.pattern')->middleware('auth');
-Route::get('uploadedTB', [CompanyController::class, 'uploaded_TB'])->name('trial.uploaded')->middleware('auth');
 
 
 //COMPANIES -------------------- END ---------------------------

@@ -300,13 +300,6 @@ class CompanyController extends FileMangementController
         }
     }
 
-
-    // Trial Template Download Function
-    public function trial_pattern()
-    {
-        return response()->download(public_path('/trial_upload.xlsx'));
-    }
-
     //CompanyPDF DOwnload
     public function companypdf($fiscal)
     {
