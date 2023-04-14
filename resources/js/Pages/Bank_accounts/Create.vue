@@ -26,7 +26,10 @@
                     {{ firstError }}
                 </div>
                 <!-- <form @submit.prevent="form.post(route('bank_accounts.store'))"> -->
-                <Form :form="form" @submit.prevent="submit">
+                <Form
+                    :form="form"
+                    @submit.prevent="form.post(route('bank_accounts.store'))"
+                >
                     <div class="ant-table-content">
                         <table class="w-full">
                             <thead class="ant-table-thead">
@@ -140,7 +143,7 @@
                             class="m-1"
                             type="primary"
                             :disabled="form.processing"
-                            @click="submit"
+                            htmlType="submit"
                             >Submit</Button
                         >
                     </Formitem>
@@ -235,9 +238,9 @@ export default {
     },
 
     methods: {
-        submit() {
-            this.$inertia.post(route("bank_accounts.store"), this.form);
-        },
+        // submit() {
+        //     this.$inertia.post(route("bank_accounts.store"), this.form);
+        // },
 
         addRow() {
             this.form.accounts.push({
