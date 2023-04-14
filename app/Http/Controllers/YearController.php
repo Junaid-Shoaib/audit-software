@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Http\Request as Req;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Year;
 use App\Models\Setting;
@@ -16,25 +17,29 @@ use Illuminate\Support\Facades\Storage;
 
 class YearController extends FileMangementController
 {
-    public function index()
+    public function index(Req $req)
     {
+        // session()->forget('team_id');
+        // dd(session('team_id'));
         if (Company::first()) {
-            $query = Year::query();
-            if(request()->has(
-            'search'
-            )){
-            $obj_data = Year::where(
-                'name'
-                ,'LIKE', '%'.$req->search.'%')
-            ->where('company_id', session('company_id'));
+            // $query = Year::query();
 
-        }
-        else{
-            $obj_data = Year::where('company_id', session('company_id'));
-        }
+            if (request()->has(
+                'search'
+            )) {
+                $obj_data =
+                    auth()->user()->years()->where(
+                        'begin',
+                        'LIKE',
+                        '%' . $req->search . '%'
+                    )
+                    ->wherePivot('company_id', session('company_id'));
+            } else {
+                $obj_data = auth()->user()->years()->wherePivot('company_id', session('company_id'));
+            }
 
-        $mapped_data = $obj_data->get()->map(function($year, $key) {
-            return [
+            $mapped_data = $obj_data->get()->map(function ($year, $key) {
+                return [
                     $begin = new Carbon($year->begin),
                     $end = new Carbon($year->end),
                     'id' => $year->id,
@@ -47,26 +52,25 @@ class YearController extends FileMangementController
             });
 
             return Inertia::render('Years/Index', [
-            'mapped_data' => $mapped_data,
+                'mapped_data' => $mapped_data,
 
-                'balances' => $query
-                    ->where('company_id', session('company_id'))
-                    ->paginate(10)
-                    ->through(
-                        function ($year) {
-                            return [
-                                $begin = new Carbon($year->begin),
-                                $end = new Carbon($year->end),
-                                'id' => $year->id,
-                                'closed' => $year->closed,
-                                'begin' => $begin->format('F,j Y'),
-                                'end' => $end->format('F,j Y'),
-                                'company_name' => $year->company->name,
-                                'company_id' => $year->company_id,
-                                // 'delete' => Document::where('year_id', $year->id)->first() || $year->id == Year::where('company_id', session('company_id'))->first()->id ? false : true,
-                            ];
-                        },
-                    ),
+                // 'balances' => $query
+                //     ->where('company_id', session('company_id'))
+                //     ->paginate(10)
+                //     ->through(
+                //         function ($year) {
+                //             return [
+                //                 $begin = new Carbon($year->begin),
+                //                 $end = new Carbon($year->end),
+                //                 'id' => $year->id,
+                //                 'closed' => $year->closed,
+                //                 'begin' => $begin->format('F,j Y'),
+                //                 'end' => $end->format('F,j Y'),
+                //                 'company_name' => $year->company->name,
+                //                 'company_id' => $year->company_id,
+                //             ];
+                //         },
+                //     ),
                 'company' => Company::where('id', session('company_id'))->first(),
 
                 'companies' => Auth::user()->companies,
@@ -93,7 +97,14 @@ class YearController extends FileMangementController
             'end' => $newEnd,
             'company_id' => session('company_id'),
         ]);
+        // $year->users()->attach(auth()->user()->id);
+        $year->users()->attach(auth()->user()->id, ['company_id' => session('company_id')]);
         session(['year_id' => $year->id]);
+        if (count($year->users()->get()) > 2) {
+            session(['team_id' => $year->users()->first()->id]);
+        } else {
+            session(['team_id' => null]);
+        }
 
         Storage::makeDirectory('/public/' . $year->company_id . '/' . $year->id);
         // Calling the function from DefaultFoldersCreation controller ---- to generate the default folder
@@ -156,8 +167,8 @@ class YearController extends FileMangementController
 
         $years = Year::find($id);
         if ($years) {
-            if ($years->users()->first()) {
-                session(['team_id' => $active_yr->user()->first()->id]);
+            if (count($years->users()->get()) > 2) {
+                session(['team_id' => $years->users()->first()->id]);
             } else {
                 session(['team_id' => null]);
             }

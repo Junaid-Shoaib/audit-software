@@ -69,6 +69,11 @@ class User extends Authenticatable
         return $this->belongsToMany('App\Models\Company', 'companies_users');
     }
 
+    public function years()
+    {
+        return $this->belongsToMany('App\Models\Year', 'years_users');
+    }
+
     public function settings()
     {
         return $this->hasMany('App\Models\Setting', 'user_id');

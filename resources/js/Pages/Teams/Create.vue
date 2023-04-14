@@ -75,7 +75,7 @@
                 </FormItem>
 
                 <FormItem class="text-right">
-                    <Button type="primary" @click="submit">Create Team</Button>
+                <Button type="primary"  @click="submit">Create Team</Button>
                 </FormItem>
             </Form>
         </div>

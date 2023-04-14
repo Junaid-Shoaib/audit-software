@@ -184,37 +184,56 @@ class CompanyController extends FileMangementController
                 'company_id' => $company->id,
             ]);
 
+
+
+
+            $year->users()->attach(auth()->user()->id, ['company_id' => $company->id]);
+
             // Create Year Functionality End
 
-            // Create Active Company Setting
-            Setting::create([
-                'key' => 'active_company',
-                'value' => $company->id,
-                'user_id' => Auth::user()->id,
-            ]);
 
-            // Create Active Year Setting
-            Setting::create([
-                'key' => 'active_year',
-                'value' => $year->id,
-                'user_id' => Auth::user()->id,
-            ]);
+            //  Setting Create & update Functionality Start
+
+            $set_comp = Setting::where('user_id', Auth::user()->id)->where('key', 'active_company')->first();
+            $set_year = Setting::where('user_id', Auth::user()->id)->where('key', 'active_year')->first();
+            if ($set_comp) {
+                $set_comp->value = $company->id;
+                $set_comp->save();
+            } else {
+                // Create Active Company Setting
+                Setting::create([
+                    'key' => 'active_company',
+                    'value' => $company->id,
+                    'user_id' => Auth::user()->id,
+                ]);
+            }
+            if ($set_year) {
+                $set_year->value = $year->id;
+                $set_year->save();
+            } else {
+                // Create Active Year Setting
+                Setting::create([
+                    'key' => 'active_year',
+                    'value' => $year->id,
+                    'user_id' => Auth::user()->id,
+                ]);
+            }
 
             session(['company_id' => $company->id]);
             session(['year_id' => $year->id]);
 
+            //  Setting Create & update Functionality end
+
+
             Storage::makeDirectory('/public/' . $company->id);
 
             Storage::makeDirectory('/public/' . $company->id . '/' . $year->id);
-
-
             // Calling the function from DefaultFoldersCreation controller ---- to generate the default folder
             $this->defaultFolders();
         });
         session(['team_id' => null]);
         return Redirect::route('companies')->with('success', 'Company created');
     }
-
     //Edit Function
     public function edit(Company $company)
     {

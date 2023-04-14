@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+
 // use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\User;
@@ -82,10 +83,7 @@ class TeamController extends Controller
                 // ],
                 'balances' => $query,
                 'filters' => request()->all(['search', 'field', 'direction']),
-                'company' => Company::where('id', session('company_id'))->first(),
-                'companies' => Auth::user()->companies,
-                'year' => Year::where('company_id', session('company_id'))->where('id', session('year_id'))->first(),
-                'years' => Year::where('company_id', session('company_id'))->get(),
+
                 'team_exists' => count($query) > 0 ? true : false,
             ]);
         } else {
@@ -137,14 +135,25 @@ class TeamController extends Controller
             'staff' => ['required'],
         ]);
 
-        // DB::transaction(function () {
-        //     try {
 
         $year = Year::find(session('year_id'));
         $company = Company::find(session('company_id'));
 
+
+        $pre_team_memb = $year->users()->get();
+        foreach ($pre_team_memb as $team_mem) {
+            $year->users()->detach($team_mem->id, ['company_id' => $company->id]);
+        }
+
+
         $partner_id = Request::input('partner');
         $manager_id = Request::input('manager');
+        $auth_connect = false;
+        if (Auth::user()->id == $partner_id || Auth::user()->id == $manager_id) {
+            $auth_connect = true;
+        }
+
+
 
         /* attaching the users with the company & year to create team
                     we have pivot table of companies_users & years_users
@@ -155,63 +164,102 @@ class TeamController extends Controller
         // checking ig already we have connection with this user or not
         if (!$company->users()->where('user_id', $partner_id)->first()) {
             $company->users()->attach($partner_id);
-            Setting::create([
-                'key' => 'active_company',
-                'value' => $company->id,
-                'user_id' => $partner_id,
-            ]);
-            Setting::create([
-                'key' => 'active_year',
-                'value' => $year->id,
-                'user_id' => $partner_id,
-            ]);
+            // Setting::create([
+            //     'key' => 'active_company',
+            //     'value' => $company->id,
+            //     'user_id' => $partner_id,
+            // ]);
+            // Setting::create([
+            //     'key' => 'active_year',
+            //     'value' => $year->id,
+            //     'user_id' => $partner_id,
+            // ]);
+            $set_comp = Setting::where('user_id', $partner_id)->where('key', 'active_company')->first();
+            $set_year = Setting::where('user_id', $partner_id)->where('key', 'active_year')->first();
+            if ($set_comp) {
+                $set_comp->value = $company->id;
+                $set_comp->save();
+            } else {
+                // Create Active Company Setting
+                Setting::create([
+                    'key' => 'active_company',
+                    'value' => $company->id,
+                    'user_id' => $partner_id,
+                ]);
+            }
+            if ($set_year) {
+                $set_year->value = $year->id;
+                $set_year->save();
+            } else {
+                // Create Active Year Setting
+                Setting::create([
+                    'key' => 'active_year',
+                    'value' => $year->id,
+                    'user_id' => $partner_id,
+                ]);
+            }
         }
         if (!$company->users()->where('user_id', $manager_id)->first()) {
             $company->users()->attach($manager_id);
-            Setting::create([
-                'key' => 'active_company',
-                'value' => $company->id,
-                'user_id' => $manager_id,
-            ]);
-            Setting::create([
-                'key' => 'active_year',
-                'value' => $year->id,
-                'user_id' => $manager_id,
-            ]);
+            $set_comp = Setting::where('user_id', $manager_id)->where('key', 'active_company')->first();
+            $set_year = Setting::where('user_id', $manager_id)->where('key', 'active_year')->first();
+            if ($set_comp) {
+                $set_comp->value = $company->id;
+                $set_comp->save();
+            } else {
+                // Create Active Company Setting
+                Setting::create([
+                    'key' => 'active_company',
+                    'value' => $company->id,
+                    'user_id' => $manager_id,
+                ]);
+            }
+            if ($set_year) {
+                $set_year->value = $year->id;
+                $set_year->save();
+            } else {
+                // Create Active Year Setting
+                Setting::create([
+                    'key' => 'active_year',
+                    'value' => $year->id,
+                    'user_id' => $manager_id,
+                ]);
+            }
         }
 
-        $year->users()->attach($partner_id);
-        $year->users()->attach($manager_id);
+        $year->users()->attach($partner_id, ['company_id' => session('company_id')]);
+        $year->users()->attach($manager_id, ['company_id' => session('company_id')]);
 
         //staff can be multiple that's why using foreach loop
         // if user select only one staff member
         $staff = Request::input('staff');
         if (is_int($staff)) {
             $staf = $staff;
-            $year->users()->attach($staf);
-            if (!$company->users()->where('user_id', $staf)->first()) {
-                $company->users()->attach($staf);
-                Setting::create([
-                    'key' => 'active_company',
-                    'value' => $company->id,
-                    'user_id' => $staf,
-                ]);
-                Setting::create([
-                    'key' => 'active_year',
-                    'value' => $year->id,
-                    'user_id' => $staf,
-                ]);
+            if (Auth::user()->id == $staf) {
+                $auth_connect = true;
             }
-        } else {
-            foreach ($staff as $staf) {
-                $year->users()->attach($staf);
-                if (!$company->users()->where('user_id', $staf)->first()) {
-                    $company->users()->attach($staf);
+            $year->users()->attach($staf, ['company_id' => session('company_id')]);
+            if (!$company->users()->where('user_id', $staf)->first()) {
+                $company->users()->attach($staf, ['company_id' => session('company_id')]);
+
+                $set_comp = Setting::where('user_id', $staf)->where('key', 'active_company')->first();
+                $set_year = Setting::where('user_id', $staf)->where('key', 'active_year')->first();
+                if ($set_comp) {
+                    $set_comp->value = $company->id;
+                    $set_comp->save();
+                } else {
+                    // Create Active Company Setting
                     Setting::create([
                         'key' => 'active_company',
                         'value' => $company->id,
                         'user_id' => $staf,
                     ]);
+                }
+                if ($set_year) {
+                    $set_year->value = $year->id;
+                    $set_year->save();
+                } else {
+                    // Create Active Year Setting
                     Setting::create([
                         'key' => 'active_year',
                         'value' => $year->id,
@@ -219,14 +267,152 @@ class TeamController extends Controller
                     ]);
                 }
             }
+            if (count($year->users()->get()) > 2) {
+                session(['team_id' => 54554]);
+            } else {
+                session(['team_id' => null]);
+            }
+        } else {
+            foreach ($staff as $staf) {
+                if (Auth::user()->id == $staf) {
+                    $auth_connect = true;
+                }
+                $year->users()->attach($staf, ['company_id' => session('company_id')]);
+                if (!$company->users()->where('user_id', $staf)->first()) {
+                    $company->users()->attach($staf, ['company_id' => session('company_id')]);
+
+                    $set_comp = Setting::where('user_id', $staf)->where('key', 'active_company')->first();
+                    $set_year = Setting::where('user_id', $staf)->where('key', 'active_year')->first();
+                    if ($set_comp) {
+                        $set_comp->value = $company->id;
+                        $set_comp->save();
+                    } else {
+                        // Create Active Company Setting
+                        Setting::create([
+                            'key' => 'active_company',
+                            'value' => $company->id,
+                            'user_id' => $staf,
+                        ]);
+                    }
+                    if ($set_year) {
+                        $set_year->value = $year->id;
+                        $set_year->save();
+                    } else {
+                        // Create Active Year Setting
+                        Setting::create([
+                            'key' => 'active_year',
+                            'value' => $year->id,
+                            'user_id' => $staf,
+                        ]);
+                    }
+                }
+            }
+            if (count($year->users()->get()) > 2) {
+                session(['team_id' => 54554]);
+            } else {
+                session(['team_id' => null]);
+            }
         }
-        session(['team_id' => $year->users()->first()->id]);
-        return Redirect::route('teams')->with('success', 'Team created.');
-        // } catch (Exception $e) {
-        //     return back()->with('error', $e);
-        //     // return $e;
+
+        if (!$auth_connect) {
+            $year->users()->detach(Auth::user()->id, ['company_id' => $company->id]);
+
+            $cur_comp_year = Year::where('company_id', $company->id)->where('id', '!=', $year->id)->get();
+            $auth_user_year = Auth::user()->years()->wherePivot('company_id', session('company_id'))->get();
+            if (count($cur_comp_year) > 0 && count($auth_user_year) > 0) {
+                $condition_break = true;
+                foreach ($cur_comp_year as $comp_year) {
+                    foreach ($auth_user_year as $auth_year) {
+                        if ($comp_year->id == $auth_year->id) {
+                            // $comp_year->users()->attach($auth_year->id, ['company_id' => $company->id]);
+                            session(['year_id' => $auth_year->id]);
+                            $set_year = Setting::where('user_id', $staf)->where('key', 'active_year')->first();
+                            $set_year->value = $auth_year->id;
+                            $set_year->save();
+                            if (count($auth_year->users()->get()) > 2) {
+                                // session(['team_id' => $auth_year->users()->first()->id]);
+                                session(['team_id' => 25252]);
+                            } else {
+                                session(['team_id' => null]);
+                            }
+                            $condition_break = false;
+                            break;
+                        }
+                    }
+                }
+                if ($condition_break) {
+                    $company->users()->detach(Auth::user()->id);
+                    $auth_set_comp = Setting::where('user_id', Auth::user()->id)->where('key', 'active_company')->first();
+                    $auth_set_year = Setting::where('user_id', Auth::user()->id)->where('key', 'active_year')->first();
+                    if (Auth::user()->companies()->first()) {
+                        $auth_comp = Auth::user()->companies()->first()->id;
+
+                        $year_to_set = Year::where('company_id', $auth_comp)->latest()->first();
+                        $auth_set_comp->value = $auth_comp;
+                        $auth_set_comp->save();
+                        $auth_set_year->value = $year_to_set->id;
+                        $auth_set_year->save();
+                        session(['company_id' => $auth_comp]);
+                        session(['year_id' => $year_to_set->id]);
+                        if (count($year_to_set->users()->get()) > 2) {
+                            // session(['team_id' => $auth_year->users()->first()->id]);
+                            session(['team_id' => 3563563]);
+                        } else {
+                            session(['team_id' => null]);
+                        }
+                    } else {
+                        $auth_set_comp->delete();
+                        $auth_set_year->delete();
+                        session(['company_id' => null]);
+                        session(['year_id' => null]);
+                        session(['team_id' => null]);
+                    }
+                }
+            } else {
+                $company->users()->detach(Auth::user()->id);
+                $auth_set_comp = Setting::where('user_id', Auth::user()->id)->where('key', 'active_company')->first();
+                $auth_set_year = Setting::where('user_id', Auth::user()->id)->where('key', 'active_year')->first();
+                if (Auth::user()->companies()->first()) {
+                    $auth_comp = Auth::user()->companies()->first()->id;
+
+                    $year_to_set = Year::where('company_id', $auth_comp)->latest()->first();
+                    $auth_set_comp->value = $auth_comp;
+                    $auth_set_comp->save();
+                    $auth_set_year->value = $year_to_set->id;
+                    $auth_set_year->save();
+                    session(['company_id' => $auth_comp]);
+                    session(['year_id' => $year_to_set->id]);
+                    if (count($year_to_set->users()->get()) > 2) {
+                        // session(['team_id' => $year_to_set->users()->first()->id]);
+                        session(['team_id' => 1451451]);
+                    } else {
+                        session(['team_id' => null]);
+                    }
+                } else {
+                    $auth_set_comp->delete();
+                    $auth_set_year->delete();
+                    session(['company_id' => null]);
+                    session(['year_id' => null]);
+                    session(['team_id' => null]);
+                }
+            }
+        }
+
+        // if ($year) {
+
+        //     if (count($year->users()->get()) > 2) {
+        //         session(['team_id' => 54554]);
+        //     } else {
+        //         session(['team_id' => null]);
+        //     }
+        // } else {
+        //     session(['team_id' => null]);
         // }
-        // });
+
+
+
+
+        return Redirect::route('teams')->with('success', 'Team created.');
     }
 
     public function edit()
@@ -260,6 +446,7 @@ class TeamController extends Controller
             'staff' => ['required'],
         ]);
         // same scenerio as storing team
+
 
         $year = Year::find(session('year_id'));
         $pre_users = $year->users()->get();
@@ -364,35 +551,27 @@ class TeamController extends Controller
             ]);
         }
 
-        // if (is_int($staff)) {
-        //     Setting::create([
-        //         'key' => 'active_company',
-        //         'value' => $company->id,
-        //         'user_id' => $staf,
-        //     ]);
-        //     Setting::create([
-        //         'key' => 'active_year',
-        //         'value' => $year->id,
-        //         'user_id' => $staf,
-        //     ]);
-        // } else {
-        //     foreach ($staff as $staf) {
-        //         dd(!$company->users()->where('user_id', $staf)->first());
-        //         Setting::create([
-        //             'key' => 'active_company',
-        //             'value' => $company->id,
-        //             'user_id' => $staf,
-        //         ]);
-        //         Setting::create([
-        //             'key' => 'active_year',
-        //             'value' => $year->id,
-        //             'user_id' => $staf,
-        //         ]);
-        //     }
-        // }
+        $user = User::where('email', auth()->user()->email)->first();
+        if ($user) {
 
+            if ($user->settings()->where('key', 'active_company')->first()) {
+                session(['company_id' => $user->settings()->where('key', 'active_company')->first()->value]);
+            } else {
+                session(['company_id' => null]);
+            }
+            if ($user->settings()->where('key', 'active_year')->first()) {
+                session(['year_id' => $user->settings()->where('key', 'active_year')->first()->value]);
+                $active_yr = Year::where('id', session('year_id'))->first();
+                if ($active_yr->users()->first()) {
+                    session(['team_id' => $active_yr->users()->first()->id]);
+                } else {
+                    session(['team_id' => null]);
+                }
+            } else {
+                session(['year_id' => null]);
+            }
+        }
 
-        session(['team_id' => $year->users()->first()->id]);
         return Redirect::route('teams')->with('success', 'Team updated.');
     }
 }

@@ -53,7 +53,11 @@ class HandleInertiaRequests extends Middleware
                 : null
                 : Company::get(),
             'year' => Year::where('company_id', session('company_id'))->where('id', session('year_id'))->first(),
-            'years' => Year::where('company_id', session('company_id'))->get(),
+            'years' => Auth::check() ?
+                Auth::user()->years() ?
+                Auth::user()->years()->wherePivot('company_id', session('company_id'))->get()
+                : null
+                : Year::get(),
             'team_id' => session('team_id'),
             'team_id' => session('team_id'),
             'flash' => function () use ($request) {

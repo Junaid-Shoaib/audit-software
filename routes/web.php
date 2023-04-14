@@ -107,8 +107,8 @@ Route::get('companies/coch/{id}', [CompanyController::class, 'coch'])
     ->name('companies.coch');
 
 Route::get('company-pdf/{fiscal}', [CompanyController::class, 'companypdf'])
-->name('companypdf')
-->middleware('auth');
+    ->name('companypdf')
+    ->middleware('auth');
 
 
 //COMPANIES -------------------- END ---------------------------
@@ -579,8 +579,8 @@ Route::get('confirmation/edit', [BankConfirmationController::class, 'edit'])
     ->middleware('auth');
 
 Route::put('balances_updated/{id}', [BankConfirmationController::class, 'updated'])
-->name('balances.updated')
-->middleware('auth');
+    ->name('balances.updated')
+    ->middleware('auth');
 
 Route::put('confirmations/{balance}', [BankConfirmationController::class, 'update'])
     ->name('confirmations.update')
@@ -591,12 +591,12 @@ Route::delete('confirmations/{confirmation}', [BankConfirmationController::class
     ->middleware('auth');
 
 Route::get('bankConfig', [BankConfirmationController::class, 'bankConfig'])
-->name('bankConfig')
-->middleware('auth');
+    ->name('bankConfig')
+    ->middleware('auth');
 
 Route::get('bankconfirmUpload/{id}', [BankConfirmationController::class, 'bankconfirmUpload'])
-->name('bankconfirmUpload')
-->middleware('auth');
+    ->name('bankconfirmUpload')
+    ->middleware('auth');
 
 
 Route::get('pd', [BankConfirmationController::class, 'pd'])
@@ -611,8 +611,8 @@ Route::get('word', [BankConfirmationController::class, 'word'])
     ->middleware('auth');
 
 Route::get('branchespdf', [BankConfirmationController::class, 'branchespdf'])
-->name('branchespdf')
-->middleware('auth');
+    ->name('branchespdf')
+    ->middleware('auth');
 
 
 
@@ -640,12 +640,12 @@ Route::get('advisor_confirmationsP/edit', [AdviserConfirmationController::class,
     ->middleware('auth');
 
 Route::put('advisor_updated/{id}', [AdviserConfirmationController::class, 'advisorupload'])
-->name('advisor.updated')
-->middleware('auth');
+    ->name('advisor.updated')
+    ->middleware('auth');
 
 Route::get('advisorconfirmUpload/{id}', [AdviserConfirmationController::class, 'advisorconfirmUpload'])
-->name('advisorconfirmUpload')
-->middleware('auth');
+    ->name('advisorconfirmUpload')
+    ->middleware('auth');
 
 Route::put('advisor_confirmations/{advisor_confirmation}', [AdviserConfirmationController::class, 'update'])
     ->name('advisor_confirmations.update')
@@ -656,12 +656,12 @@ Route::delete('advisor_confirmations/{advisor_confirmation}', [AdviserConfirmati
     ->middleware('auth');
 
 Route::get('advisor_word', [AdviserConfirmationController::class, 'advisor_word'])
-->name('advisor_word')
-->middleware('auth');
+    ->name('advisor_word')
+    ->middleware('auth');
 
 Route::get('advisorspdf', [AdviserConfirmationController::class, 'advisorspdf'])
-->name('advisorspdf')
-->middleware('auth');
+    ->name('advisorspdf')
+    ->middleware('auth');
 
 
 //Confirmation End Route---------------------------------------------------

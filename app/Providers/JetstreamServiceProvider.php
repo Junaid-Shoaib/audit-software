@@ -49,7 +49,7 @@ class JetstreamServiceProvider extends ServiceProvider
                 if ($user->settings()->where('key', 'active_year')->first()) {
                     // session(['company_id'=>$user->settings()->where('key', 'active_company')->first()->value]);
                     session(['year_id' => $user->settings()->where('key', 'active_year')->first()->value]);
-                    $active_yr = Year::where('id' , session('year_id'))->first();
+                    $active_yr = Year::where('id', session('year_id'))->first();
                     if ($active_yr->users()->first()) {
                         session(['team_id' => $active_yr->users()->first()->id]);
                     } else {

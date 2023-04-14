@@ -5,10 +5,10 @@
     </template>
 
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 py-1">
-      <Button v-if="team_exists" @click="edit" size="small"
+      <!-- <Button v-if="team_exists" @click="edit" size="small"
         >Edit your Team</Button
-      >
-      <Button v-else @click="create" size="small">Add Team</Button>
+      > -->
+      <Button @click="create" size="small">Edit Team</Button>
       <Table
         :columns="columns"
         :data-source="mapped_data"
