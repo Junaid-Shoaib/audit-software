@@ -7,7 +7,7 @@
             <div class="">
                 <a-form
                     :form="form"
-                    @submit.prevent="submit"
+                    @submit.prevent="form.post(route('companies.store'))"
                     :label-col="{ span: 4 }"
                     :wrapper-col="{ span: 14 }"
                 >
@@ -288,7 +288,7 @@
                         <a-button
                             type="primary"
                             :disabled="form.processing"
-                            @click="submitForm"
+                            htmlType="submit"
                             >Submit</a-button
                         >
                     </a-form-item>

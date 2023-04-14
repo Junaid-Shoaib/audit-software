@@ -7,7 +7,7 @@
         <div class="max-w-7xl mx-auto pb-2 sm:px-6 lg:px-8 py-4">
             <Form
                 :form="form"
-                @submit.prevent="submit"
+                @submit.prevent="form.post(route('branches.store'))"
                 :label-col="{ span: 4 }"
                 :wrapper-col="{ span: 14 }"
             >
@@ -49,7 +49,12 @@
                     </div>
                 </FormItem>
                 <FormItem class="text-right">
-                    <Button type="primary" @click="submit">Submit</Button>
+                    <Button
+                        type="primary"
+                        htmlType="submit"
+                        :disabled="form.processing"
+                        >Submit</Button
+                    >
                 </FormItem>
             </Form>
 
