@@ -75,7 +75,7 @@
                 </FormItem>
 
                 <FormItem class="text-right">
-                <Button type="primary"  @click="submit">Create Team</Button>
+                    <Button type="primary" @click="submit">Create Team</Button>
                 </FormItem>
             </Form>
         </div>
@@ -117,26 +117,25 @@ export default {
         staff: Object,
         partner: Object,
         manager: Object,
-        staf: Object,
+        staf: Array,
     },
     data() {
         return {
-            // co_id: this.$page.props.co_id,
             partners: this.partners,
             managers: this.managers,
             staff: this.staff,
-
-            //   partner_id: this.partner,
-            //   manager_id: this.manager,
-            //   staff_id: this.staf,
         };
     },
 
     setup(props) {
         const form = useForm({
-            partner: props.partner.id,
-            manager: props.manager.id,
-            staff: props.staf[0].id,
+            partner: props.partner ? props.partner.id : null,
+            manager: props.manager ? props.manager.id : null,
+
+            staff:
+                props.staf.length > 0
+                    ? props.staf.map((item) => item.id)
+                    : null,
         });
         return { form };
     },

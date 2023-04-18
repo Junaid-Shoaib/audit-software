@@ -101,9 +101,27 @@ class TeamController extends Controller
         // if we have at least one manager, partner and 1 staff only then user can
         // redirect to create page otherwise he/she have to create these
         if ($partner && $manager && $staf) {
-            $partners = User::where('location', auth()->user()->location)->role('partner')->get();
-            $staff = User::where('location', auth()->user()->location)->role('staff')->get()->toArray();
-            $managers = User::where('location', auth()->user()->location)->role('manager')->get();
+
+            $year = Year::find(session('year_id'));
+            $partner = $year->users()->role('partner')->first();
+            $manager = $year->users()->role('manager')->first();
+            $staf = $year->users()->role('staff')->get();
+
+
+            // if(!$partners) {
+                $partners = User::where('location', auth()->user()->location)->role('partner')->get();
+            // }
+            // if(!$staff) {
+                $staff = User::where('location', auth()->user()->location)->role('staff')->get();
+            // }
+            // if(!$managers) {
+                $managers = User::where('location', auth()->user()->location)->role('manager')->get();
+            // }
+
+
+
+
+
 
             return Inertia::render('Teams/Create', [
                 'partners' => $partners,
