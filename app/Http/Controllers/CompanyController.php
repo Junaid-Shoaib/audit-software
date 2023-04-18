@@ -307,7 +307,7 @@ class CompanyController extends FileMangementController
 
             $active_yr = Year::where('company_id', $id)->latest()->first();
             session(['year_id' => $active_yr->id]);
-            if ($active_yr->users()->first()) {
+            if (count($active_yr->users()->get()) > 2) {
                 session(['team_id' => $active_yr->users()->first()->id]);
             } else {
                 session(['team_id' => null]);
