@@ -476,8 +476,11 @@ class Excel extends Controller
             $spreadsheet->getSheet($key)->fromArray([$closing - $opening], NULL, 'F' . $j);
             // $div = $this->opn == 0 ? 1 : $this->opn;
             // $res = $div == 1 ? '0' : ($this->cls / $div) * 100;
-            $div = $opening == 0 ? 1 : $opening;
-            $res = $div == 1 ? '1' : ($div / $closing) * 100;
+
+            $div = $opening == 0 || $opening == ''   ? 1 : $opening;
+            $closi = $closing == 0 ? 1 : $closing;
+            $res = $div == 1 ? '0' : ($div / $closi) * 100;
+            $closing = $closi == 1 ? '0' : $closi;
             // $res = $div == 1 ? '0' : ($closing / $div) * 100;
             $spreadsheet->getSheet($key)->fromArray([round($res, 2) . '%'], NULL, 'G' . $j);
             $open += $opening;
@@ -499,8 +502,11 @@ class Excel extends Controller
             $spreadsheet->getSheet($key)->fromArray([$acc_closing], NULL, 'D' . $j);
             $spreadsheet->getSheet($key)->fromArray([$acc_opening], NULL, 'E' . $j);
             $spreadsheet->getSheet($key)->fromArray([$acc_closing - $acc_opening], NULL, 'F' . $j);
-            $divis = $acc_opening == 0 ? 1 : $acc_opening;
-            $resul = $divis == 1 ? '1' : ($acc_closing / $divis) * 100;
+            $divis = $acc_opening == 0 || $acc_opening == '' ? 1 : $acc_opening;
+            $acc_closi = $acc_closing  == 0 ? 1 : $acc_closing;
+            $resul = $divis == 1 ? '0' : ($acc_closi / $divis) * 100;
+            $acc_closing = $acc_closi  == 1 ? '0' : $acc_closi;
+
             $spreadsheet->getSheet($key)->fromArray([round($resul, 2) . '%'], NULL, 'G' . $j);
             $j++;
             $clos += abs($acc['trials']['cls_credit'] - $acc['trials']['cls_debit']);
@@ -515,8 +521,11 @@ class Excel extends Controller
         $spreadsheet->getSheet($key)->fromArray([$clos], NULL, 'D' . $j);
         $spreadsheet->getSheet($key)->fromArray([$open], NULL, 'E' . $j);
         $spreadsheet->getSheet($key)->fromArray([$clos - $open], NULL, 'F' . $j);
-        $divi = $open == 0 ? 1 : $open;
-        $resu = $divi == 1 ? '1' : ($clos / $divi) * 100;
+        $divi = $open == 0 || $open == '' ? 1 : $open;
+        $closin = $clos == 0 ? 1 : $clos;
+        $resu = $divi == 1 ? '0' : ($closin / $divi) * 100;
+        $clos = $closin == 1 ? '0' : $closin;
+
         $spreadsheet->getSheet($key)->fromArray([round($resu, 2) . '%'], NULL, 'G' . $j);
 
         foreach ($acc_grp['children'] as $k => $children) {
