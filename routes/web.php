@@ -32,6 +32,7 @@ use App\Http\Controllers\AdviserConfirmationController;
 
 // To read Excel file
 use App\Http\Controllers\Excel;
+use App\Http\Controllers\MaterialityController;
 
 /*
 |--------------------------------------------------------------------------
@@ -63,12 +64,11 @@ Route::middleware([
     })->name('dashboard');
 });
 
-
 // To read the Excel File
 Route::get('trial', [Excel::class, 'index'])->name('trial.index')->middleware('auth');
 Route::post('trial/read', Excel::class)->name('trial.read')->middleware('auth');
 Route::get('lead', [Excel::class, 'lead'])->name('lead')->middleware('auth');
-Route::get('materiality-download', [Excel::class, 'materiality'])->name('materiality')->middleware('auth');
+
 
 Route::delete('excel', [Excel::class, 'destroy'])
     ->name('excel.destroy')
@@ -76,6 +76,27 @@ Route::delete('excel', [Excel::class, 'destroy'])
 
 Route::get('trialpattern', [Excel::class, 'trial_pattern'])->name('trial.pattern')->middleware('auth');
 Route::get('uploadedTB', [Excel::class, 'uploaded_TB'])->name('trial.uploaded')->middleware('auth');
+
+//Materiality -------------------- STARTS ---------------------------
+Route::get('materialities', [MaterialityController::class, 'index'])
+    ->name('materialities')
+    ->middleware('auth');
+Route::get('materiality-download', [MaterialityController::class, 'materiality'])->name('materiality')->middleware('auth');
+
+
+Route::get('rsc', [MaterialityController::class, 'rsc'])
+    ->name('rsc')
+    ->middleware('auth');
+Route::get('rsc-download', [MaterialityController::class, 'rsc_download'])->name('rsc_download')->middleware('auth');
+
+
+Route::get('risk-level', [MaterialityController::class, 'risk_level'])
+    ->name('risk_level')
+    ->middleware('auth');
+
+Route::get('risk-level-download', [MaterialityController::class, 'risk_level_download'])->name('risk_level_download')->middleware('auth');
+//Materiality -------------------- End ---------------------------
+
 
 //COMPANIES -------------------- STARTS ---------------------------
 Route::get('companies', [CompanyController::class, 'index'])

@@ -476,10 +476,10 @@ class Excel extends Controller
             $spreadsheet->getSheet($key)->fromArray([$closing - $opening], NULL, 'F' . $j);
             // $div = $this->opn == 0 ? 1 : $this->opn;
             // $res = $div == 1 ? '0' : ($this->cls / $div) * 100;
-
-            $div = $opening == 0 || $opening == ''   ? 1 : $opening;
+            $dif = $closing - $opening;
+            // $div = $opening == 0 || $opening == ''   ? 1 : $opening;
             $closi = $closing == 0 ? 1 : $closing;
-            $res = $div == 1 ? '0' : ($div / $closi) * 100;
+            $res =  ($dif / $closi) * 100;
             $closing = $closi == 1 ? '0' : $closi;
             // $res = $div == 1 ? '0' : ($closing / $div) * 100;
             $spreadsheet->getSheet($key)->fromArray([round($res, 2) . '%'], NULL, 'G' . $j);
@@ -502,9 +502,10 @@ class Excel extends Controller
             $spreadsheet->getSheet($key)->fromArray([$acc_closing], NULL, 'D' . $j);
             $spreadsheet->getSheet($key)->fromArray([$acc_opening], NULL, 'E' . $j);
             $spreadsheet->getSheet($key)->fromArray([$acc_closing - $acc_opening], NULL, 'F' . $j);
-            $divis = $acc_opening == 0 || $acc_opening == '' ? 1 : $acc_opening;
+            $diff = $acc_closing - $acc_opening;
+            // $divis = $acc_opening == 0 || $acc_opening == '' ? 1 : $acc_opening;
             $acc_closi = $acc_closing  == 0 ? 1 : $acc_closing;
-            $resul = $divis == 1 ? '0' : ($acc_closi / $divis) * 100;
+            $resul = ($diff / $acc_closi) * 100;
             $acc_closing = $acc_closi  == 1 ? '0' : $acc_closi;
 
             $spreadsheet->getSheet($key)->fromArray([round($resul, 2) . '%'], NULL, 'G' . $j);
@@ -521,9 +522,10 @@ class Excel extends Controller
         $spreadsheet->getSheet($key)->fromArray([$clos], NULL, 'D' . $j);
         $spreadsheet->getSheet($key)->fromArray([$open], NULL, 'E' . $j);
         $spreadsheet->getSheet($key)->fromArray([$clos - $open], NULL, 'F' . $j);
-        $divi = $open == 0 || $open == '' ? 1 : $open;
+        // $divi = $open == 0 || $open == '' ? 1 : $open;
+        $diffr = $clos - $open;
         $closin = $clos == 0 ? 1 : $clos;
-        $resu = $divi == 1 ? '0' : ($closin / $divi) * 100;
+        $resu = ($diffr / $closin) * 100;
         $clos = $closin == 1 ? '0' : $closin;
 
         $spreadsheet->getSheet($key)->fromArray([round($resu, 2) . '%'], NULL, 'G' . $j);
@@ -557,162 +559,163 @@ class Excel extends Controller
 
 
 
-    public function materiality(Request $request)
-    {
-        $request->validate([
-            'preTax' => 'required|numeric|between:0.1,99.99',
-            'tAsset' => 'required|numeric|between:0.1,99.99',
-            'equity' => 'required|numeric|between:0.1,99.99',
-            'netRevenue' => 'required|numeric|between:0.1,99.99',
-        ]);
+    // public function materiality(Request $request)
+    // {
+    //     dd($request->all());
+    //     $request->validate([
+    //         'preTax' => 'required|numeric|between:0.1,99.99',
+    //         'tAsset' => 'required|numeric|between:0.1,99.99',
+    //         'equity' => 'required|numeric|between:0.1,99.99',
+    //         'netRevenue' => 'required|numeric|between:0.1,99.99',
+    //     ]);
 
-        $accounts = Account::where('company_id', session('company_id'))->first();
-        if ($accounts) {
-            $preTax = $request->preTax;
-            $tAsset = $request->tAsset;
-            $equity = $request->equity;
-            $netRevenue = $request->netRevenue;
-            // dd($request);
-            $accounts = Account::where('company_id', session('company_id'))->with('accountGroup', 'accountGroup.accountType', 'trials')->get();
-            $capital = $assets = $revenue = $expense = 0;
-            foreach ($accounts as $account) {
-                if ($account->trials->year_id == session('year_id')) {
-                    if ($account->accountGroup->accountType->name == 'Assets') {
-                        $temp = abs($account->trials->cls_debit - $account->trials->cls_credit);
-                        $assets += $temp;
-                    } else if ($account->accountGroup->accountType->name == 'Capital') {
-                        $temp = abs($account->trials->cls_debit - $account->trials->cls_credit);
-                        $capital += $temp;
-                    } else if ($account->accountGroup->accountType->name == 'Revenue') {
-                        $temp = abs($account->trials->cls_debit - $account->trials->cls_credit);
-                        $revenue += $temp;
-                    } else if ($account->accountGroup->accountType->name == 'Expenses') {
-                        $temp = abs($account->trials->cls_debit - $account->trials->cls_credit);
-                        $expense += $temp;
-                    }
-                }
-            }
-            $preTaxIncome = abs($revenue - $expense);
+    //     $accounts = Account::where('company_id', session('company_id'))->first();
+    //     if ($accounts) {
+    //         $preTax = $request->preTax;
+    //         $tAsset = $request->tAsset;
+    //         $equity = $request->equity;
+    //         $netRevenue = $request->netRevenue;
+    //         // dd($request);
+    //         $accounts = Account::where('company_id', session('company_id'))->with('accountGroup', 'accountGroup.accountType', 'trials')->get();
+    //         $capital = $assets = $revenue = $expense = 0;
+    //         foreach ($accounts as $account) {
+    //             if ($account->trials->year_id == session('year_id')) {
+    //                 if ($account->accountGroup->accountType->name == 'Assets') {
+    //                     $temp = abs($account->trials->cls_debit - $account->trials->cls_credit);
+    //                     $assets += $temp;
+    //                 } else if ($account->accountGroup->accountType->name == 'Capital') {
+    //                     $temp = abs($account->trials->cls_debit - $account->trials->cls_credit);
+    //                     $capital += $temp;
+    //                 } else if ($account->accountGroup->accountType->name == 'Revenue') {
+    //                     $temp = abs($account->trials->cls_debit - $account->trials->cls_credit);
+    //                     $revenue += $temp;
+    //                 } else if ($account->accountGroup->accountType->name == 'Expenses') {
+    //                     $temp = abs($account->trials->cls_debit - $account->trials->cls_credit);
+    //                     $expense += $temp;
+    //                 }
+    //             }
+    //         }
+    //         $preTaxIncome = abs($revenue - $expense);
 
-            // dd('Assets '.$assets, 'Capital '.$capital, 'Revenue '.$revenue, 'Expenses '.$expense);
-            $year = Year::where('company_id', session('company_id'))
-                ->where('id', session('year_id'))->first();
-            if ($year) {
-                $partner = $year->users()->role('partner')->first();
-                $manager = $year->users()->role('manager')->first();
-                $staff = $year->users()->role('staff')->first();
-                //   dd($partner->name , $manager->name , $staff->name);
-
-
-                if ($partner != null && $manager != null && $staff != null) {
-                    // $start = $year->begin ? new Carbon($year->begin) : null;
-                    $now = Carbon::now();
-                    $end = $year->end ? new Carbon($year->end) : null;
-                    $names = str_replace(["&"], "&amp;", $year->company->name);
+    //         // dd('Assets '.$assets, 'Capital '.$capital, 'Revenue '.$revenue, 'Expenses '.$expense);
+    //         $year = Year::where('company_id', session('company_id'))
+    //             ->where('id', session('year_id'))->first();
+    //         if ($year) {
+    //             $partner = $year->users()->role('partner')->first();
+    //             $manager = $year->users()->role('manager')->first();
+    //             $staff = $year->users()->role('staff')->first();
+    //             //   dd($partner->name , $manager->name , $staff->name);
 
 
-                    $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load(public_path('materiality/materiality.xlsx'));
-                    $worksheet = $spreadsheet->getActiveSheet();
-                    $worksheet->getCell('C6')->setValue($names);
-                    $worksheet->getCell('C7')->setValue($end->format("M j Y"));
-                    $worksheet->getCell('E6')->setValue('Prepared by: ' . ucwords($staff->name));
-                    $worksheet->getCell('E7')->setValue('Reviewed by: ' . ucwords($manager->name));
-                    $worksheet->getCell('G6')->setValue('Date: ' . $now->format("M j Y"));
-                    $worksheet->getCell('G7')->setValue('Date: ' . $now->format("M j Y"));
-                    // $worksheet->getCell('C7')->setValue(ucwords($partner->name));
+    //             if ($partner != null && $manager != null && $staff != null) {
+    //                 // $start = $year->begin ? new Carbon($year->begin) : null;
+    //                 $now = Carbon::now();
+    //                 $end = $year->end ? new Carbon($year->end) : null;
+    //                 $names = str_replace(["&"], "&amp;", $year->company->name);
 
-                    // Single Rule
-                    $worksheet->getCell('C14')->setValue($preTax . '% of Pre Tax Income');
-                    $worksheet->getCell('C15')->setValue($tAsset . '% of Total Assets');
-                    $worksheet->getCell('C16')->setValue($equity . '% of Equity');
-                    $worksheet->getCell('C17')->setValue($netRevenue . '% of Total Net Revenues');
 
-                    $D14 = $preTaxIncome * $preTax / 100;
-                    $D15 = $assets * $tAsset / 100;
-                    $D16 = $capital * $equity / 100;
-                    $D17 = $revenue * $netRevenue / 100;
-                    //Computation
-                    $worksheet->getCell('D14')->setValue('=(' . $preTax . '%*' . $preTaxIncome . ')');
-                    $worksheet->getCell('D15')->setValue('=(' . $tAsset . '%*' . $assets . ')');
-                    $worksheet->getCell('D16')->setValue('=(' . $equity . '%*' . $capital . ')');
-                    $worksheet->getCell('D17')->setValue('=(' . $netRevenue . '%*' . $revenue . ')');
+    //                 $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load(public_path('materiality/materiality.xlsx'));
+    //                 $worksheet = $spreadsheet->getActiveSheet();
+    //                 $worksheet->getCell('C6')->setValue($names);
+    //                 $worksheet->getCell('C7')->setValue($end->format("M j Y"));
+    //                 $worksheet->getCell('E6')->setValue('Prepared by: ' . ucwords($staff->name));
+    //                 $worksheet->getCell('E7')->setValue('Reviewed by: ' . ucwords($manager->name));
+    //                 $worksheet->getCell('G6')->setValue('Date: ' . $now->format("M j Y"));
+    //                 $worksheet->getCell('G7')->setValue('Date: ' . $now->format("M j Y"));
+    //                 // $worksheet->getCell('C7')->setValue(ucwords($partner->name));
 
-                    $E14 = $D14 * $preTax / 100;
-                    $E15 = $D15 * $tAsset / 100;
-                    $E16 = $D16 * $equity / 100;
-                    $E17 = $D17 * $netRevenue / 100;
+    //                 // Single Rule
+    //                 $worksheet->getCell('C14')->setValue($preTax . '% of Pre Tax Income');
+    //                 $worksheet->getCell('C15')->setValue($tAsset . '% of Total Assets');
+    //                 $worksheet->getCell('C16')->setValue($equity . '% of Equity');
+    //                 $worksheet->getCell('C17')->setValue($netRevenue . '% of Total Net Revenues');
 
-                    $materiality_val = ($E14 + $E15 + $E16 + $E17) / 2;
+    //                 $D14 = $preTaxIncome * $preTax / 100;
+    //                 $D15 = $assets * $tAsset / 100;
+    //                 $D16 = $capital * $equity / 100;
+    //                 $D17 = $revenue * $netRevenue / 100;
+    //                 //Computation
+    //                 $worksheet->getCell('D14')->setValue('=(' . $preTax . '%*' . $preTaxIncome . ')');
+    //                 $worksheet->getCell('D15')->setValue('=(' . $tAsset . '%*' . $assets . ')');
+    //                 $worksheet->getCell('D16')->setValue('=(' . $equity . '%*' . $capital . ')');
+    //                 $worksheet->getCell('D17')->setValue('=(' . $netRevenue . '%*' . $revenue . ')');
 
-                    //Planning Materiality (PiM as mentioned in Single Rule)
-                    $worksheet->getCell('E14')->setValue('=(' . $preTax . '%*D14)');
-                    $worksheet->getCell('E15')->setValue('=(' . $tAsset . '%*D15)');
-                    $worksheet->getCell('E16')->setValue('=(' . $equity . '%*D16)');
-                    $worksheet->getCell('E17')->setValue('=(' . $netRevenue . '%*D17)');
+    //                 $E14 = $D14 * $preTax / 100;
+    //                 $E15 = $D15 * $tAsset / 100;
+    //                 $E16 = $D16 * $equity / 100;
+    //                 $E17 = $D17 * $netRevenue / 100;
 
-                    // ----- To calculate performance materiality as in EXCEL SHEET FORMULAS -----------------------------
-                    $F14 = $E14 * 10 / 100;
-                    $F15 = $E15 * 10 / 100;
-                    $F16 = $E16 * 10 / 100;
-                    $F17 = $E17 * 10 / 100;
-                    $perf_materiality_val = ($F14 + $F15 + $F16 + $F17) / 2;
-                    // dd($perf_materiality_val, $materiality_val, $E14, $E15,$E16, $E17, $D14, $D15,$D16, $D17);
+    //                 $materiality_val = ($E14 + $E15 + $E16 + $E17) / 2;
 
-                    $materiality_exists = Setting::where('company_id', session('company_id'))
-                        ->where('year_id', session('year_id'))
-                        ->where('user_id', Auth::user()->id)
-                        ->where('key', 'materiality')
-                        ->first();
+    //                 //Planning Materiality (PiM as mentioned in Single Rule)
+    //                 $worksheet->getCell('E14')->setValue('=(' . $preTax . '%*D14)');
+    //                 $worksheet->getCell('E15')->setValue('=(' . $tAsset . '%*D15)');
+    //                 $worksheet->getCell('E16')->setValue('=(' . $equity . '%*D16)');
+    //                 $worksheet->getCell('E17')->setValue('=(' . $netRevenue . '%*D17)');
 
-                    if ($materiality_exists) {
-                        $materiality_exists->value = $materiality_val;
-                        $materiality_exists->save();
-                    } else {
-                        Setting::create([
-                            'key' => 'materiality',
-                            'value' => $materiality_val,
-                            'user_id' => Auth::user()->id,
-                            'company_id' => session('company_id'),
-                            'year_id' => session('year_id'),
-                        ]);
-                    }
-                    $perf_materiality_exists = Setting::where('company_id', session('company_id'))
-                        ->where('year_id', session('year_id'))
-                        ->where('user_id', Auth::user()->id)
-                        ->where('key', 'perf_materiality')
-                        ->first();
-                    if ($perf_materiality_exists) {
-                        $perf_materiality_exists->value = $perf_materiality_val;
-                        $perf_materiality_exists->save();
-                    } else {
-                        Setting::create([
-                            'key' => 'perf_materiality',
-                            'value' => $perf_materiality_val,
-                            'user_id' => Auth::user()->id,
-                            'company_id' => session('company_id'),
-                            'year_id' => session('year_id'),
-                        ]);
-                    }
+    //                 // ----- To calculate performance materiality as in EXCEL SHEET FORMULAS -----------------------------
+    //                 $F14 = $E14 * 10 / 100;
+    //                 $F15 = $E15 * 10 / 100;
+    //                 $F16 = $E16 * 10 / 100;
+    //                 $F17 = $E17 * 10 / 100;
+    //                 $perf_materiality_val = ($F14 + $F15 + $F16 + $F17) / 2;
+    //                 // dd($perf_materiality_val, $materiality_val, $E14, $E15,$E16, $E17, $D14, $D15,$D16, $D17);
 
-                    // ----------------------------------
+    //                 $materiality_exists = Setting::where('company_id', session('company_id'))
+    //                     ->where('year_id', session('year_id'))
+    //                     ->where('user_id', Auth::user()->id)
+    //                     ->where('key', 'materiality')
+    //                     ->first();
 
-                    // $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xls');
-                    $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
-                    $writer->save(storage_path('app/public/materiality.xlsx'));
-                    return response()->download(storage_path('app/public/materiality.xlsx'));
-                }
-            } else {
-                return back()->with('warning', 'Please Create Team First');
-            }
-        } else {
-            $comp = Company::find(session('company_id'));
-            if ($comp) {
-                return redirect()->back()->with('warning', 'Account not found in ' . $comp->name . ' company, Upload trial to generate accounts');
-            } else {
-                return redirect()->back()->with('warning', 'Account not found in selected company, Upload trial to generate accounts');
-            }
-        }
-    }
+    //                 if ($materiality_exists) {
+    //                     $materiality_exists->value = $materiality_val;
+    //                     $materiality_exists->save();
+    //                 } else {
+    //                     Setting::create([
+    //                         'key' => 'materiality',
+    //                         'value' => $materiality_val,
+    //                         'user_id' => Auth::user()->id,
+    //                         'company_id' => session('company_id'),
+    //                         'year_id' => session('year_id'),
+    //                     ]);
+    //                 }
+    //                 $perf_materiality_exists = Setting::where('company_id', session('company_id'))
+    //                     ->where('year_id', session('year_id'))
+    //                     ->where('user_id', Auth::user()->id)
+    //                     ->where('key', 'perf_materiality')
+    //                     ->first();
+    //                 if ($perf_materiality_exists) {
+    //                     $perf_materiality_exists->value = $perf_materiality_val;
+    //                     $perf_materiality_exists->save();
+    //                 } else {
+    //                     Setting::create([
+    //                         'key' => 'perf_materiality',
+    //                         'value' => $perf_materiality_val,
+    //                         'user_id' => Auth::user()->id,
+    //                         'company_id' => session('company_id'),
+    //                         'year_id' => session('year_id'),
+    //                     ]);
+    //                 }
+
+    //                 // ----------------------------------
+
+    //                 // $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xls');
+    //                 $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
+    //                 $writer->save(storage_path('app/public/materiality.xlsx'));
+    //                 return response()->download(storage_path('app/public/materiality.xlsx'));
+    //             }
+    //         } else {
+    //             return back()->with('warning', 'Please Create Team First');
+    //         }
+    //     } else {
+    //         $comp = Company::find(session('company_id'));
+    //         if ($comp) {
+    //             return redirect()->back()->with('warning', 'Account not found in ' . $comp->name . ' company, Upload trial to generate accounts');
+    //         } else {
+    //             return redirect()->back()->with('warning', 'Account not found in selected company, Upload trial to generate accounts');
+    //         }
+    //     }
+    // }
 
     public function destroy()
     {

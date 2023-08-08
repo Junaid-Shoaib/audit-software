@@ -138,6 +138,17 @@
                     </jet-nav-link>
                 </a-menu-item>
 
+                 <a-menu-item key="23" v-if="
+                    this.$page.props.co_id &&
+                    this.$page.props.yr_id &&
+                    this.$page.props.team_id
+                ">
+                    <jet-nav-link :href="route('materialities')" :active="route().current('materialities')">
+                        <VerticalAlignBottomOutlined class="mr-2" />
+                       Materiality
+                    </jet-nav-link>
+                </a-menu-item>
+
                 <a-menu-item key="8" v-if="
                     this.$page.props.co_id &&
                     this.$page.props.yr_id &&
@@ -331,6 +342,7 @@ import {
     BankOutlined,
     CheckOutlined,
     BranchesOutlined,
+    VerticalAlignBottomOutlined,
 } from "@ant-design/icons-vue";
 import ApplicationLogo from "@/Jetstream/ApplicationLogo";
 import JetNavLink from "@/Jetstream/NavLink";
@@ -356,6 +368,7 @@ export default {
         FlashMessage,
 
         //All Icon Export
+        VerticalAlignBottomOutlined,
         UserAddOutlined,
         CalendarFilled,
         BankFilled,

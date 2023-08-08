@@ -63,52 +63,32 @@
                             >
                         </a-form-item>
                     </a-form>
-
-                    <!-- Old upload form -->
-                    <!-- <form @submit.prevent="submit">
-            <div class="flex flex-wrap">
-              <input
-                class="
-                  border-solid border-2 border-indigo-300
-                  rounded-xl
-                  px-2
-                  py-1
-                "
-                type="file"
-                v-on:change="onFileChange"
-              />
-
-              <button class="trailbutton" type="submit">Upload TB</button>
-              <a class="trailbutton items-center" href="/trialpattern"
-                >Download TB Template</a
-              >
-
-              <a class="trailbutton" href="/lead">Lead Schedule</a>
-
-              <
-            </div>
-          </form> -->
                 </div>
                 <!-- <paginator class="mt-6" :balances="balances" /> -->
             </div>
         </div>
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 py-1">
+        <!-- <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 py-1">
             <div class="p-2 bg-gray-200 text-center rounded-xl">
                 <h2 class="header">Download Materiality Schedule</h2>
             </div>
             <div class="max-w-7xl m-4 sm:px-6 lg:px-8">
                 <div class="">
-                    <!-- target="_blank" -->
                     <form
                         @submit.prevent="submit_materiality"
                         v-bind:action="'materiality-download'"
                         ref="form_materiality"
                     >
+
+                    <a-form-item
+                    >
+                         <a-form-item name="remember" no-style>
+                            <a-checkbox v-model:value="form_mt.preTaxSel"> </a-checkbox>
+                        </a-form-item>
                         <a-form-item
                             :label-col="{ span: 4 }"
                             :wrapper-col="{ span: 14 }"
                             label="Pre Tax Income :"
-                        >
+                            >
                             <a-input
                                 v-model:value="form_mt.preTax"
                                 type="text"
@@ -118,6 +98,8 @@
                                 value="5"
                             >
                             </a-input>
+                        </a-form-item>
+
                             <div
                                 class="text-red-700 px-4 py-2"
                                 role="alert"
@@ -129,8 +111,9 @@
                         <a-form-item
                             :label-col="{ span: 4 }"
                             :wrapper-col="{ span: 14 }"
-                            label="Total Assets :"
                         >
+                             <a-checkbox v-model:value="form_mt.tAssetSel">Total Assets : </a-checkbox>
+
                             <a-input
                                 v-model:value="form_mt.tAsset"
                                 type="text"
@@ -150,10 +133,10 @@
                         <a-form-item
                             :label-col="{ span: 4 }"
                             :wrapper-col="{ span: 14 }"
-                            label="Equity :"
                         >
+                             <a-checkbox v-model:value="form_mt.equitySel">Equity : </a-checkbox>
+
                             <a-input
-                                v-model:value="form_mt.equity"
                                 type="text"
                                 name="equity"
                                 class="text-center pr-2 pb-2 rounded-md"
@@ -171,8 +154,8 @@
                         <a-form-item
                             :label-col="{ span: 4 }"
                             :wrapper-col="{ span: 14 }"
-                            label="Total Net Revenues :"
                         >
+                            <a-checkbox v-model:value="form_mt.netRevenueSel">Total Net Revenues : </a-checkbox>
                             <a-input
                                 v-model:value="form_mt.netRevenue"
                                 type="text"
@@ -204,24 +187,17 @@
                     </form>
                 </div>
             </div>
-        </div>
+        </div> -->
     </app-layout>
 </template>
 
 <script>
 import AppLayout from "@/Layouts/AppLayout";
-import { Form, Input, Button, DatePicker } from "ant-design-vue";
+import { Form, Input, Button, DatePicker , Checkbox } from "ant-design-vue";
 import FlashMessage from "@/Layouts/FlashMessage";
 import { useForm } from "@inertiajs/inertia-vue3";
 
 export default {
-    setup() {
-        const form = useForm({
-            file: null,
-        });
-        return { form };
-    },
-
     components: {
         AppLayout,
         FlashMessage,
@@ -230,6 +206,7 @@ export default {
         "a-input": Input,
         "a-button": Button,
         "a-date-picker": DatePicker,
+        "a-checkbox":Checkbox,
         // Treeselect,
     },
 
@@ -247,6 +224,10 @@ export default {
         return {
             value: null,
             form_mt: {
+                preTaxSel: null,
+                tAssetSel: null,
+                equitySel: null,
+                netRevenueSel: null,
                 preTax: 5,
                 tAsset: 0.5,
                 equity: 1,
