@@ -95,6 +95,21 @@ Route::get('risk-level', [MaterialityController::class, 'risk_level'])
     ->middleware('auth');
 
 Route::get('risk-level-download', [MaterialityController::class, 'risk_level_download'])->name('risk_level_download')->middleware('auth');
+
+Route::get('sample-size', [MaterialityController::class, 'sample_size'])
+    ->name('sample_size')
+    ->middleware('auth');
+
+
+Route::get('sampleData', [MaterialityController::class, 'sampleData'])
+    ->name('sampleData')
+    ->middleware('auth');
+
+
+
+Route::get('sample-size-download', [MaterialityController::class, 'sample_size_download'])->name('sample_size_download')->middleware('auth');
+
+
 //Materiality -------------------- End ---------------------------
 
 

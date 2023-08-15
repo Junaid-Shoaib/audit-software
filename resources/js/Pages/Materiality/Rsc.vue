@@ -6,12 +6,13 @@
             </div>
         </template>
         <div class="p-2">
-             <a-button @click="materiality" size="small">Materiality</a-button>
-            <a-button @click="risk_level" size="small">Risk Level</a-button>
-            <div class="p-2 bg-gray-200 text-center rounded-xl">
-                <h2 class="header">RISK ASSESSMENT, SAMPLE WORK-OUT AND CONCLUSION</h2>
+                <a-button class="m-1" @click="materiality" size="small">Materiality</a-button>
+                <a-button class="m-1" @click="risk_level" size="small">Risk Level</a-button>
+                <a-button class="m-1" @click="sample_size" size="small">Sample Size</a-button>
+                <br>
             </div>
-            <br>
+            <div class="p-2">
+
             <form @submit.prevent="submit_rsc" v-bind:action="'rsc-download'" ref="form_rsc">
 
                 <a-form-item :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label="Subject">
@@ -41,11 +42,13 @@
                 </a-form-item>
 
                                 <!-- Start End -->
-
-                <a-form-item :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label="Question 1">
+                <a-form-item :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label="Answer">
+                 <input type="checkbox" v-model="selected" name="selected" value="1" @change="onAllChange(selected)">  Over All
+                </a-form-item>
+                <a-form-item v-if="this.overall" :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label="Question">
                     <strong>Classification</strong>
                 </a-form-item>
-                <a-form-item :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label="Answer">
+                <a-form-item v-if="this.overall" :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label="Answer">
                     <a-radio-group name="classification" v-model:value="formData.classification">
                         <a-radio value="Low">Low</a-radio>
                         <a-radio value="Medium">Medium</a-radio>
@@ -56,10 +59,10 @@
                     {{ errors.classification }}
                 </div>
 
-                <a-form-item :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label="Question 2">
+                <a-form-item v-if="this.overall" :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label="Question">
                     <strong>Completeness</strong>
                 </a-form-item>
-                <a-form-item :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label="Answer">
+                <a-form-item v-if="this.overall" :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label="Answer">
                     <a-radio-group name="completeness" v-model:value="formData.completeness">
                          <a-radio value="Low">Low</a-radio>
                         <a-radio value="Medium">Medium</a-radio>
@@ -70,10 +73,10 @@
                     {{ errors.completeness }}
                 </div>
 
-                <a-form-item :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label="Question 3">
+                <a-form-item v-if="this.overall" :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label="Question">
                     <strong>Accuracy</strong>
                 </a-form-item>
-                <a-form-item :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label="Answer">
+                <a-form-item v-if="this.overall" :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label="Answer">
                     <a-radio-group name="accuracy" v-model:value="formData.accuracy">
                          <a-radio value="Low">Low</a-radio>
                         <a-radio value="Medium">Medium</a-radio>
@@ -85,10 +88,10 @@
                 </div>
 
 
-                <a-form-item :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label="Question 4">
+                <a-form-item v-if="this.overall" :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label="Question">
                     <strong>Cut off</strong>
                 </a-form-item>
-                <a-form-item :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label="Answer">
+                <a-form-item v-if="this.overall" :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label="Answer">
                     <a-radio-group name="cut_off" v-model:value="formData.cut_off">
                          <a-radio value="Low">Low</a-radio>
                         <a-radio value="Medium">Medium</a-radio>
@@ -99,10 +102,10 @@
                     {{ errors.cut_off }}
                 </div>
 
-                <a-form-item :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label="Question 5">
+                <a-form-item v-if="this.overall" :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label="Question">
                     <strong>Presentation & Disclosure </strong>
                 </a-form-item>
-                <a-form-item :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label="Answer">
+                <a-form-item v-if="this.overall" :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label="Answer">
                     <a-radio-group name="pre_dis" v-model:value="formData.pre_dis">
                          <a-radio value="Low">Low</a-radio>
                             <a-radio value="Medium">Medium</a-radio>
@@ -115,24 +118,24 @@
 
                 <!-- Start End-->
 
+                <a-form-item v-if="this.overall == false"  :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label="Question">
+                    <strong>Over all Materiality</strong>
+                </a-form-item>
+                <a-form-item v-if="this.overall == false" :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label="Answer">
+                    <a-radio-group name="all" v-model:value="formData.all">
+                        <a-radio value="Low">Low</a-radio>
+                        <a-radio value="Medium">Medium</a-radio>
+                        <a-radio value="High">High</a-radio>
+                    </a-radio-group>
+                </a-form-item>
+                <div class="text-red-700 px-4" role="alert" v-if="errors.high_classification">
+                    {{ errors.high_classification }}
+                </div>
 
                 <!-- high Start -->
                 <!-- <div class="Comment Code">
-                    <a-form-item :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label="Question 1">
-                        <strong>Classification</strong>
-                    </a-form-item>
-                    <a-form-item :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label="Answer">
-                        <a-radio-group name="high_classification" v-model:value="high_classification">
-                            <a-radio value="1.2">Low</a-radio>
-                            <a-radio value="1.4">Medium</a-radio>
-                            <a-radio value="1.6">High</a-radio>
-                        </a-radio-group>
-                    </a-form-item>
-                    <div class="text-red-700 px-4" role="alert" v-if="errors.high_classification">
-                        {{ errors.high_classification }}
-                    </div>
 
-                    <a-form-item :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label="Question 2">
+                    <a-form-item :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label="Question">
                         <strong>Completeness</strong>
                     </a-form-item>
                     <a-form-item :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label="Answer">
@@ -146,7 +149,7 @@
                         {{ errors.high_completeness }}
                     </div>
 
-                    <a-form-item :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label="Question 3">
+                    <a-form-item :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label="Question">
                         <strong>Accuracy</strong>
                     </a-form-item>
                     <a-form-item :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label="Answer">
@@ -161,7 +164,7 @@
                     </div>
 
 
-                    <a-form-item :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label="Question 4">
+                    <a-form-item :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label="Question">
                         <strong>Cut off</strong>
                     </a-form-item>
                     <a-form-item :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label="Answer">
@@ -175,7 +178,7 @@
                         {{ errors.high_cut_off }}
                     </div>
 
-                    <a-form-item :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label="Question 5">
+                    <a-form-item :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label="Question">
                         <strong>Presentation & Disclosure </strong>
                     </a-form-item>
                     <a-form-item :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label="Answer">
@@ -194,7 +197,7 @@
                 <a-form-item :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label=" ">
                         <strong style="background-color: rgb(240 242 245); padding:10px">Particulars</strong>
                     </a-form-item>
-                <a-form-item :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label="Question 1">
+                <a-form-item :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label="Question">
                     <strong>Observed no exceptions to the identified risks.</strong>
                 </a-form-item>
                 <a-form-item :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label="Answer">
@@ -207,7 +210,7 @@
                 <div class="text-red-700 px-4" role="alert" v-if="errors.answer1">
                     {{ errors.answer1 }}
                 </div>
-                <a-form-item :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label="Question 2">
+                <a-form-item :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label="Question">
                     <strong>Performed the work as per Plan and documented all the findings and results.</strong>
                 </a-form-item>
                 <a-form-item :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label="Answer">
@@ -222,7 +225,7 @@
                 </div>
 
 
-                <a-form-item :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label="Question 3">
+                <a-form-item :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label="Question">
                     <strong>Obtained Sufficient and Appropriate Audit evidences has been obtained to support the Audit objectives and disclosures.</strong>
                 </a-form-item>
                 <a-form-item :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label="Answer">
@@ -236,7 +239,7 @@
                     {{ errors.answer3 }}
                 </div>
 
-                <a-form-item :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label="Question 4">
+                <a-form-item :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label="Question">
                     <strong>The balances are appropriately presented and disclosed in the Financial statements and are in accordance with the Companies Act, 2017 and the applicable Financial Reporting Framework.</strong>
                 </a-form-item>
                 <a-form-item :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label="Answer">
@@ -251,7 +254,7 @@
                 </div>
 
 
-                <a-form-item :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label="Question 5">
+                <a-form-item :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label="Question">
                     <strong>All the related accounting policies has been reviewed and ensured they are in line with the applicable reporting framework and consistent with prior year.</strong>
                 </a-form-item>
                 <a-form-item :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label="Answer">
@@ -265,7 +268,7 @@
                     {{ errors.answer5 }}
                 </div>
 
-                <a-form-item :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label="Question 6">
+                <a-form-item :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label="Question">
                     <strong>Considered and concluded that there is no need to revise the materiality in view of Audit evidence obtained.</strong>
                 </a-form-item>
                 <a-form-item :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label="Answer">
@@ -279,7 +282,7 @@
                     {{ errors.answer6 }}
                 </div>
 
-                <a-form-item :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label="Question 7">
+                <a-form-item :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label="Question">
                     <strong>No material misstatement identified.</strong>
                 </a-form-item>
                 <a-form-item :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label="Answer">
@@ -293,7 +296,7 @@
                     {{ errors.answer7 }}
                 </div>
 
-                <a-form-item :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label="Question 8">
+                <a-form-item :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label="Question">
                     <strong>Based on the above, conclude whether the amount is fairly stated.</strong>
                 </a-form-item>
                 <a-form-item :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label="Answer">
@@ -352,6 +355,8 @@ export default {
     data() {
         return {
             options: this.accounts,
+            selected: false,
+            overall: true,
             formData: {
                  account_id: this.accounts[0].id,
                  classification: 'Low',
@@ -367,11 +372,21 @@ export default {
                  answer6: 'Yes',
                  answer7: 'Yes',
                  answer8: 'Yes',
+                 all: 'Medium',
              }
         };
     },
 
     methods: {
+        onAllChange(selected) {
+            console.log(selected);
+            if(selected === false){
+                this.overall = true;
+            }else{
+                this.overall = false;
+            }
+
+        },
 
         submit_rsc: function () {
 
@@ -379,6 +394,9 @@ export default {
         },
         risk_level() {
             this.$inertia.get(route("risk_level"));
+        },
+          sample_size() {
+            this.$inertia.get(route("sample_size"));
         },
         materiality() {
             this.$inertia.get(route("materialities"));

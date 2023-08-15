@@ -10,14 +10,16 @@ class Account extends Model
     use HasFactory;
 
     protected $fillable = [
-        'number','name','group_id','enabled','company_id'
+        'number', 'name', 'group_id', 'enabled', 'company_id'
     ];
 
-    public function accountGroup(){
+    public function accountGroup()
+    {
         return $this->belongsTo('App\Models\AccountGroup', 'group_id');
     }
 
-    public function company(){
+    public function company()
+    {
         return $this->belongsTo('App\Models\Company', 'company_id');
     }
 
@@ -30,4 +32,8 @@ class Account extends Model
         return $this->hasOne('App\Models\Trial', 'account_id');
     }
 
+    public function risks()
+    {
+        return $this->hasOne('App\Models\Risk', 'account_id');
+    }
 }

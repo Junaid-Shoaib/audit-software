@@ -6,12 +6,12 @@
             </div>
         </template>
         <div class="p-2">
-            <a-button @click="materiality" size="small">Materiality</a-button>
-            <a-button @click="rsc" size="small">RSC</a-button>
-            <div class="p-2 bg-gray-200 text-center rounded-xl">
-                <h2 class="header">Overall Financial Statement Risk level</h2>
-            </div>
+            <a-button class="m-1" @click="materiality" size="small">Materiality</a-button>
+            <a-button class="m-1" @click="rsc" size="small">RSC</a-button>
+            <a-button class="m-1" @click="sample_size" size="small">Sample Size</a-button>
             <br>
+        </div>
+        <div class="p-2">
             <form @submit.prevent="submit_risk_level" v-bind:action="'risk-level-download'" ref="form_risk_level">
                 <a-form-item :label-col="{ span: 4 }" :wrapper-col="{ span: 14 }" label="Question 1">
                     <strong>Overall financial statement risk level</strong>
@@ -548,6 +548,9 @@ export default {
         },
         rsc() {
             this.$inertia.get(route("rsc"));
+        },
+        sample_size() {
+            this.$inertia.get(route("sample_size"));
         },
     },
 };

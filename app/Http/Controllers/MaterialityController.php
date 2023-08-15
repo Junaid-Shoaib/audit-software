@@ -16,7 +16,17 @@ class MaterialityController extends Controller
 {
     public function index()
     {
-        return Inertia::render('Materiality/Index', []);
+        $accounts = Account::where('company_id', session('company_id'))->first();
+        if ($accounts) {
+            return Inertia::render('Materiality/Index', []);
+        } else {
+            $comp = Company::find(session('company_id'));
+            if ($comp) {
+                return redirect()->route('trial.index')->with('warning', 'Account not found in ' . $comp->name . ' company, Upload trial to generate accounts');
+            } else {
+                return redirect()->route('trial.index')->with('warning', 'Account not found in selected company, Upload trial to generate accounts');
+            }
+        }
     }
 
 
@@ -29,10 +39,10 @@ class MaterialityController extends Controller
             'equity' => 'required|numeric|between:0.1,99.99',
             'netRevenue' => 'required|numeric|between:0.1,99.99',
             'adpt' => 'required|numeric|between:0.1,5',
-            'preTaxSel' => 'required_without_all:preTaxSel,tAssetSel,equitySel,netRevenueSel',
-            'tAssetSel' => 'required_without_all:preTaxSel,tAssetSel,equitySel,netRevenueSel',
-            'equitySel' => 'required_without_all:preTaxSel,tAssetSel,equitySel,netRevenueSel',
-            'netRevenueSel' => 'required_without_all:preTaxSel,tAssetSel,equitySel,netRevenueSel',
+            'preTaxSelect' => 'required_without_all:preTaxSelect,TotalAssetSelect,equitySelect,netRevenueSelect',
+            'TotalAssetSelect' => 'required_without_all:preTaxSelect,TotalAssetSelect,equitySelect,netRevenueSelect',
+            'equitySelect' => 'required_without_all:preTaxSelect,TotalAssetSelect,equitySelect,netRevenueSelect',
+            'netRevenueSelect' => 'required_without_all:preTaxSelect,TotalAssetSelect,equitySelect,netRevenueSelect',
             "answer1" => 'required',
             "answer2" => 'required',
             "answer3" => 'required',
@@ -106,14 +116,14 @@ class MaterialityController extends Controller
                     $I21 = 0;
 
                     // Single Rule
-                    if (isset($request->preTaxSel)) {
+                    if (isset($request->preTaxSelect)) {
                         $preTaxName = $preTax . '% of Pre Tax Income';
                         $worksheet->getCell('A18')->setValue($preTaxName);
                         $worksheet->getCell('I18')->setValue($preTaxIncome);
                         $I18 = $preTaxIncome * $preTax / 100;
                         $cntSel++;
                     }
-                    if (isset($request->tAssetSel)) {
+                    if (isset($request->TotalAssetSelect)) {
                         $TAssetName = $tAsset . '% of Total Assets';
                         $worksheet->getCell('A19')->setValue($TAssetName);
                         $worksheet->getCell('I19')->setValue($assets);
@@ -121,14 +131,14 @@ class MaterialityController extends Controller
                         $I19 = $assets * $tAsset / 100;
                     }
 
-                    if (isset($request->equitySel)) {
+                    if (isset($request->equitySelect)) {
                         $equityName =  $equity . '% of Equity';
                         $worksheet->getCell('A20')->setValue($equityName);
                         $worksheet->getCell('I20')->setValue($equity);
                         $I20 = $capital * $equity / 100;
                         $cntSel++;
                     }
-                    if (isset($request->netRevenueSel)) {
+                    if (isset($request->netRevenueSelect)) {
                         $netRevenueName = $netRevenue . '% of Total Net Revenues';
                         $worksheet->getCell('A21')->setValue($netRevenueName);
                         $worksheet->getCell('I21')->setValue($revenue);
@@ -639,24 +649,47 @@ class MaterialityController extends Controller
 
     public function rsc()
     {
-        $accounts = Account::where('company_id', session('company_id'))->orderBy('name', 'asc')->get();
-        return Inertia::render('Materiality/Rsc', [
-            'accounts' => $accounts,
-        ]);
+        $account = Account::where('company_id', session('company_id'))->first();
+        if ($account) {
+            $avg_mat =  Setting::where('company_id', session('company_id'))->where('year_id', session('year_id'))->where('key', 'materiality')->first();
+            if ($avg_mat) {
+                $perf_mat =  Setting::where('company_id', session('company_id'))->where('year_id', session('year_id'))->where('key', 'perf_materiality')->first();
+                if ($perf_mat) {
+                    $accounts = Account::where('company_id', session('company_id'))->orderBy('name', 'asc')->get();
+                    return Inertia::render('Materiality/Rsc', [
+                        'accounts' => $accounts,
+                    ]);
+                } else {
+                    return redirect()->route('risk_level')->with('warning', 'Download Overall Financial Statement Risk level Fisrt');
+                }
+            } else {
+                return redirect()->route('materialities')->with('warning', 'Download Materiality First');
+            }
+        } else {
+            $comp = Company::find(session('company_id'));
+            if ($comp) {
+                return redirect()->route('trial.index')->with('warning', 'Account not found in ' . $comp->name . ' company, Upload trial to generate accounts');
+            } else {
+                return redirect()->route('trial.index')->with('warning', 'Account not found in selected company, Upload trial to generate accounts');
+            }
+        }
     }
+
+
 
 
 
     public function rsc_download(Request $request)
     {
-        // dd($request->all());
+
         $request->validate([
             "account_id" => "required",
-            "classification" => "required",
-            "completeness" => "required",
-            "accuracy" => "required",
-            "cut_off" => "required",
-            "pre_dis" => "required",
+            'classification' => 'required_without_all:completeness,accuracy,cut_off,pre_dis,selected',
+            'completeness' => 'required_without_all:classification,accuracy,cut_off,pre_dis,selected',
+            'accuracy' => 'required_without_all:classification,completeness,cut_off,pre_dis,selected',
+            'cut_off' => 'required_without_all:classification,completeness,accuracy,pre_dis,selected',
+            'pre_dis' => 'required_without_all:classification,completeness,accuracy,cut_off,selected',
+            'selected' => 'required_without_all:classification,completeness,accuracy,cut_off,pre_dis',
             "answer1" => "required",
             "answer2" => "required",
             "answer3" => "required",
@@ -666,6 +699,9 @@ class MaterialityController extends Controller
             "answer7" => "required",
             "answer8" => "required",
         ]);
+
+
+
         $avg_mat = Setting::where('company_id', session('company_id'))->where('year_id', session('year_id'))->where('key', 'materiality')->first();
         if ($avg_mat) {
             $avg_mat_val = $avg_mat->value;
@@ -684,6 +720,7 @@ class MaterialityController extends Controller
                         $end = $year->end ? new Carbon($year->end) : null;
                         $names = str_replace(["&"], "&amp;", $year->company->name);
 
+
                         $account = Account::where('company_id', session('company_id'))->where('id', $request->account_id)->first();
                         $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load(public_path('materiality/Risk-RSC.xlsx'));
                         $worksheet = $spreadsheet->getActiveSheet();
@@ -696,15 +733,275 @@ class MaterialityController extends Controller
                         $worksheet->getCell('G9')->setValue(ucwords($partner->name));
                         $worksheet->getCell('D12')->setValue($avg_perf_mat->value);
                         $worksheet->getCell('D13')->setValue($avg_mat->value);
-                        // dd($request->classification, $request->completeness, $request->accuracy, $request->cut_off, $request->pre_dis);
 
-                        $worksheet->getCell('C23')->setValue($request->classification);
-                        $worksheet->getCell('D23')->setValue($request->completeness);
-                        $worksheet->getCell('E23')->setValue($request->accuracy);
-                        $worksheet->getCell('F23')->setValue($request->cut_off);
-                        $worksheet->getCell('G23')->setValue($request->pre_dis);
+                        $classification = 0;
+                        $completeness = 0;
+                        $accuracy = 0;
+                        $cut_off = 0;
+
+                        $classification_val = 0;
+                        $completeness_val = 0;
+                        $accuracy_val = 0;
+                        $cut_off_val = 0;
+                        $pre_Disclosure_val = 0;
 
 
+                        if (isset($request->selected)) {
+                            $reqclassification = $request->all;
+                            $reqcompleteness = $request->all;
+                            $reqaccuracy = $request->all;
+                            $reqcut_off = $request->all;
+                            $reqpre_dis = $request->all;
+                        } else {
+                            $reqclassification = $request->classification;
+                            $reqcompleteness = $request->completeness;
+                            $reqaccuracy = $request->accuracy;
+                            $reqcut_off = $request->cut_off;
+                            $reqpre_dis = $request->pre_dis;
+                        }
+
+                        $worksheet->getCell('C23')->setValue($reqclassification);
+                        $worksheet->getCell('D23')->setValue($reqcompleteness);
+                        $worksheet->getCell('E23')->setValue($reqaccuracy);
+                        $worksheet->getCell('F23')->setValue($reqcut_off);
+                        $worksheet->getCell('G23')->setValue($reqpre_dis);
+
+                        if ($avg_perf_mat->value == 'Low') {
+                            $Low_low_mat = 1.2;
+                            $Low_med_mat = 1.4;
+                            $Low_high_mat = 1.6;
+
+                            //Classigfication
+                            if ($reqclassification == 'Low') {
+                                $classification = $avg_mat_val / $Low_low_mat;
+                                $classification_val = $Low_low_mat;
+                            } else if ($reqclassification == 'Medium') {
+                                $classification = $avg_mat_val / $Low_med_mat;
+                                $classification_val = $Low_med_mat;
+                            } else {
+                                $classification = $avg_mat_val / $Low_high_mat;
+                                $classification_val = $Low_high_mat;
+                            }
+
+                            //Completness
+                            if ($reqcompleteness == 'Low') {
+                                $completeness = $avg_mat_val / $Low_low_mat;
+                                $completeness_val = $Low_low_mat;
+                            } else if ($reqcompleteness == 'Medium') {
+                                $completeness = $avg_mat_val / $Low_med_mat;
+                                $completeness_val = $Low_med_mat;
+                            } else {
+                                $completeness = $avg_mat_val / $Low_high_mat;
+                                $completeness_val = $Low_high_mat;
+                            }
+
+
+                            //accuracy
+                            if ($reqaccuracy == 'Low') {
+                                $accuracy = $avg_mat_val / $Low_low_mat;
+                                $accuracy_val = $Low_low_mat;
+                            } else if ($reqcompleteness == 'Medium') {
+                                $accuracy = $avg_mat_val / $Low_med_mat;
+                                $accuracy_val = $Low_med_mat;
+                            } else {
+                                $accuracy = $avg_mat_val / $Low_high_mat;
+                                $accuracy_val = $Low_high_mat;
+                            }
+
+
+                            //Cut Off
+                            if ($reqcut_off == 'Low') {
+                                $cut_off = $avg_mat_val / $Low_low_mat;
+                                $cut_off_val = $Low_low_mat;
+                            } else if ($reqcut_off == 'Medium') {
+                                $cut_off = $avg_mat_val / $Low_med_mat;
+                                $cut_off_val = $Low_med_mat;
+                            } else {
+                                $cut_off = $avg_mat_val / $Low_high_mat;
+                                $cut_off_val = $Low_high_mat;
+                            }
+
+                            // pre_Disclosure
+
+                            if ($reqpre_dis == 'Low') {
+                                $pre_Disclosure = $avg_mat_val / $Low_low_mat;
+                                $pre_Disclosure_val = $Low_low_mat;
+                            } else if ($reqpre_dis == 'Medium') {
+                                $pre_Disclosure = $avg_mat_val / $Low_med_mat;
+                                $pre_Disclosure_val = $Low_med_mat;
+                            } else {
+                                $pre_Disclosure = $avg_mat_val / $Low_high_mat;
+                                $pre_Disclosure_val = $Low_high_mat;
+                            }
+                        } else if ($avg_perf_mat->value == 'Medium') {
+                            $Med_low_mat = 1.4;
+                            $Med_med_mat = 1.8;
+                            $Med_high_mat = 2.1;
+
+
+                            //Classigfication
+                            if ($reqclassification == 'Low') {
+                                $classification = $avg_mat_val / $Med_low_mat;
+                                $classification_val = $Med_low_mat;
+                            } else if ($reqclassification == 'Medium') {
+                                $classification = $avg_mat_val / $Med_med_mat;
+                                $classification_val = $Med_med_mat;
+                            } else {
+                                $classification = $avg_mat_val / $Med_high_mat;
+                                $classification_val = $Med_high_mat;
+                            }
+
+                            //Completness
+                            if ($reqcompleteness == 'Low') {
+                                $completeness = $avg_mat_val / $Med_low_mat;
+                                $completeness_val = $Med_low_mat;
+                            } else if ($reqcompleteness == 'Medium') {
+                                $completeness = $avg_mat_val / $Med_med_mat;
+                                $completeness_val = $Med_med_mat;
+                            } else {
+                                $completeness = $avg_mat_val / $Med_high_mat;
+                                $completeness_val = $Med_high_mat;
+                            }
+
+
+                            //accuracy
+                            if ($reqaccuracy == 'Low') {
+                                $accuracy = $avg_mat_val / $Med_low_mat;
+                                $accuracy_val = $Med_low_mat;
+                            } else if ($reqcompleteness == 'Medium') {
+                                $accuracy = $avg_mat_val / $Med_med_mat;
+                                $accuracy_val = $Med_med_mat;
+                            } else {
+                                $accuracy = $avg_mat_val / $Med_high_mat;
+                                $accuracy_val = $Med_high_mat;
+                            }
+
+
+                            //Cut Off
+                            if ($reqcut_off == 'Low') {
+                                $cut_off = $avg_mat_val / $Med_low_mat;
+                                $cut_off_val = $Med_low_mat;
+                            } else if ($reqcut_off == 'Medium') {
+                                $cut_off = $avg_mat_val / $Med_med_mat;
+                                $cut_off_val = $Med_med_mat;
+                            } else {
+                                $cut_off = $avg_mat_val / $Med_high_mat;
+                                $cut_off_val = $Med_high_mat;
+                            }
+
+                            //pre_Disclosure
+
+                            if ($reqpre_dis == 'Low') {
+                                $pre_Disclosure = $avg_mat_val / $Med_low_mat;
+                                $pre_Disclosure_val = $Med_low_mat;
+                            } else if ($reqpre_dis == 'Medium') {
+                                $pre_Disclosure = $avg_mat_val / $Med_med_mat;
+                                $pre_Disclosure_val = $Med_med_mat;
+                            } else {
+                                $pre_Disclosure = $avg_mat_val / $Med_high_mat;
+                                $pre_Disclosure_val = $Med_high_mat;
+                            }
+                        } else {
+                            $High_low_mat = 1.6;
+                            $High_med_mat = 2.1;
+                            $High_high_mat = 2.5;
+
+                            //Classigfication
+                            if ($reqclassification == 'Low') {
+                                $classification = $avg_mat_val / $High_low_mat;
+                                $classification_val = $High_low_mat;
+                            } else if ($reqclassification == 'Medium') {
+                                $classification = $avg_mat_val / $High_med_mat;
+                                $classification_val = $High_med_mat;
+                            } else {
+                                $classification = $avg_mat_val / $High_high_mat;
+                                $classification_val = $High_high_mat;
+                            }
+
+                            //Completness
+                            if ($reqcompleteness == 'Low') {
+                                $completeness = $avg_mat_val / $High_low_mat;
+                                $completeness_val = $High_low_mat;
+                            } else if ($reqcompleteness == 'Medium') {
+                                $completeness = $avg_mat_val / $High_med_mat;
+                                $completeness_val = $High_med_mat;
+                            } else {
+                                $completeness = $avg_mat_val / $High_high_mat;
+                                $completeness_val = $High_high_mat;
+                            }
+
+
+                            //accuracy
+                            if ($reqaccuracy == 'Low') {
+                                $accuracy = $avg_mat_val / $High_low_mat;
+                                $accuracy_val = $High_low_mat;
+                            } else if ($reqcompleteness == 'Medium') {
+                                $accuracy = $avg_mat_val / $High_med_mat;
+                                $accuracy_val = $High_med_mat;
+                            } else {
+                                $accuracy = $avg_mat_val / $High_high_mat;
+                                $accuracy_val = $High_high_mat;
+                            }
+
+
+                            //Cut Off
+                            if ($reqcut_off == 'Low') {
+                                $cut_off = $avg_mat_val / $High_low_mat;
+                                $cut_off_val = $High_low_mat;
+                            } else if ($reqcut_off == 'Medium') {
+                                $cut_off = $avg_mat_val / $High_med_mat;
+                                $cut_off_val = $High_med_mat;
+                            } else {
+                                $cut_off = $avg_mat_val / $High_high_mat;
+                                $cut_off_val = $High_high_mat;
+                            }
+
+                            // pre_Disclosure
+
+                            if ($reqpre_dis == 'Low') {
+                                $pre_Disclosure = $avg_mat_val / $High_low_mat;
+                                $pre_Disclosure_val = $High_low_mat;
+                            } else if ($reqpre_dis == 'Medium') {
+                                $pre_Disclosure = $avg_mat_val / $High_med_mat;
+                                $pre_Disclosure_val = $High_med_mat;
+                            } else {
+                                $pre_Disclosure = $avg_mat_val / $High_high_mat;
+                                $pre_Disclosure_val = $High_high_mat;
+                            }
+                        }
+                        // dd($classification_val, $completeness_val, $accuracy_val,  $cut_off_val,  $pre_Disclosure_val);
+                        $sum = $classification_val + $completeness_val + $accuracy_val +  $cut_off_val +  $pre_Disclosure_val;
+                        $pm = round((5 * $avg_mat_val) / $sum);
+                        $risk_exists = Risk::where('company_id', session('company_id'))
+                            ->where('year_id', session('year_id'))
+                            ->where('account_id', $request->account_id)
+                            ->first();
+                        if ($risk_exists) {
+                            $risk_exists->classification = round($classification);
+                            $risk_exists->completeness = round($completeness);
+                            $risk_exists->accuracy = round($accuracy);
+                            $risk_exists->cut_off = round($cut_off);
+                            $risk_exists->presentation_disclosure = round($pre_Disclosure);
+                            $risk_exists->overall = 0;
+                            $risk_exists->perform_materiality = $pm;
+                            $risk_exists->company_id = session('company_id');
+                            $risk_exists->year_id = session('year_id');
+                            $risk_exists->account_id = $request->account_id;                // $risk_exists->value = $perf_materiality_val;
+                            $risk_exists->save();
+                        } else {
+                            Risk::create([
+                                'classification' => $classification,
+                                'completeness' => $completeness,
+                                'accuracy' => $accuracy,
+                                'cut_off' => $cut_off,
+                                'presentation_disclosure' => $pre_Disclosure,
+                                'overall' => 0,
+                                'perform_materiality' => $pm,
+                                'company_id' => session('company_id'),
+                                'year_id' => session('year_id'),
+                                'account_id' => $request->account_id,
+                            ]);
+                        }
 
                         if ($request->answer1 == 'Yes') {
                             $worksheet->getCell('E44')->setValue('⌐');
@@ -768,252 +1065,8 @@ class MaterialityController extends Controller
                         }
 
 
-                        $classification = 0;
-                        $completeness = 0;
-                        $accuracy = 0;
-                        $cut_off = 0;
-
-                        $classification_val = 0;
-                        $completeness_val = 0;
-                        $accuracy_val = 0;
-                        $cut_off_val = 0;
-                        $pre_Disclosure_val = 0;
-                        if ($avg_perf_mat->value == 'Low') {
-                            $Low_low_mat = 1.2;
-                            $Low_med_mat = 1.4;
-                            $Low_high_mat = 1.6;
-
-                            //Classigfication
-                            if ($request->classification == 'Low') {
-                                $classification = $avg_mat_val / $Low_low_mat;
-                                $classification_val = $Low_low_mat;
-                            } else if ($request->classification == 'Medium') {
-                                $classification = $avg_mat_val / $Low_med_mat;
-                                $classification_val = $Low_med_mat;
-                            } else {
-                                $classification = $avg_mat_val / $Low_high_mat;
-                                $classification_val = $Low_high_mat;
-                            }
-
-                            //Completness
-                            if ($request->completeness == 'Low') {
-                                $completeness = $avg_mat_val / $Low_low_mat;
-                                $completeness_val = $Low_low_mat;
-                            } else if ($request->completeness == 'Medium') {
-                                $completeness = $avg_mat_val / $Low_med_mat;
-                                $completeness_val = $Low_med_mat;
-                            } else {
-                                $completeness = $avg_mat_val / $Low_high_mat;
-                                $completeness_val = $Low_high_mat;
-                            }
 
 
-                            //accuracy
-                            if ($request->accuracy == 'Low') {
-                                $accuracy = $avg_mat_val / $Low_low_mat;
-                                $accuracy_val = $Low_low_mat;
-                            } else if ($request->completeness == 'Medium') {
-                                $accuracy = $avg_mat_val / $Low_med_mat;
-                                $accuracy_val = $Low_med_mat;
-                            } else {
-                                $accuracy = $avg_mat_val / $Low_high_mat;
-                                $accuracy_val = $Low_high_mat;
-                            }
-
-
-                            //Cut Off
-                            if ($request->cut_off == 'Low') {
-                                $cut_off = $avg_mat_val / $Low_low_mat;
-                                $cut_off_val = $Low_low_mat;
-                            } else if ($request->cut_off == 'Medium') {
-                                $cut_off = $avg_mat_val / $Low_med_mat;
-                                $cut_off_val = $Low_med_mat;
-                            } else {
-                                $cut_off = $avg_mat_val / $Low_high_mat;
-                                $cut_off_val = $Low_high_mat;
-                            }
-
-                            // pre_Disclosure
-
-                            if ($request->pre_dis == 'Low') {
-                                $pre_Disclosure = $avg_mat_val / $Low_low_mat;
-                                $pre_Disclosure_val = $Low_low_mat;
-                            } else if ($request->pre_dis == 'Medium') {
-                                $pre_Disclosure = $avg_mat_val / $Low_med_mat;
-                                $pre_Disclosure_val = $Low_med_mat;
-                            } else {
-                                $pre_Disclosure = $avg_mat_val / $Low_high_mat;
-                                $pre_Disclosure_val = $Low_high_mat;
-                            }
-                        } else if ($avg_perf_mat->value == 'Medium') {
-                            $Med_low_mat = 1.4;
-                            $Med_med_mat = 1.8;
-                            $Med_high_mat = 2.1;
-
-
-                            //Classigfication
-                            if ($request->classification == 'Low') {
-                                $classification = $avg_mat_val / $Med_low_mat;
-                                $classification_val = $Med_low_mat;
-                            } else if ($request->classification == 'Medium') {
-                                $classification = $avg_mat_val / $Med_med_mat;
-                                $classification_val = $Med_med_mat;
-                            } else {
-                                $classification = $avg_mat_val / $Med_high_mat;
-                                $classification_val = $Med_high_mat;
-                            }
-
-                            //Completness
-                            if ($request->completeness == 'Low') {
-                                $completeness = $avg_mat_val / $Med_low_mat;
-                                $completeness_val = $Med_low_mat;
-                            } else if ($request->completeness == 'Medium') {
-                                $completeness = $avg_mat_val / $Med_med_mat;
-                                $completeness_val = $Med_med_mat;
-                            } else {
-                                $completeness = $avg_mat_val / $Med_high_mat;
-                                $completeness_val = $Med_high_mat;
-                            }
-
-
-                            //accuracy
-                            if ($request->accuracy == 'Low') {
-                                $accuracy = $avg_mat_val / $Med_low_mat;
-                                $accuracy_val = $Med_low_mat;
-                            } else if ($request->completeness == 'Medium') {
-                                $accuracy = $avg_mat_val / $Med_med_mat;
-                                $accuracy_val = $Med_med_mat;
-                            } else {
-                                $accuracy = $avg_mat_val / $Med_high_mat;
-                                $accuracy_val = $Med_high_mat;
-                            }
-
-
-                            //Cut Off
-                            if ($request->cut_off == 'Low') {
-                                $cut_off = $avg_mat_val / $Med_low_mat;
-                                $cut_off_val = $Med_low_mat;
-                            } else if ($request->cut_off == 'Medium') {
-                                $cut_off = $avg_mat_val / $Med_med_mat;
-                                $cut_off_val = $Med_med_mat;
-                            } else {
-                                $cut_off = $avg_mat_val / $Med_high_mat;
-                                $cut_off_val = $Med_high_mat;
-                            }
-
-                            //pre_Disclosure
-
-                            if ($request->pre_dis == 'Low') {
-                                $pre_Disclosure = $avg_mat_val / $Med_low_mat;
-                                $pre_Disclosure_val = $Med_low_mat;
-                            } else if ($request->pre_dis == 'Medium') {
-                                $pre_Disclosure = $avg_mat_val / $Med_med_mat;
-                                $pre_Disclosure_val = $Med_med_mat;
-                            } else {
-                                $pre_Disclosure = $avg_mat_val / $Med_high_mat;
-                                $pre_Disclosure_val = $Med_high_mat;
-                            }
-                        } else {
-                            $High_low_mat = 1.6;
-                            $High_med_mat = 2.1;
-                            $High_high_mat = 2.5;
-
-                            //Classigfication
-                            if ($request->classification == 'Low') {
-                                $classification = $avg_mat_val / $High_low_mat;
-                                $classification_val = $High_low_mat;
-                            } else if ($request->classification == 'Medium') {
-                                $classification = $avg_mat_val / $High_med_mat;
-                                $classification_val = $High_med_mat;
-                            } else {
-                                $classification = $avg_mat_val / $High_high_mat;
-                                $classification_val = $High_high_mat;
-                            }
-
-                            //Completness
-                            if ($request->completeness == 'Low') {
-                                $completeness = $avg_mat_val / $High_low_mat;
-                                $completeness_val = $High_low_mat;
-                            } else if ($request->completeness == 'Medium') {
-                                $completeness = $avg_mat_val / $High_med_mat;
-                                $completeness_val = $High_med_mat;
-                            } else {
-                                $completeness = $avg_mat_val / $High_high_mat;
-                                $completeness_val = $High_high_mat;
-                            }
-
-
-                            //accuracy
-                            if ($request->accuracy == 'Low') {
-                                $accuracy = $avg_mat_val / $High_low_mat;
-                                $accuracy_val = $High_low_mat;
-                            } else if ($request->completeness == 'Medium') {
-                                $accuracy = $avg_mat_val / $High_med_mat;
-                                $accuracy_val = $High_med_mat;
-                            } else {
-                                $accuracy = $avg_mat_val / $High_high_mat;
-                                $accuracy_val = $High_high_mat;
-                            }
-
-
-                            //Cut Off
-                            if ($request->cut_off == 'Low') {
-                                $cut_off = $avg_mat_val / $High_low_mat;
-                                $cut_off_val = $High_low_mat;
-                            } else if ($request->cut_off == 'Medium') {
-                                $cut_off = $avg_mat_val / $High_med_mat;
-                                $cut_off_val = $High_med_mat;
-                            } else {
-                                $cut_off = $avg_mat_val / $High_high_mat;
-                                $cut_off_val = $High_high_mat;
-                            }
-
-                            // pre_Disclosure
-
-                            if ($request->pre_dis == 'Low') {
-                                $pre_Disclosure = $avg_mat_val / $High_low_mat;
-                                $pre_Disclosure_val = $High_low_mat;
-                            } else if ($request->pre_dis == 'Medium') {
-                                $pre_Disclosure = $avg_mat_val / $High_med_mat;
-                                $pre_Disclosure_val = $High_med_mat;
-                            } else {
-                                $pre_Disclosure = $avg_mat_val / $High_high_mat;
-                                $pre_Disclosure_val = $High_high_mat;
-                            }
-                        }
-                        // dd($classification_val, $completeness_val, $accuracy_val,  $cut_off_val,  $pre_Disclosure_val);
-                        $sum = $classification_val + $completeness_val + $accuracy_val +  $cut_off_val +  $pre_Disclosure_val;
-                        $pm = round((5 * $avg_mat_val) / $sum);
-                        $risk_exists = Risk::where('company_id', session('company_id'))
-                            ->where('year_id', session('year_id'))
-                            ->where('account_id', $request->account_id)
-                            ->first();
-                        if ($risk_exists) {
-                            $risk_exists->classification = round($classification);
-                            $risk_exists->completeness = round($completeness);
-                            $risk_exists->accuracy = round($accuracy);
-                            $risk_exists->cut_off = round($cut_off);
-                            $risk_exists->presentation_disclosure = round($pre_Disclosure);
-                            $risk_exists->overall = 0;
-                            $risk_exists->perform_materiality = $pm;
-                            $risk_exists->company_id = session('company_id');
-                            $risk_exists->year_id = session('year_id');
-                            $risk_exists->account_id = $request->account_id;                // $risk_exists->value = $perf_materiality_val;
-                            $risk_exists->save();
-                        } else {
-                            Risk::create([
-                                'classification' => $classification,
-                                'completeness' => $completeness,
-                                'accuracy' => $accuracy,
-                                'cut_off' => $cut_off,
-                                'presentation_disclosure' => $pre_Disclosure,
-                                'overall' => 0,
-                                'perform_materiality' => $pm,
-                                'company_id' => session('company_id'),
-                                'year_id' => session('year_id'),
-                                'account_id' => $request->account_id,
-                            ]);
-                        }
 
                         $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
                         $writer->save(storage_path('app/public/Risk-RSC.xlsx'));
@@ -1035,5 +1088,118 @@ class MaterialityController extends Controller
         } else {
             return redirect()->route('materialities')->with('warning', 'Download Materiality Schedule Fisrt');
         }
+    }
+
+
+
+    public function sample_size()
+    {
+        $account = Account::where('company_id', session('company_id'))->first();
+        if ($account) {
+            $accounts = Account::where('company_id', session('company_id'))
+                ->wherehas('risks', function ($query) {
+                    $query->whereNotNull('account_id');
+                    $query->where('year_id', session('year_id'));
+                })->orderBy('name', 'asc')->get();
+            if (count($accounts) > 0) {
+                return Inertia::render('Materiality/SampleSize', [
+                    'accounts' => $accounts,
+                ]);
+            } else {
+                return redirect()->route('rsc')->with('warning', 'Download Rsc First');
+            }
+        } else {
+            $comp = Company::find(session('company_id'));
+            if ($comp) {
+                return redirect()->route('trial.index')->with('warning', 'Account not found in ' . $comp->name . ' company, Upload trial to generate accounts');
+            } else {
+                return redirect()->route('trial.index')->with('warning', 'Account not found in selected company, Upload trial to generate accounts');
+            }
+        }
+    }
+
+    public function sample_size_download(Request $request)
+    {
+        $request->validate([
+            "account_id" => "required",
+            "no_of_items" => "required",
+            "pkr" => "required",
+        ]);
+        $account = Account::where('company_id', session('company_id'))->where('id', $request->account_id)->first();
+        if ($account) {
+            $year = Year::where('company_id', session('company_id'))
+                ->where('id', session('year_id'))->first();
+            if ($year) {
+                $partner = $year->users()->role('partner')->first();
+                $manager = $year->users()->role('manager')->first();
+                $staff = $year->users()->role('staff')->first();
+                //   dd($partner->name , $manager->name , $staff->name);
+
+
+                if ($partner != null && $manager != null && $staff != null) {
+                    // $start = $year->begin ? new Carbon($year->begin) : null;
+                    $now = Carbon::now();
+                    $end = $year->end ? new Carbon($year->end) : null;
+                    $names = str_replace(["&"], "&amp;", $year->company->name);
+
+                    $risk = Risk::where('company_id', session('company_id'))
+                        ->where('year_id', session('year_id'))
+                        ->where('account_id', $request->account_id)->first();
+
+                    $plan_pm = $risk->perform_materiality;
+
+                    $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load(public_path('materiality/Sample-Size.xlsx'));
+                    $worksheet = $spreadsheet->getActiveSheet();
+                    $worksheet->getCell('B7')->setValue($names);
+                    $worksheet->getCell('B8')->setValue($end->format("M j Y"));
+                    $worksheet->getCell('B9')->setValue($account->name);
+
+                    $worksheet->getCell('F13')->setValue($plan_pm);
+                    $worksheet->getCell('D15')->setValue($request->no_of_items);
+                    $worksheet->getCell('F15')->setValue($request->pkr);
+
+                    $worksheet->getCell('F26')->setValue('');
+
+
+                    // $perf_materiality_val = 100;
+                    // $materiality_exists = Setting::where('company_id', session('company_id'))
+                    //     ->where('year_id', session('year_id'))
+                    //     ->where('user_id', Auth::user()->id)
+                    //     ->where('key', 'materiality')
+                    //     ->first();
+
+                    // if ($materiality_exists) {
+                    //     $materiality_exists->value = $materiality_val;
+                    //     $materiality_exists->save();
+                    // } else {
+                    //     Setting::create([
+                    //         'key' => 'materiality',
+                    //         'value' => $materiality_val,
+                    //         'user_id' => Auth::user()->id,
+                    //         'company_id' => session('company_id'),
+                    //         'year_id' => session('year_id'),
+                    //     ]);
+                    // }
+                    $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
+                    $writer->save(storage_path('app/public/Sample-Size.xlsx'));
+                    return response()->download(storage_path('app/public/Sample-Size.xlsx'));
+                }
+            } else {
+                return back()->with('warning', 'Please Create Team First');
+            }
+        } else {
+            $comp = Company::find(session('company_id'));
+            if ($comp) {
+                return redirect()->back()->with('warning', 'Account not found in ' . $comp->name . ' company, Upload trial to generate accounts');
+            } else {
+                return redirect()->back()->with('warning', 'Account not found in selected company, Upload trial to generate accounts');
+            }
+        }
+    }
+
+
+    public function sampleData()
+    {
+        return response()->download(storage_path('app/public/SampleData-Example.xlsx'));
     }
 }

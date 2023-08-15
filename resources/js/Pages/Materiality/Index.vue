@@ -6,16 +6,13 @@
             </div>
         </template>
             <div class="p-2">
-                     <a-button @click="risk_level" size="small">Risk level</a-button>
-                     <a-button @click="rsc" size="small">RSC</a-button>
-
-                <div class="p-2 bg-gray-200 text-center rounded-xl">
-
-                    <h2 class="header">Download Materiality Schedule</h2>
-
+                    <a-button class="m-1" @click="risk_level" size="small">Risk Level</a-button>
+                    <a-button class="m-1" @click="rsc" size="small">RSC</a-button>
+                    <a-button class="m-1" @click="sample_size" size="small">Sample Size</a-button>
+                    <br>
                 </div>
+                <div class="p-2">
 
-                <br>
                     <form
                         @submit.prevent="submit_materiality"
                         v-bind:action="'materiality-download'"
@@ -23,43 +20,43 @@
                     >
 
                     <a-form-item  :wrapper-col="{ span: 14, offset: 4 }">
-                        <a-checkbox name="preTaxSel" value="1"  v-model:checked="preTaxChecked">Pre Tax Income</a-checkbox>
+                        <a-checkbox name="preTaxSelect" value="1"  v-model:checked="preTaxChecked">Pre Tax Income</a-checkbox>
                         <a-input class="text-center" name="preTax" v-model:value="preTaxValue" style="margin-left: 10px; width: 70%" />
+                        <div class="text-red-700 px-4"  role="alert"   v-if="errors.preTaxSelect">
+                            {{ errors.preTaxSelect }}
+                        </div>
                     </a-form-item>
-                            <div class="text-red-700 px-4"  role="alert"   v-if="errors.preTaxSel">
-                                {{ errors.preTaxSel }}
-                            </div>
                     <a-form-item  :wrapper-col="{ span: 14, offset: 4 }">
-                        <a-checkbox name="tAssetSel" value="1" v-model:checked="tAssetChecked">Total Assets</a-checkbox>
+                        <a-checkbox name="TotalAssetSelect" value="1" v-model:checked="tAssetChecked">Total Assets</a-checkbox>
                         <a-input class="text-center" name="tAsset" v-model:value="tAssetValue" style="margin-left: 10px; width: 75%" />
+                        <div class="text-red-700 px-4"  role="alert"   v-if="errors.TotalAssetSelect">
+                                {{ errors.TotalAssetSelect }}
+                        </div>
                     </a-form-item>
-                            <div class="text-red-700 px-4"  role="alert"   v-if="errors.tAssetSel">
-                                    {{ errors.tAssetSel }}
-                            </div>
 
                     <a-form-item  :wrapper-col="{ span: 14, offset: 4 }">
-                        <a-checkbox name="equitySel" value="1" v-model:checked="equityChecked">Equity</a-checkbox>
+                        <a-checkbox name="equitySelect" value="1" v-model:checked="equityChecked">Equity</a-checkbox>
                         <a-input class="text-center" name="equity" v-model:value="equityValue" style="margin-left: 10px; width: 80%" />
-                    </a-form-item>
-                        <div class="text-red-700 px-4"  role="alert"   v-if="errors.equitySel">
-                                {{ errors.equitySel }}
+                        <div class="text-red-700 px-4"  role="alert"   v-if="errors.equitySelect">
+                                {{ errors.equitySelect }}
                         </div>
+                    </a-form-item>
 
                     <a-form-item  :wrapper-col="{ span: 14, offset: 4 }">
-                        <a-checkbox name="netRevenueSel" value="1" v-model:checked="netRevenueChecked">Total Net Revenues</a-checkbox>
+                        <a-checkbox name="netRevenueSelect" value="1" v-model:checked="netRevenueChecked">Total Net Revenues</a-checkbox>
                         <a-input class="text-center" name="netRevenue" v-model:value="netRevenueValue" style="margin-left: 10px; width: 70%" />
-                    </a-form-item>
-                        <div class="text-red-700 px-4"  role="alert"   v-if="errors.netRevenueSel">
-                            {{ errors.netRevenueSel }}
+                        <div class="text-red-700 px-4"  role="alert"   v-if="errors.netRevenueSelect">
+                            {{ errors.netRevenueSelect }}
                         </div>
+                    </a-form-item>
 
                     <a-form-item :wrapper-col="{ span: 14, offset: 4 }">
                         <a-checkbox  name="adptSel" disabled checked value="1">ADPT as a Percentage</a-checkbox>
                         <a-input class="text-center" name="adpt" v-model:value="adptValue" style="margin-left: 10px; width:60%" />
-                    </a-form-item>
                         <div class="text-red-700 px-4"  role="alert"   v-if="errors.adpt">
                             {{ errors.adpt }}
                         </div>
+                    </a-form-item>
 
                     <a-form-item :label-col="{ span: 4 }"
                             :wrapper-col="{ span: 14 }" label="Question 1">
@@ -73,10 +70,10 @@
                             placeholder="Document the source of relevant financial"
                             :auto-size="{ minRows: 2, maxRows: 5 }"
                             > 2022</a-textarea>
+                            <div class="text-red-700 px-4"  role="alert"   v-if="errors.answer1">
+                                    {{ errors.answer1 }}
+                            </div>
                     </a-form-item>
-                        <div class="text-red-700 px-4"  role="alert"   v-if="errors.answer1">
-                                {{ errors.answer1 }}
-                        </div>
 
                     <a-form-item :label-col="{ span: 4 }"
                             :wrapper-col="{ span: 14 }" label="Question 2">
@@ -89,10 +86,10 @@
                                 <a-radio value="no">No</a-radio>
                                 <a-radio value="not_applicable">Not applicable</a-radio>
                         </a-radio-group>
+                        <div class="text-red-700 px-4"  role="alert"   v-if="errors.answer2">
+                                   {{ errors.answer2 }}
+                           </div>
                     </a-form-item>
-                         <div class="text-red-700 px-4"  role="alert"   v-if="errors.answer2">
-                                    {{ errors.answer2 }}
-                            </div>
 
                     <a-form-item :label-col="{ span: 4 }"
                             :wrapper-col="{ span: 14 }" label="Question 3">
@@ -106,10 +103,10 @@
                             placeholder="Document factor(s) considered in determining"
                             :auto-size="{ minRows: 2, maxRows: 5 }"
                             />
+                            <div class="text-red-700 px-4"  role="alert"   v-if="errors.answer3">
+                                               {{ errors.answer3 }}
+                                       </div>
                     </a-form-item>
-                     <div class="text-red-700 px-4"  role="alert"   v-if="errors.answer3">
-                                        {{ errors.answer3 }}
-                                </div>
 
                     <a-form-item :label-col="{ span: 4 }"
                         :wrapper-col="{ span: 14 }" label="Question 4">
@@ -123,10 +120,10 @@
                             <a-radio value="no">No</a-radio>
                             <a-radio value="not_applicable">Not applicable</a-radio>
                         </a-radio-group>
+                        <div class="text-red-700 px-4"  role="alert"   v-if="errors.answer4">
+                                               {{ errors.answer4 }}
+                                       </div>
                     </a-form-item>
-                     <div class="text-red-700 px-4"  role="alert"   v-if="errors.answer4">
-                                            {{ errors.answer4 }}
-                                    </div>
 
                     <a-form-item :label-col="{ span: 4 }"
                         :wrapper-col="{ span: 14 }" label="Question 5">
@@ -140,10 +137,10 @@
                                 placeholder="Document the factors considered in determining PM"
                                 :auto-size="{ minRows: 2, maxRows: 5 }"
                                 />
+                                <div class="text-red-700 px-4"  role="alert"   v-if="errors.answer5">
+                                                           {{ errors.answer5 }}
+                                                   </div>
                     </a-form-item>
-                     <div class="text-red-700 px-4"  role="alert"   v-if="errors.answer5">
-                                                {{ errors.answer5 }}
-                                        </div>
 
                     <a-form-item :label-col="{ span: 4 }"
                         :wrapper-col="{ span: 14 }" label="Question 6">
@@ -156,10 +153,10 @@
                             <a-radio value="no">No</a-radio>
                             <a-radio value="not_applicable">Not applicable</a-radio>
                         </a-radio-group>
+                        <div class="text-red-700 px-4"  role="alert"   v-if="errors.answer6">
+                                {{ errors.answer6 }}
+                        </div>
                     </a-form-item>
-                            <div class="text-red-700 px-4"  role="alert"   v-if="errors.answer6">
-                                    {{ errors.answer6 }}
-                            </div>
                     <a-form-item :label-col="{ span: 4 }"
                         :wrapper-col="{ span: 14 }" label="Question 7">
                                 <strong> Has the engagement team determined a higher ADPT for accumulating reclassification misstatements?</strong>
@@ -170,11 +167,11 @@
                             <a-radio  value="yes">Yes</a-radio>
                             <a-radio value="no">No</a-radio>
                         </a-radio-group>
+                        <div class="text-red-700 px-4"  role="alert"   v-if="errors.answer7">
+                                {{ errors.answer7 }}
+                        </div>
                     </a-form-item>
 
-                                <div class="text-red-700 px-4"  role="alert"   v-if="errors.answer7">
-                                        {{ errors.answer7 }}
-                                </div>
                     <a-form-item :wrapper-col="{ span: 14, offset: 4 }">
                         <a-button type="primary"  htmlType="submit">Download</a-button>
                     </a-form-item>
@@ -242,10 +239,10 @@ export default {
                 netRevenueValue: 0.5,
                 adptValue: 5
             // form_mt: {
-            //     preTaxSel: null,
-            //     tAssetSel: null,
-            //     equitySel: null,
-            //     netRevenueSel: null,
+            //     preTaxSelect: null,
+            //     TotalAssetSelect: null,
+            //     equitySelect: null,
+            //     netRevenueSelect: null,
             //     adptSel: null,
             //     preTax: 5,
             //     tAsset: 0.5,
@@ -265,6 +262,9 @@ export default {
         },
         rsc() {
             this.$inertia.get(route("rsc"));
+        },
+        sample_size() {
+            this.$inertia.get(route("sample_size"));
         },
     },
 };

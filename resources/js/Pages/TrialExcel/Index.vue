@@ -198,6 +198,12 @@ import FlashMessage from "@/Layouts/FlashMessage";
 import { useForm } from "@inertiajs/inertia-vue3";
 
 export default {
+    setup() {
+            const form = useForm({
+                file: null,
+            });
+            return { form };
+        },
     components: {
         AppLayout,
         FlashMessage,
