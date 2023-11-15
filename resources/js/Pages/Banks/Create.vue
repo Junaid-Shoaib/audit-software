@@ -30,7 +30,7 @@
                         type="primary"
                         htmlType="submit"
                         :disabled="form.processing"
-                        >Submit</Button
+                        >Create Bank</Button
                     >
                 </FormItem>
             </Form>

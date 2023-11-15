@@ -73,7 +73,7 @@ class DetailController extends Controller
             //     );
             // }
 
-            $obj_data = Detail::where('company_id', session('company_id'))
+            $obj_data = Detail::where('company_id', session('company_id'))->where('year_id', session('year_id'))
                 ->groupBy('account_id')->get();
             $mapped_data = $obj_data->map(function ($obj, $key) {
                 return [
@@ -401,7 +401,6 @@ class DetailController extends Controller
         $details = Detail::where('company_id', session('company_id'))
             ->where('year_id', session('year_id'))
             ->where('account_id', $account_id)->get();
-
         foreach ($details as $detail) {
             $detail->delete();
         }

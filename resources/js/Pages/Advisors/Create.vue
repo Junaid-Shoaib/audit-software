@@ -69,7 +69,7 @@
                             htmlType="submit"
                             :disabled="form.processing"
                         >
-                            Submit
+                            Create Advisor
                         </a-button>
                     </a-form-item>
                 </a-form>

@@ -8,7 +8,7 @@
         :href="route('advisor_accounts.create')"
         size="small"
         type="buttin"
-        >Add Advisor Account
+        >Create Advisor Account
       </a-button>
 
       <div class="">

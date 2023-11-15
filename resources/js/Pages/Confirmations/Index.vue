@@ -11,7 +11,7 @@
                 size="small"
                  :href="route('confirmations.create')"
                 v-if="create"
-                >Add Confiramtion
+                >Create Confiramtion
               </a-button>
 
             <a-button v-if="balances.data.length > 0"

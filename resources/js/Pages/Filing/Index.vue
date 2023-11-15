@@ -4,16 +4,16 @@
             <div class="grid grid-cols-2 items-center">
                 <div v-if="folders" class="items-center">
                     <!-- <multiselect
-            v-model="form.folder"
-            placeholder="Select Folder."
-            style="width: 50%"
-            :options="folders"
-            label="name"
-            class="float-left rounded-md border border-black"
-            track-by="id"
-            @update:model-value="foch"
-          >
-          </multiselect> -->
+                        v-model="form.folder"
+                        placeholder="Select Folder."
+                        style="width: 50%"
+                        :options="folders"
+                        label="name"
+                        class="float-left rounded-md border border-black"
+                        track-by="id"
+                        @update:model-value="foch"
+                    >
+                    </multiselect> -->
                     <Select
                         show-search
                         optionFilterProp="name"
@@ -43,7 +43,7 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 py-1">
             <InputSearch
                 v-model:value="search"
-                placeholder="input search text"
+                placeholder="Search here"
                 style="width: 200px"
                 @search="onSearch"
                 size="small"
@@ -63,7 +63,7 @@
             />
             <label
                 v-if="isCheckAll"
-                class="ant-btn ant-btn-sm ml-2"
+                class="ant-btn ant-btn-sm ml-8"
                 for="selected"
             >
                 Un-Select All</label

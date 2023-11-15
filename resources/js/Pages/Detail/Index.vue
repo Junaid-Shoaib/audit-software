@@ -5,7 +5,7 @@
     </template>
 
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 py-1">
-      <Button @click="create" size="small">Create</Button>
+      <Button @click="create" size="small">Create Details</Button>
 
       <div class="">
         <div class="obsolute sm:rounded-2xl">

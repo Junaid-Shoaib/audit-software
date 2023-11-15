@@ -6,12 +6,12 @@
 
     <div class="max-w-7xl mx-auto pb-2 sm:px-6 lg:px-8 py-1">
       <Button size="small" :href="route('banks.create', 'create')"
-        >Add Bank</Button
+        >Create Bank</Button
       >
       <InputSearch
         v-model:value="search"
         class="ml-2"
-        placeholder="input search text"
+        placeholder="Search here"
         style="width: 200px"
         @search="onSearch"
         size="small"

@@ -476,4 +476,6 @@ export default {
 .ant-table.ant-table-small tfoot>tr>td {
     padding: 6px 8px !important;
 }
+
+
 </style>

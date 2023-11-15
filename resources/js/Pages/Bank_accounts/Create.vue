@@ -144,7 +144,7 @@
                             type="primary"
                             :disabled="form.processing"
                             htmlType="submit"
-                            >Submit</Button
+                            >Create Bank Account</Button
                         >
                     </Formitem>
                 </Form>

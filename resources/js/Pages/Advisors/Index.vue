@@ -6,7 +6,7 @@
 
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 py-1">
       <a-button :href="route('advisors.create')" size="small" type="buttin"
-        >Add Advisor
+        >Create Advisor
       </a-button>
       <!-- <input
           type="search"

@@ -114,7 +114,7 @@
                             type="primary"
                             :disabled="form.processing"
                             @click="submitForm"
-                            >Submit</a-button
+                            >Create Advisor Accounts</a-button
                         >
                     </a-form-item>
                 </a-form>

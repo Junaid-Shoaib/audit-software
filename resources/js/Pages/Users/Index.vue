@@ -12,7 +12,7 @@
       <InputSearch
         class="ml-2"
         v-model:value="search"
-        placeholder="input search text"
+        placeholder="Search here"
         style="width: 200px"
         @search="onSearch"
         size="small"

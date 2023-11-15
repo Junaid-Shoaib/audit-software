@@ -8,7 +8,7 @@
       <Button @click="create" size="small">Create Template</Button>
       <InputSearch
         v-model:value="search"
-        placeholder="input search text"
+        placeholder="Search here"
         style="width: 200px"
         @search="onSearch"
         size="small"

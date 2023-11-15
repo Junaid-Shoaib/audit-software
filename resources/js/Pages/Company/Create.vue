@@ -187,7 +187,7 @@
             <div v-if="errors.phone">{{ errors.phone }}</div>
           </div> -->
 
-                    <a-form-item label="Fiscal">
+                    <a-form-item label="Month End">
                         <!-- <a-input
               v-model:value="form.fiscal"
               placeholder="Enter your fiscal"
@@ -242,7 +242,7 @@
             </select>
             <div v-if="errors.fiscal">{{ errors.fiscal }}</div>
           </div> -->
-                    <a-form-item label="Incorp">
+                    <a-form-item label="Incorporation Date">
                         <!-- <a-input
               v-model:value="form.incorp"
               placeholder="Enter your incorp"
@@ -289,7 +289,7 @@
                             type="primary"
                             :disabled="form.processing"
                             htmlType="submit"
-                            >Submit</a-button
+                            > Create Company</a-button
                         >
                     </a-form-item>
                     <!-- <div class="px-4 py-2 flex justify-center items-center">

@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Year;
 use App\Models\Setting;
 use App\Models\Company;
+use App\Models\Team;
 use Illuminate\Support\Facades\Artisan;
 use Inertia\Inertia;
 use Carbon\Carbon;
@@ -48,31 +49,12 @@ class YearController extends FileMangementController
                     'end' => $end->format('F,j Y'),
                     'company_name' => $year->company->name,
                     'company_id' => $year->company_id,
-                ];
+                    ];
             });
 
             return Inertia::render('Years/Index', [
                 'mapped_data' => $mapped_data,
-
-                // 'balances' => $query
-                //     ->where('company_id', session('company_id'))
-                //     ->paginate(10)
-                //     ->through(
-                //         function ($year) {
-                //             return [
-                //                 $begin = new Carbon($year->begin),
-                //                 $end = new Carbon($year->end),
-                //                 'id' => $year->id,
-                //                 'closed' => $year->closed,
-                //                 'begin' => $begin->format('F,j Y'),
-                //                 'end' => $end->format('F,j Y'),
-                //                 'company_name' => $year->company->name,
-                //                 'company_id' => $year->company_id,
-                //             ];
-                //         },
-                //     ),
                 'company' => Company::where('id', session('company_id'))->first(),
-
                 'companies' => Auth::user()->companies,
 
             ]);

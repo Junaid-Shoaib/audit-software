@@ -16,13 +16,13 @@
         >
           <template #bodyCell="{ column, record }">
             <template v-if="column.key === 'actions'">
-              <Button
+              <!-- <Button
                 size="small"
                 type="primary"
                 @click="edit(record.id)"
                 class="mr-2"
                 >Edit</Button
-              >
+              > -->
               <Button
                 v-if="record.delete"
                 class="mr-2"

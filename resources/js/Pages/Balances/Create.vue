@@ -88,7 +88,7 @@
                             type="primary"
                             :disabled="form.processing"
                             @click="submit"
-                            >Submit</Button
+                            >Create Balances</Button
                         >
                     </Formitem>
                 </Form>

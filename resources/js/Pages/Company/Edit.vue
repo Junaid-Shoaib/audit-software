@@ -71,7 +71,7 @@
             </div>
           </a-form-item>
 
-          <a-form-item label="Fiscal">
+          <a-form-item label="Month End">
             <a-select
               v-model:value="form.fiscal"
               :options="fiscals"
@@ -91,7 +91,7 @@
               {{ errors.fiscal }}
             </div>
           </a-form-item>
-          <a-form-item label="Incorp">
+          <a-form-item label="Incorporation Date">
             <a-input
               v-model:value="form.incorp"
                            type="date"

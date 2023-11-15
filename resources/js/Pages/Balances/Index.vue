@@ -6,7 +6,7 @@
 
     <div class="max-w-7xl mx-auto pb-2 sm:px-6 lg:px-8 py-1">
       <Button size="small" :href="route('balances.create')"
-        >Add Balances</Button
+        >Create Balances</Button
       >
       <Button
         v-if="dataEdit"

@@ -7,7 +7,7 @@
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 py-1">
       <InputSearch
         v-model:value="search"
-        placeholder="input search text"
+        placeholder="Search here"
         style="width: 200px"
         @search="onSearch"
         size="small"
