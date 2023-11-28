@@ -7,6 +7,7 @@ use Inertia\Middleware;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Company;
 use App\Models\Year;
+use Carbon\Carbon;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -52,10 +53,22 @@ class HandleInertiaRequests extends Middleware
                 })->get()
                 : null
                 : Company::get(),
-            'year' => Year::where('company_id', session('company_id'))->where('id', session('year_id'))->first(),
+            'year' => Year::where('company_id', session('company_id'))->where('id', session('year_id'))->get()->map(function($row){
+                $start = Carbon::create($row->begin)->format('F j, Y');
+                $end = Carbon::create($row->end)->format('F j, Y');
+                return [
+                    'end' => $start .' - '. $end,
+                ];    
+            })->first(),
             'years' => Auth::check() ?
                 Auth::user()->years() ?
-                Auth::user()->years()->wherePivot('company_id', session('company_id'))->get()
+                Auth::user()->years()->wherePivot('company_id', session('company_id'))->get()->map(function($row){
+                    $start = Carbon::create($row->begin)->format('F j, Y');
+                    $end = Carbon::create($row->end)->format('F j, Y');
+                    return [
+                        'end' => $start .' - '. $end,
+                    ];    
+                })
                 : null
                 : Year::get(),
             'team_id' => session('team_id'),
