@@ -55,8 +55,9 @@ class HandleInertiaRequests extends Middleware
                 : Company::get(),
             'year' => Year::where('company_id', session('company_id'))->where('id', session('year_id'))->get()->map(function($row){
                 $start = Carbon::create($row->begin)->format('F j, Y');
-                $end = Carbon::create($row->end)->format('F j, Y');
+                $end = Carbon::create($row->end)->format    ('F j, Y');
                 return [
+                    'id' => $row->id,
                     'end' => $start .' - '. $end,
                 ];    
             })->first(),
@@ -66,6 +67,7 @@ class HandleInertiaRequests extends Middleware
                     $start = Carbon::create($row->begin)->format('F j, Y');
                     $end = Carbon::create($row->end)->format('F j, Y');
                     return [
+                        'id' => $row->id,
                         'end' => $start .' - '. $end,
                     ];    
                 })
