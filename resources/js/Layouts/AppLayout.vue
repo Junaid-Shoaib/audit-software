@@ -478,4 +478,25 @@ export default {
 }
 
 
+.ant-layout-sider-children::-webkit-scrollbar-track
+{
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+	background-color: #F5F5F5;
+}
+
+.ant-layout-sider-children::-webkit-scrollbar
+{
+	width: 6px;
+	background-color: #F5F5F5;
+}
+
+.ant-layout-sider-children::-webkit-scrollbar-thumb
+{
+	background-color: #334454a6;
+}
+
+
+
+
+
 </style>
