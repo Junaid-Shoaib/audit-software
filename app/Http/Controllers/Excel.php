@@ -422,15 +422,16 @@ class Excel extends Controller
         $spreadsheet->getSheet($key)->getStyle('B11:B30')->getAlignment()->setHorizontal('left');
         $spreadsheet->getSheet($key)->getStyle('A11:G30')->getAlignment()->setVertical('center');
 
-
+        $year = Year::find(session('year_id'));
+       $comp = Company::find(session('company_id'));
         $spreadsheet->getSheet($key)->fromArray(['CLIENT:'], NULL, 'A3');
-        $spreadsheet->getSheet($key)->fromArray(['MZK CORPORATION'], NULL, 'B3');
+        $spreadsheet->getSheet($key)->fromArray([$comp->name], NULL, 'B3');
         $spreadsheet->getSheet($key)->fromArray(['SUBJECT:'], NULL, 'A4');
         $spreadsheet->getSheet($key)->fromArray([$acc_grp['name']], NULL, 'B4');
         $spreadsheet->getSheet($key)->fromArray(['PERIOD:'], NULL, 'A5');
-        $spreadsheet->getSheet($key)->fromArray(['23-8-2022'], NULL, 'B5');
+        $spreadsheet->getSheet($key)->fromArray([carbon::parse($year->end)->format('d-m-Y')], NULL, 'B5');
 
-        $year = Year::find(session('year_id'));
+        
         $partner = $year->users()->role('partner')->first();
         $manager = $year->users()->role('manager')->first();
         $staff = $year->users()->role('staff')->first();
@@ -442,6 +443,8 @@ class Excel extends Controller
         $spreadsheet->getSheet($key)->fromArray(['REVIEWED BY:'], NULL, 'A8');
         $spreadsheet->getSheet($key)->fromArray([$partner->name], NULL, 'B8');
         $spreadsheet->getSheet($key)->fromArray(['LEAD SCHEDULE'], NULL, 'B9');
+        $spreadsheet->getSheet($key)->fromArray(['DATE'], NULL, 'C9');
+        $spreadsheet->getSheet($key)->fromArray([carbon::now()->format('F j, Y')], NULL, 'D9');
         $spreadsheet->getSheet($key)->fromArray([''], NULL, 'B10');
         $spreadsheet->getSheet($key)->fromArray(['S.NO'], NULL, 'A11');
         $spreadsheet->getSheet($key)->fromArray(['PARTICULARS'], NULL, 'B11');
