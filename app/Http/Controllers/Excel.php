@@ -407,8 +407,10 @@ class Excel extends Controller
 
         $drawing->setPath('images/logo.png'); /* put your path and image here */
         $drawing->setCoordinates('D1');
-        $drawing->setOffsetX(70);
-        $drawing->setHeight(200);
+
+        $drawing->setOffsetX(15);
+        $drawing->setOffsetY(5);
+        $drawing->setHeight(70);
         $drawing->setWorksheet($spreadsheet->getSheet($key));
         foreach (range('A', 'G') as $k => $col) {
             $spreadsheet->getSheet($key)->getColumnDimension($col)->setAutoSize(true);
@@ -537,6 +539,9 @@ class Excel extends Controller
             $this->excel1($children, $k, $spreadsheet);
         }
     }
+
+
+    
 
     // Lead Genreate Global function --End
 
